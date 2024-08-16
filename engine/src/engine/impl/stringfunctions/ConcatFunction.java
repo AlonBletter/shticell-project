@@ -1,4 +1,6 @@
 package engine.impl.stringfunctions;
 
-public class ConcatFunction {
+import engine.Function;
+
+public class ConcatFunction implements Function {
 }

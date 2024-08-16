@@ -1,4 +1,6 @@
 package engine.impl.mathfunctions;
 
-public class AbsFunction {
+import engine.Function;
+
+public class AbsFunction implements Function {
 }

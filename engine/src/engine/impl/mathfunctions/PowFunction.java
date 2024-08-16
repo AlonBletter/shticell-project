@@ -1,4 +1,6 @@
 package engine.impl.mathfunctions;
 
-public class PowFunction {
+import engine.Function;
+
+public class PowFunction implements Function {
 }

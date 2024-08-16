@@ -1,4 +1,6 @@
 package engine.impl.mathfunctions;
 
-public class ModFunction {
+import engine.Function;
+
+public class ModFunction implements Function {
 }

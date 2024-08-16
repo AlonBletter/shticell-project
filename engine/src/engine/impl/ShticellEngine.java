@@ -1,4 +1,7 @@
 package engine.impl;
 
-public class ShticellEngine {
+import engine.Engine;
+
+public class ShticellEngine implements Engine {
+
 }

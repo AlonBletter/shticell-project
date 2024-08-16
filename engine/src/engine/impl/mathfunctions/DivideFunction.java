@@ -1,4 +1,6 @@
 package engine.impl.mathfunctions;
 
-public class DivideFunction {
+import engine.Function;
+
+public class DivideFunction implements Function {
 }

@@ -1,4 +1,6 @@
 package engine.impl.systemfunctions;
 
-public class RefFunction {
+import engine.Function;
+
+public class RefFunction implements Function {
 }

@@ -1,4 +1,6 @@
 package engine.impl.mathfunctions;
 
-public class PlusFunction {
+import engine.Function;
+
+public class PlusFunction implements Function {
 }

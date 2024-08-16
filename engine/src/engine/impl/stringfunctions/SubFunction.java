@@ -1,4 +1,6 @@
 package engine.impl.stringfunctions;
 
-public class SubFunction {
+import engine.Function;
+
+public class SubFunction implements Function {
 }

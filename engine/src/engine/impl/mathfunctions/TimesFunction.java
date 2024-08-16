@@ -1,4 +1,6 @@
 package engine.impl.mathfunctions;
 
-public class TimesFunction {
+import engine.Function;
+
+public class TimesFunction implements Function {
 }

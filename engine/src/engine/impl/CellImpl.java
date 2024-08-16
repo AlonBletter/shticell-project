@@ -1,4 +1,6 @@
 package engine.impl;
 
-public class CellImpl {
+import engine.Cell;
+
+public class CellImpl implements Cell {
 }

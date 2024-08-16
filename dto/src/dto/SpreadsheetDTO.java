@@ -1,6 +1,6 @@
 package dto;
 
-import engine.Cell;
+import engine.sheet.cell.api.Cell;
 
 public record SpreadsheetDTO(
         String name,

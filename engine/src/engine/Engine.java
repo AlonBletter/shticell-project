@@ -7,4 +7,5 @@ public interface Engine {
     SpreadsheetDTO getSpreadsheet();
     CellDTO getCell(int row, int column);
     void updateCell(CellDTO updatedCell);
+    void load();
 }

@@ -1,0 +1,22 @@
+package engine.sheet.api;
+
+public enum CellType {
+    NUMERIC(Double.class) ,
+    TEXT(String.class) ,
+    BOOLEAN(Boolean.class) ;
+
+    private Class<?> type;
+
+    CellType(Class<?> type) {
+        this.type = type;
+    }
+
+    public Class<?> getType() {
+        return type;
+    }
+
+    public boolean isAssignableFrom(Class<?> aType) {
+        return type.isAssignableFrom(aType);
+    }
+}
+

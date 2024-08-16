@@ -1,5 +1,6 @@
 package ui.impl;
 
+import dto.*;
 import engine.Engine;
 import ui.ConsoleCommands;
 import ui.UI;
@@ -17,19 +18,28 @@ public class ConsoleUI implements UI {
         displayProgramTitle();
 
         while (true) {
-            displaySpreadsheet();
+            displayMenu();
             userSelection = getInputFromUser();
+
+            if (ConsoleCommands.values()[userSelection] == ConsoleCommands.EXIT_SYSTEM) {
+                break;
+            }
+
             handleUserSelection(userSelection);
+        }
+
+        System.out.println("Exiting shticell...");
+    }
+
+    private void displayMenu() {
+        for(ConsoleCommands command : ConsoleCommands.values()) {
+            System.out.println(command.ordinal() + 1 + ": " + command);
         }
     }
 
     private int getInputFromUser() {
         int userSelection;
         Scanner scanner = new Scanner(System.in);
-
-        for(ConsoleCommands command : ConsoleCommands.values()) {
-            System.out.println(command.ordinal() + 1 + ": " + command);
-        }
 
         while (true) {
             System.out.print("Please select your option by entering the command number: ");
@@ -46,7 +56,7 @@ public class ConsoleUI implements UI {
                 scanner.next();
                 System.out.println("Invalid input! Please enter a number corresponding to your choice.");
             } catch (Exception e) {
-                System.out.println("Unknown error! Exiting program...");
+                System.out.println("Unknown error!");
                 throw new RuntimeException(e);
             }
         }
@@ -58,29 +68,7 @@ public class ConsoleUI implements UI {
         ConsoleCommands command = ConsoleCommands.values()[userSelection];
 
         try {
-            switch (command) {
-                case LOAD_SYSTEM_SETTINGS:
-                    loadSystemSettings();
-                    break;
-                case DISPLAY_SPREADSHEET:
-                    displaySpreadsheet();
-                    break;
-                case DISPLAY_CELL_VALUE:
-                    displayCellValue();
-                    break;
-                case UPDATE_CELL_VALUE:
-                    updateCellValue();
-                    break;
-                case DISPLAY_SPREADSHEET_VERSION:
-                    displaySpreadsheetVersion();
-                    break;
-                case EXIT_SYSTEM:
-                    System.exit(0); // LEGITIMATE EXIT?
-                    break;
-                default:
-                    System.out.println("Invalid selection. Please try again."); // SHOULD I?
-                    break;
-            }
+            command.invoke(this);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -93,7 +81,28 @@ public class ConsoleUI implements UI {
 
     @Override
     public void displaySpreadsheet() {
+        SpreadsheetDTO spreadsheet = spreadsheetEngine.getSpreadsheet();
+        char columnName = 'A';
 
+        System.out.println("Spreadsheet version: " + spreadsheet.getCurrentVersion());
+        System.out.println("Spreadsheet name: " + spreadsheet.getName());
+        System.out.println();
+
+        for(int i = 0 ; i < spreadsheet.width() ; i++) {
+            System.out.print(" " + (char) (columnName + 1) + " ");
+        }
+
+        for(int i = 0 ; i < spreadsheet.height() ; i++) {
+            for(int j = 0 ; j < spreadsheet.width() + 1 ; j++) {
+                if (j == 0) {
+                    System.out.printf("%2d", i);
+                }
+
+                System.out.print(" | " + spreadsheetEngine.getCellValue(i, j));
+            }
+
+            System.out.println();
+        }
     }
 
     @Override

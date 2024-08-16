@@ -1,4 +1,5 @@
 package engine;
 
-public interface Function {
+public interface Function<T> {
+    T evaluate();
 }

@@ -1,4 +1,4 @@
-package engine.expression.impl;
+package engine.expression;
 
 import engine.expression.api.Expression;
 import engine.expression.api.Operation;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ExpressionTree {
+public class ExpressionUtils {
     public static void main(String[] args) {
 //        System.out.println(tokenizeExpression("{PLUS,2,3}")); // Output: 5
 //        System.out.println(tokenizeExpression("{MINUS,{PLUS,4,5},{POW,2,3}}")); // Output: 1
@@ -22,12 +22,12 @@ public class ExpressionTree {
 //        System.out.println(tokenizeExpression("5"));
 //        System.out.println(tokenizeExpression("BLABLBALLBA"));
 
-        Expression exp = buildExpression("{SUB,TestingThis,2,5}");
+        Expression exp = buildExpressionFromString("   {CONCAT,HELLO   ,WORLD}");
 
         System.out.println(exp.evaluate().extractValueWithExpectation(exp.evaluate().getCellType().getType()));
     }
 
-    public static class Node {
+    private static class Node {
         String value;
         List<Node> children;
 
@@ -53,21 +53,21 @@ public class ExpressionTree {
         }
     }
 
-    public static Expression buildExpression(String inputToParse) {
+    public static Expression buildExpressionFromString(String inputToParse) {
         Node tokenized = tokenizeExpression(inputToParse);
 
         return parseExpression(tokenized);
     }
 
     private static Node tokenizeExpression(String inputToTokenize) {
-        inputToTokenize = inputToTokenize.trim();
+        inputToTokenize = inputToTokenize;
 
         if (inputToTokenize.startsWith("{") && inputToTokenize.endsWith("}")) {
             int commaIndex = inputToTokenize.indexOf(',');
-            String function = inputToTokenize.substring(1, commaIndex).trim();
+            String function = inputToTokenize.substring(1, commaIndex);
             Node root = new Node(function, new ArrayList<>());
 
-            return tokenizeFunctionExpression(root, inputToTokenize.substring(1, inputToTokenize.length() - 1).trim());
+            return tokenizeFunctionExpression(root, inputToTokenize.substring(1, inputToTokenize.length() - 1));
         } else {
             return new Node(inputToTokenize, null);
         }
@@ -83,13 +83,13 @@ public class ExpressionTree {
             } else if (input.charAt(i) == '}') {
                 bracketCounter--;
             } else if (input.charAt(i) == ',' && bracketCounter == 0) {
-                argument = input.substring(commaIndex + 1, i).trim();
+                argument = input.substring(commaIndex + 1, i);
                 commaIndex = i;
                 root.children.add(tokenizeExpression(argument));
             }
         }
 
-        argument = input.substring(commaIndex + 1).trim();
+        argument = input.substring(commaIndex + 1);
         root.children.add(tokenizeExpression(argument));
 
         return root;

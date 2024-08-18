@@ -22,9 +22,9 @@ public class ExpressionUtils {
 //        System.out.println(tokenizeExpression("5"));
 //        System.out.println(tokenizeExpression("BLABLBALLBA"));
 
-        Expression exp = buildExpressionFromString("   {CONCAT,HELLO   ,WORLD}");
+        Expression exp = buildExpressionFromString("{CONCAT,HELLO   ,123}");
 
-        System.out.println(exp.evaluate().extractValueWithExpectation(exp.evaluate().getCellType().getType()));
+        System.out.println(exp.evaluate(null).extractValueWithExpectation(exp.evaluate(null).getCellType().getType()));
     }
 
     private static class Node {

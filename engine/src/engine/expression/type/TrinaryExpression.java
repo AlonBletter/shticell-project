@@ -1,5 +1,6 @@
 package engine.expression.type;
 
+import dto.SheetDTO;
 import engine.expression.api.Expression;
 import engine.sheet.api.EffectiveValue;
 
@@ -15,9 +16,9 @@ public abstract class TrinaryExpression implements Expression {
     }
 
     @Override
-    public EffectiveValue evaluate() {
-        return evaluate(expression1, expression2, expression3);
+    public EffectiveValue evaluate(SheetDTO currentWorkingSheet) {
+        return evaluate(currentWorkingSheet, expression1, expression2, expression3);
     }
 
-    abstract protected EffectiveValue evaluate(Expression expression1, Expression expression2, Expression expression3);
+    abstract protected EffectiveValue evaluate(SheetDTO sheet, Expression expression1, Expression expression2, Expression expression3);
 }

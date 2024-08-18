@@ -1,5 +1,6 @@
 package engine.expression.impl.string;
 
+import dto.SheetDTO;
 import engine.expression.api.Expression;
 import engine.expression.type.TrinaryExpression;
 import engine.sheet.api.CellType;
@@ -16,10 +17,10 @@ public class Sub extends TrinaryExpression {
     }
 
     @Override
-    protected EffectiveValue evaluate(Expression expression1, Expression expression2, Expression expression3) {
-        EffectiveValue effectiveValue1 = expression1.evaluate();
-        EffectiveValue effectiveValue2 = expression2.evaluate();
-        EffectiveValue effectiveValue3 = expression3.evaluate();
+    protected EffectiveValue evaluate(SheetDTO sheet, Expression expression1, Expression expression2, Expression expression3) {
+        EffectiveValue effectiveValue1 = expression1.evaluate(sheet);
+        EffectiveValue effectiveValue2 = expression2.evaluate(sheet);
+        EffectiveValue effectiveValue3 = expression3.evaluate(sheet);
 
         String source = effectiveValue1.extractValueWithExpectation(String.class);
         int startIndex = effectiveValue2.extractValueWithExpectation(Double.class).intValue();
@@ -27,7 +28,7 @@ public class Sub extends TrinaryExpression {
 
         if(startIndex > endIndex || startIndex < 0 || endIndex > source.length()) {
             return new EffectiveValueImpl(CellType.TEXT, "!UNDEFINED!");
-        }
+        } //TODO: how to return undefined?
 
         return new EffectiveValueImpl(CellType.TEXT, source.substring(startIndex, endIndex + 1));
     }

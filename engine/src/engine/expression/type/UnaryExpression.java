@@ -1,5 +1,6 @@
 package engine.expression.type;
 
+import dto.SheetDTO;
 import engine.expression.api.Expression;
 import engine.sheet.api.EffectiveValue;
 
@@ -11,9 +12,9 @@ public abstract class UnaryExpression implements Expression {
     }
 
     @Override
-    public EffectiveValue evaluate() {
-        return evaluate(expression);
+    public EffectiveValue evaluate(SheetDTO currentWorkingSheet) {
+        return evaluate(currentWorkingSheet, expression);
     }
 
-    abstract protected EffectiveValue evaluate(Expression expression);
+    abstract protected EffectiveValue evaluate(SheetDTO sheet, Expression expression);
 }

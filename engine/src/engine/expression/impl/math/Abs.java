@@ -1,5 +1,6 @@
 package engine.expression.impl.math;
 
+import dto.SheetDTO;
 import engine.expression.api.Expression;
 import engine.expression.type.UnaryExpression;
 import engine.sheet.api.CellType;
@@ -12,10 +13,10 @@ public class Abs extends UnaryExpression {
     }
 
     @Override
-    protected EffectiveValue evaluate(Expression expression) {
-        EffectiveValue effectiveValue = expression.evaluate();
+    protected EffectiveValue evaluate(SheetDTO sheet, Expression expression) {
+        EffectiveValue effectiveValue = expression.evaluate(sheet);
         double result = effectiveValue.extractValueWithExpectation(Double.class);
-        // Optional<T> OR exception OR null
+        //TODO: Optional<T> OR exception OR null
         return new EffectiveValueImpl(CellType.NUMERIC, result);
     }
 }

@@ -3,7 +3,6 @@ package engine;
 import dto.CellDTO;
 import dto.SheetDTO;
 import engine.exception.DataReadException;
-import engine.exception.InvalidCellBoundsException;
 import engine.exception.InvalidSheetLayoutException;
 import engine.generated.STLCell;
 import engine.generated.STLCells;
@@ -11,10 +10,10 @@ import engine.generated.STLSheet;
 import engine.sheet.api.Sheet;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
+import engine.sheet.impl.SheetImpl;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
-
 import java.io.File;
 import java.util.List;
 
@@ -26,17 +25,20 @@ public class EngineImpl implements Engine {
 
     @Override
     public SheetDTO getSpreadsheet() {
+        //TODO
         return null;
     }
 
     @Override
     public CellDTO getCell(int row, int column) {
+        //TODO
         return null;
     }
 
     @Override
-    public void updateCell(CellDTO updatedCell) {
-
+    public void updateCell(String cellToUpdate, String newCellOriginalValue) {
+        Coordinate cellToUpdateCoordinate = CoordinateFactory.createCoordinate(cellToUpdate);
+        sheet.updateCell(cellToUpdateCoordinate, newCellOriginalValue);
     }
 
     @Override
@@ -48,14 +50,14 @@ public class EngineImpl implements Engine {
     }
 
     private void validateXMLFile(String filePath) {
-        if(filePath == null || filePath.isEmpty()) {
+        if(filePath == null || filePath.isEmpty()) { //TODO: Think of other possibilities for exception
             throw new IllegalArgumentException("File path cannot be null or empty");
         } else if (!filePath.endsWith(".xml")) {
             throw new IllegalArgumentException("File path must end with .xml");
         }
     }
 
-    private STLSheet readSheetFromXMLFile(String filePath) throws DataReadException { // Should be checked or unchecked?
+    private STLSheet readSheetFromXMLFile(String filePath) throws DataReadException { //TODO: Should be checked or unchecked?
         try {
             File file = new File(filePath);
             JAXBContext jaxbContext = JAXBContext.newInstance(STLSheet.class);
@@ -79,15 +81,33 @@ public class EngineImpl implements Engine {
 
         for (STLCell stlCell : cellsList) {
             Coordinate cellCoordinate = CoordinateFactory.createCoordinate(stlCell.getRow(), stlCell.getColumn());
-
-            if(cellCoordinate.getRow() > xmlSheetNumOfRows || cellCoordinate.getRow() < 0 ||
-                    cellCoordinate.getColumn() < 0 || cellCoordinate.getColumn() > xmlSheetNumOfColumns) {
-                throw new InvalidCellBoundsException(cellCoordinate, xmlSheetNumOfRows, xmlSheetNumOfColumns);
-            }
+            SheetImpl.validateCoordinateInbound(cellCoordinate, xmlSheetNumOfRows, xmlSheetNumOfColumns);
         }
+
+        validateXMLCellReferences(sheetFromFile);
+    }
+
+    private void validateXMLCellReferences(STLSheet sheetFromFile) {
+        //TODO
     }
 
     private void convertXMLSheetToCurrentSheet(STLSheet sheetFromFile) {
+        sheet.setName(sheetFromFile.getName());
+        sheet.setNumberOfRows(sheetFromFile.getSTLLayout().getRows());
+        sheet.setNumberOfColumns(sheetFromFile.getSTLLayout().getColumns());
+        sheet.setRowHeightUnits(sheetFromFile.getSTLLayout().getSTLSize().getRowsHeightUnits());
+        sheet.setColumnWidthUnits(sheetFromFile.getSTLLayout().getSTLSize().getColumnWidthUnits());
+        sheet.resetActiveCells();
+
+        STLCells cellsFromFile = sheetFromFile.getSTLCells();
+        List<STLCell> cellsList = cellsFromFile.getSTLCell();
+
+        for (STLCell stlCell : cellsList) {
+            Coordinate cellCoordinate = CoordinateFactory.createCoordinate(stlCell.getRow(), stlCell.getColumn());
+            sheet.updateCell(cellCoordinate, stlCell.getSTLOriginalValue());
+        }
+
+        //TODO MAHAM + dependencies
     }
 
 

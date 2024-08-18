@@ -1,5 +1,7 @@
 package engine.sheet.coordinate;
 
+import java.util.Objects;
+
 public class CoordinateImpl implements Coordinate {
     private final int row;
     private final int column;
@@ -17,5 +19,18 @@ public class CoordinateImpl implements Coordinate {
     @Override
     public int getColumn() {
         return column;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CoordinateImpl that = (CoordinateImpl) o;
+        return row == that.row && column == that.column;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(row, column);
     }
 }

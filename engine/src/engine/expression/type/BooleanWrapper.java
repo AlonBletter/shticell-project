@@ -1,5 +1,6 @@
 package engine.expression.type;
 
+import dto.SheetDTO;
 import engine.expression.api.Expression;
 import engine.sheet.api.CellType;
 import engine.sheet.api.EffectiveValue;
@@ -13,7 +14,7 @@ public class BooleanWrapper implements Expression {
     }
 
     @Override
-    public EffectiveValue evaluate() {
+    public EffectiveValue evaluate(SheetDTO currentWorkingSheet) {
         return new EffectiveValueImpl(CellType.BOOLEAN, aBoolean);
     }
 

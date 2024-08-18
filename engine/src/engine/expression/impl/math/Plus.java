@@ -1,5 +1,6 @@
 package engine.expression.impl.math;
 
+import dto.SheetDTO;
 import engine.expression.api.Expression;
 import engine.expression.type.BinaryExpression;
 import engine.sheet.api.CellType;
@@ -13,9 +14,9 @@ public class Plus extends BinaryExpression {
     }
 
     @Override
-    protected EffectiveValue evaluate(Expression expression1, Expression expression2) {
-        EffectiveValue effectiveValue1 = expression1.evaluate();
-        EffectiveValue effectiveValue2 = expression2.evaluate();
+    protected EffectiveValue evaluate(SheetDTO sheet, Expression expression1, Expression expression2) {
+        EffectiveValue effectiveValue1 = expression1.evaluate(sheet);
+        EffectiveValue effectiveValue2 = expression2.evaluate(sheet);
         double result = effectiveValue1.extractValueWithExpectation(Double.class) + effectiveValue2.extractValueWithExpectation(Double.class);
 
         return new EffectiveValueImpl(CellType.NUMERIC, result);

@@ -1,5 +1,6 @@
 package engine.expression.impl.string;
 
+import dto.SheetDTO;
 import engine.expression.api.Expression;
 import engine.expression.type.BinaryExpression;
 import engine.sheet.api.CellType;
@@ -13,9 +14,9 @@ public class Concat extends BinaryExpression {
     }
 
     @Override
-    protected EffectiveValue evaluate(Expression expression1, Expression expression2) {
-        EffectiveValue effectiveValue1 = expression1.evaluate();
-        EffectiveValue effectiveValue2 = expression2.evaluate();
+    protected EffectiveValue evaluate(SheetDTO sheet, Expression expression1, Expression expression2) {
+        EffectiveValue effectiveValue1 = expression1.evaluate(sheet);
+        EffectiveValue effectiveValue2 = expression2.evaluate(sheet);
         String result = effectiveValue1.extractValueWithExpectation(String.class) + effectiveValue2.extractValueWithExpectation(String.class);
 
         return new EffectiveValueImpl(CellType.TEXT, result);

@@ -1,5 +1,6 @@
 package engine.expression.type;
 
+import dto.SheetDTO;
 import engine.sheet.api.EffectiveValue;
 import engine.expression.api.Expression;
 
@@ -13,9 +14,9 @@ public abstract class BinaryExpression implements Expression {
     }
 
     @Override
-    public EffectiveValue evaluate() {
-        return evaluate(expression1, expression2);
+    public EffectiveValue evaluate(SheetDTO currentWorkingSheet) {
+        return evaluate(currentWorkingSheet, expression1, expression2);
     }
 
-    abstract protected EffectiveValue evaluate(Expression expression1, Expression expression2);
+    abstract protected EffectiveValue evaluate(SheetDTO sheet, Expression expression1, Expression expression2);
 }

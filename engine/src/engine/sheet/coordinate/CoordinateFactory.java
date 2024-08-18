@@ -27,7 +27,7 @@ public class CoordinateFactory {
 
     public static Coordinate createCoordinate(String cellCoordinate) {
         int parsedColumn = cellCoordinate.charAt(0) - 'A' + 1;
-        int parsedRow = cellCoordinate.charAt(1) - '0' + 1;
+        int parsedRow = Integer.parseInt(cellCoordinate.substring(1));
 
         return createCoordinate(parsedRow, parsedColumn);
     }

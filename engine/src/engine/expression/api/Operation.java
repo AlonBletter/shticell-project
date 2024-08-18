@@ -70,7 +70,7 @@ public enum Operation {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateNumberOfParameters(Ref.class, parameters);
-            return null; // IMPLEMENT!!!!!!!!!!
+            return new Ref(parameters.getFirst());
         }
     };
 

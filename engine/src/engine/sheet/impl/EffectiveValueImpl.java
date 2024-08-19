@@ -31,4 +31,12 @@ public class EffectiveValueImpl implements EffectiveValue {
         //TODO: error handling... exception ? return null ?
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "EffectiveValueImpl{" +
+                "cellType=" + cellType +
+                ", value=" + value +
+                '}';
+    }
 }

@@ -9,7 +9,7 @@ public record SheetDTO(
         int numOfRows,
         int numOfColumns,
         int rowHeightUnits,
-        int columnHeightUnits,
+        int columnWidthUnits,
         Map<Coordinate, CellDTO> activeCells,
         Map<Coordinate, Coordinate> dependentCells
 ) {

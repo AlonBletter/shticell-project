@@ -38,4 +38,12 @@ public class CellImpl implements Cell {
     public void setEffectiveValue(EffectiveValue value) {
         this.effectiveValue = value;
     }
+
+    @Override
+    public String toString() {
+        return "Cell{" +
+                "originalValue='" + originalValue + '\'' +
+                ", effectiveValue='" + effectiveValue + '\'' +
+                '}';
+    }
 }

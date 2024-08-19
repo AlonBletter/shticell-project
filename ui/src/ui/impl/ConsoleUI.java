@@ -1,15 +1,22 @@
 package ui.impl;
 
-import dto.*;
+import dto.CellDTO;
+import dto.SheetDTO;
 import engine.Engine;
+import engine.EngineImpl;
+import engine.exception.DataReadException;
+import engine.sheet.coordinate.Coordinate;
+import engine.sheet.coordinate.CoordinateFactory;
 import ui.ConsoleCommands;
 import ui.UI;
 
 import java.util.InputMismatchException;
+import java.util.Map;
 import java.util.Scanner;
 
 public class ConsoleUI implements UI {
-    private Engine spreadsheetEngine;
+    private final Engine spreadsheetEngine = new EngineImpl();
+    private boolean systemIsLoaded = false;
 
     @Override
     public void executeProgram() {
@@ -26,12 +33,14 @@ public class ConsoleUI implements UI {
             }
 
             handleUserSelection(userSelection);
+            System.out.println();
         }
 
         System.out.println("Exiting shticell...");
     }
 
     private void displayMenu() {
+        System.out.println("Menu Options:");
         for(ConsoleCommands command : ConsoleCommands.values()) {
             System.out.println(command.ordinal() + 1 + ": " + command);
         }
@@ -56,8 +65,7 @@ public class ConsoleUI implements UI {
                 scanner.next();
                 System.out.println("Invalid input! Please enter a number corresponding to your choice.");
             } catch (Exception e) {
-                System.out.println("Unknown error!");
-                throw new RuntimeException(e);
+                System.out.println("Error! " + e.getMessage());
             }
         }
 
@@ -76,32 +84,66 @@ public class ConsoleUI implements UI {
 
     @Override
     public void loadSystemSettings() {
+        String userInput;
+        Scanner scanner = new Scanner(System.in);
 
+        while (true) {
+            System.out.print("Please enter the absolute file path of the .XML file (Or enter q/Q return to the main menu): ");
+
+            try {
+                userInput = scanner.next();
+
+                if(userInput.equalsIgnoreCase("q")) {
+                    System.out.println("Returning to main menu...");
+                    break;
+                }
+
+                spreadsheetEngine.loadSystemSettingsFromFile(userInput);
+                systemIsLoaded = true;
+                System.out.println("Loaded file successfully...");
+                break;
+            } catch (Exception e) {
+                System.out.println("Error! " + e.getMessage());
+            }
+        }
     }
 
     @Override
     public void displaySpreadsheet() {
-        SpreadsheetDTO spreadsheet = spreadsheetEngine.getSpreadsheet();
-        char columnName = 'A';
+        try {
+            SheetDTO spreadsheet = spreadsheetEngine.getSpreadsheet();
+            Map<Coordinate, CellDTO> cells = spreadsheet.activeCells();
+            int columnWidth = spreadsheet.columnWidthUnits();
 
-        System.out.println("Spreadsheet version: " + spreadsheet.getCurrentVersion());
-        System.out.println("Spreadsheet name: " + spreadsheet.getName());
-        System.out.println();
+            //System.out.println("Spreadsheet version: " + spreadsheet.getVersion()); //TODO version
+            System.out.println("Spreadsheet name: " + spreadsheet.name());
+            System.out.println();
 
-        for(int i = 0 ; i < spreadsheet.width() ; i++) {
-            System.out.print(" " + (char) (columnName + 1) + " ");
-        }
+            // Prints columns headers
+            System.out.print("     ");
+            for (int i = 0; i < spreadsheet.numOfColumns(); i++) {
+                char columnName = (char) ('A' + i);
+                System.out.printf("%-" + columnWidth + "s" + "   ", columnName);
+            }
+            System.out.println();
 
-        for(int i = 0 ; i < spreadsheet.height() ; i++) {
-            for(int j = 0 ; j < spreadsheet.width() + 1 ; j++) {
-                if (j == 0) {
-                    System.out.printf("%2d", i);
+            for (int i = 0; i < spreadsheet.numOfRows(); i++) {
+                // Prints rows headers
+                System.out.printf("%2d", i + 1);
+
+                // Prints cells values
+                for (int j = 0; j < spreadsheet.numOfColumns(); j++) {
+                    Coordinate coordinate = CoordinateFactory.createCoordinate(i + 1, j + 1);
+                    CellDTO cell = spreadsheetEngine.getCell(coordinate);
+                    Object cellValue = cell != null ? cell.effectiveValue().getValue() : ""; //TODO is object fine? (we assume its primitive inside)
+
+                    System.out.printf(" | %-" + columnWidth + "s", cellValue);
                 }
 
-                System.out.print(" | " + spreadsheetEngine.getCellValue(i, j));
+                System.out.println("|");
             }
-
-            System.out.println();
+        } catch (Exception e) {
+            System.out.println("Error! +" + e.getMessage());
         }
     }
 
@@ -122,23 +164,9 @@ public class ConsoleUI implements UI {
 
     private void displayProgramTitle() {
         System.out.println(
-                "   SSSSSSSSSSSSSSS hhhhhhh                     tttt            iiii                                         lllllll lllllll \n" +
-                " SS:::::::::::::::Sh:::::h                  ttt:::t           i::::i                                        l:::::l l:::::l \n" +
-                "S:::::SSSSSS::::::Sh:::::h                  t:::::t            iiii                                         l:::::l l:::::l \n" +
-                "S:::::S     SSSSSSSh:::::h                  t:::::t                                                         l:::::l l:::::l \n" +
-                "S:::::S             h::::h hhhhh      ttttttt:::::ttttttt    iiiiiii     cccccccccccccccc    eeeeeeeeeeee    l::::l  l::::l \n" +
-                "S:::::S             h::::hh:::::hhh   t:::::::::::::::::t    i:::::i   cc:::::::::::::::c  ee::::::::::::ee  l::::l  l::::l \n" +
-                " S::::SSSS          h::::::::::::::hh t:::::::::::::::::t     i::::i  c:::::::::::::::::c e::::::eeeee:::::eel::::l  l::::l \n" +
-                "  SS::::::SSSSS     h:::::::hhh::::::htttttt:::::::tttttt     i::::i c:::::::cccccc:::::ce::::::e     e:::::el::::l  l::::l \n" +
-                "    SSS::::::::SS   h::::::h   h::::::h     t:::::t           i::::i c::::::c     ccccccce:::::::eeeee::::::el::::l  l::::l \n" +
-                "       SSSSSS::::S  h:::::h     h:::::h     t:::::t           i::::i c:::::c             e:::::::::::::::::e l::::l  l::::l \n" +
-                "            S:::::S h:::::h     h:::::h     t:::::t           i::::i c:::::c             e::::::eeeeeeeeeee  l::::l  l::::l \n" +
-                "            S:::::S h:::::h     h:::::h     t:::::t    tttttt i::::i c::::::c     ccccccce:::::::e           l::::l  l::::l \n" +
-                "SSSSSSS     S:::::S h:::::h     h:::::h     t::::::tttt:::::ti::::::ic:::::::cccccc:::::ce::::::::e         l::::::ll::::::l\n" +
-                "S::::::SSSSSS:::::S h:::::h     h:::::h     tt::::::::::::::ti::::::i c:::::::::::::::::c e::::::::eeeeeeee l::::::ll::::::l\n" +
-                "S:::::::::::::::SS  h:::::h     h:::::h       tt:::::::::::tti::::::i  cc:::::::::::::::c  ee:::::::::::::e l::::::ll::::::l\n" +
-                " SSSSSSSSSSSSSSS    hhhhhhh     hhhhhhh         ttttttttttt  iiiiiiii    cccccccccccccccc    eeeeeeeeeeeeee llllllllllllllll"
+                "---------------------------------\n" +
+                "-      Welcome To Shticell      -\n" +
+                "---------------------------------"
         );
-        System.out.println();
     }
 }

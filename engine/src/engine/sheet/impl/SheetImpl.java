@@ -41,26 +41,21 @@ public class SheetImpl implements Sheet {
     }
 
     public static void validateCoordinateInbound(Coordinate coordinate, int numberOfRows, int numberOfColumns) {
-        if(coordinate.getRow() > numberOfRows || coordinate.getRow() < 0 ||
-                coordinate.getColumn() > numberOfColumns || coordinate.getColumn() < 0) {
+        if(coordinate.getRow() > numberOfRows || coordinate.getRow() < 1 ||
+                coordinate.getColumn() > numberOfColumns || coordinate.getColumn() < 1) {
             throw new InvalidCellBoundsException(coordinate, numberOfRows, numberOfColumns);
         }
     }
 
     public void resetActiveCells() {
-        activeCells.clear();
+        activeCells.clear(); //TODO Maybe not necessary?
     }
 
     @Override
     public Cell getCell(Coordinate coordinate) {
         validateCoordinateInbound(coordinate, numberOfRows, numberOfColumns);
-        Cell cell = activeCells.get(coordinate);
 
-        if(cell == null) {
-            activeCells.put(coordinate, new CellImpl());
-        }
-
-        return cell;
+        return activeCells.computeIfAbsent(coordinate, k -> new CellImpl());
     }
 
     @Override

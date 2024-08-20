@@ -90,7 +90,8 @@ public enum Operation {
         }
 
         if (!matchFound) {
-            throw new ParameterCountMismatchException(constructorParameterCount, parameters.size());
+            //throw new ParameterCountMismatchException(constructorParameterCount, parameters.size());
+            throw new IllegalArgumentException("Expected " + parameters.size() + " parameters but received " + constructorParameterCount);
         }
     }
 }

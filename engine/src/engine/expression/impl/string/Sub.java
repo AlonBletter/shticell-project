@@ -8,10 +8,6 @@ import engine.sheet.api.EffectiveValue;
 import engine.sheet.impl.EffectiveValueImpl;
 
 public class Sub extends TrinaryExpression {
-    private Expression expression1;
-    private Expression expression2;
-    private Expression expression3;
-
     public Sub(Expression expression1, Expression expression2, Expression expression3) {
         super(expression1, expression2, expression3);
     }
@@ -23,8 +19,22 @@ public class Sub extends TrinaryExpression {
         EffectiveValue effectiveValue3 = expression3.evaluate(sheet);
 
         String source = effectiveValue1.extractValueWithExpectation(String.class);
-        int startIndex = effectiveValue2.extractValueWithExpectation(Double.class).intValue();
-        int endIndex = effectiveValue3.extractValueWithExpectation(Double.class).intValue();
+        Double arg2 = effectiveValue2.extractValueWithExpectation(Double.class);
+        Double arg3 = effectiveValue3.extractValueWithExpectation(Double.class);
+
+        if (source == null || arg2 == null || arg3 == null) {
+            throw new IllegalArgumentException("Invalid arguments to " + this.getClass().getSimpleName().toUpperCase() + " function!\n" +
+                    "Expected Arg1=<"+ CellType.NUMERIC +">, Arg2=<" + CellType.TEXT + ">, Arg3=<" + CellType.TEXT + "> but received " +
+                    "Arg1=<" + effectiveValue1.getCellType() + ">, Arg2=<" + effectiveValue2.getCellType() + ">, Arg3=<" + effectiveValue2.getCellType() + ">");
+        }
+
+        if (arg2 % 1 != 0 || arg3 % 1 != 0) {
+            throw new IllegalArgumentException("Invalid arguments to " + this.getClass().getSimpleName().toUpperCase() +
+                    " function! Indices must be whole numbers. Received Arg2=<" + arg2 + ">, Arg3=<" + arg3 + ">");
+        }
+
+        int startIndex = arg2.intValue();
+        int endIndex = arg3.intValue();
 
         if(startIndex > endIndex || startIndex < 0 || endIndex > source.length()) {
             return new EffectiveValueImpl(CellType.TEXT, "!UNDEFINED!");

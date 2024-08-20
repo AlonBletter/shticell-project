@@ -9,5 +9,5 @@ public interface Engine {
     void loadSystemSettingsFromFile(String filePath) throws DataReadException;
     SheetDTO getSpreadsheet();
     CellDTO getCell(Coordinate cellToGetCoordinate);
-    void updateCell(String cellToUpdate, String newCellOriginalValue);
+    void updateCell(Coordinate cellToUpdateCoordinate, String newCellOriginalValue);
 }

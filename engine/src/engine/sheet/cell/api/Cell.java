@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface Cell {
     String getOriginalValue();
-    void setCellOriginalValue(String value);
+    void setOriginalValue(String value);
     EffectiveValue getEffectiveValue();
     void setEffectiveValue(EffectiveValue value);
 }

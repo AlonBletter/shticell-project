@@ -5,27 +5,33 @@ import engine.expression.api.Operation;
 import engine.expression.type.BooleanWrapper;
 import engine.expression.type.Numeric;
 import engine.expression.type.Text;
+import engine.sheet.coordinate.Coordinate;
+import engine.sheet.coordinate.CoordinateFactory;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ExpressionUtils {
-//    public static void main(String[] args) {
-////        System.out.println(tokenizeExpression("{PLUS,2,3}")); // Output: 5
-////        System.out.println(tokenizeExpression("{MINUS,{PLUS,4,5},{POW,2,3}}")); // Output: 1
-////        System.out.println(tokenizeExpression("{CONCAT,Hello,World}")); // Output: HelloWorld
-////        System.out.println(tokenizeExpression("{ABS,{MINUS,4,5}}")); // Output: 1
-////        System.out.println(tokenizeExpression("{POW,2,3}")); // Output: 8
-////        System.out.println(tokenizeExpression("{SUB,hello,2,3}")); // Output: 8
-////        System.out.println(tokenizeExpression("{MOD,4, 2}")); // Output: 0
-////        System.out.println(tokenizeExpression("5"));
-////        System.out.println(tokenizeExpression("BLABLBALLBA"));
-//
+    public static void main(String[] args) {
+//        System.out.println(tokenizeExpression("{PLUS,2,3}")); // Output: 5
+//        System.out.println(tokenizeExpression("{MINUS,{PLUS,4,5},{POW,2,3}}")); // Output: 1
+//        System.out.println(tokenizeExpression("{CONCAT,Hello,World}")); // Output: HelloWorld
+//        System.out.println(tokenizeExpression("{ABS,{MINUS,4,5}}")); // Output: 1
+//        System.out.println(tokenizeExpression("{POW,2,3}")); // Output: 8
+//        System.out.println(tokenizeExpression("{SUB,hello,2,3}")); // Output: 8
+//        System.out.println(tokenizeExpression("{MOD,4, 2}")); // Output: 0
+//        System.out.println(tokenizeExpression("5"));
+//        System.out.println(tokenizeExpression("BLABLBALLBA"));
 //        Expression exp = buildExpressionFromString("{CONCAT,HELLO   ,123}");
-//
 //        System.out.println(exp.evaluate(null).extractValueWithExpectation(exp.evaluate(null).getCellType().getType()));
-//    }
+
+        String str = "{PLUS,{REF,A4},{MINUS,{REF,A5},6}}";
+
+        System.out.println();
+    }
 
     private static class Node {
         String value;
@@ -60,8 +66,6 @@ public class ExpressionUtils {
     }
 
     private static Node tokenizeExpression(String inputToTokenize) {
-        inputToTokenize = inputToTokenize;
-
         if (inputToTokenize.startsWith("{") && inputToTokenize.endsWith("}")) {
             int commaIndex = inputToTokenize.indexOf(',');
             String function = inputToTokenize.substring(1, commaIndex);
@@ -117,7 +121,7 @@ public class ExpressionUtils {
         String numberPattern = "^\\d+(\\.\\d+)?$";
         Expression parsingResult;
 
-        try {
+        try { //TODO redundant try catch?
             if(expression.matches(numberPattern)) {
                 parsingResult = new Numeric(
                         Double.parseDouble(expression));

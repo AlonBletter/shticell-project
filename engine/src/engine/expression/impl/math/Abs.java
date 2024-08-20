@@ -15,8 +15,14 @@ public class Abs extends UnaryExpression {
     @Override
     protected EffectiveValue evaluate(SheetDTO sheet, Expression expression) {
         EffectiveValue effectiveValue = expression.evaluate(sheet);
-        double result = effectiveValue.extractValueWithExpectation(Double.class);
-        //TODO: Optional<T> OR exception OR null
+
+        Double result = effectiveValue.extractValueWithExpectation(Double.class);
+
+        if (result == null) {
+            throw new IllegalArgumentException("Invalid arguments to " + this.getClass().getSimpleName().toUpperCase() + " function!\n" +
+                    "Expected <"+ CellType.NUMERIC +"> but received <" + effectiveValue.getCellType() + ">");
+        }
+
         return new EffectiveValueImpl(CellType.NUMERIC, result);
     }
 }

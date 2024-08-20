@@ -1,14 +1,12 @@
-package ui.impl;
+package ui;
 
 import dto.CellDTO;
 import dto.SheetDTO;
 import engine.Engine;
 import engine.EngineImpl;
-import engine.exception.DataReadException;
+import engine.exception.InvalidCellBoundsException;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
-import ui.ConsoleCommands;
-import ui.UI;
 
 import java.util.InputMismatchException;
 import java.util.Map;
@@ -16,7 +14,6 @@ import java.util.Scanner;
 
 public class ConsoleUI implements UI {
     private final Engine spreadsheetEngine = new EngineImpl();
-    private boolean systemIsLoaded = false;
 
     @Override
     public void executeProgram() {
@@ -41,6 +38,7 @@ public class ConsoleUI implements UI {
 
     private void displayMenu() {
         System.out.println("Menu Options:");
+        System.out.println("-------------");
         for(ConsoleCommands command : ConsoleCommands.values()) {
             System.out.println(command.ordinal() + 1 + ": " + command);
         }
@@ -88,24 +86,38 @@ public class ConsoleUI implements UI {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            System.out.print("Please enter the absolute file path of the .XML file (Or enter q/Q return to the main menu): ");
+            System.out.print("Please enter the absolute file path of the .XML file you'd like to load (Or enter 'q'/'Q' return to the main menu): ");
 
             try {
                 userInput = scanner.next();
 
-                if(userInput.equalsIgnoreCase("q")) {
+                if (userInput.equalsIgnoreCase("q")) {
                     System.out.println("Returning to main menu...");
                     break;
                 }
 
                 spreadsheetEngine.loadSystemSettingsFromFile(userInput);
-                systemIsLoaded = true;
                 System.out.println("Loaded file successfully...");
                 break;
+            } catch (InvalidCellBoundsException e) {
+                handleInvalidCellBoundException(e);
             } catch (Exception e) {
-                System.out.println("Error! " + e.getMessage());
+                System.out.println(e.getMessage());
             }
+            System.out.println();
         }
+    }
+
+    private void handleInvalidCellBoundException(InvalidCellBoundsException e) {
+        Coordinate coordinate = e.getActualCoordinate();
+        int sheetNumOfRows = e.getSheetNumOfRows();
+        int SheetNumOfColumns = e.getSheetNumOfColumns();
+        char sheetColumnRange = (char) (SheetNumOfColumns + 'A' - 1);
+        char cellColumnChar = (char) (coordinate.getColumn() + 'A' - 1);
+
+        System.out.println(e.getMessage() + "Invalid cell bounds!\n" +
+                "Expected column between A-" + sheetColumnRange + " and row between 1-" + sheetNumOfRows +
+                " But received column: " + cellColumnChar + ", row: " + coordinate.getRow());
     }
 
     @Override
@@ -137,13 +149,18 @@ public class ConsoleUI implements UI {
                     CellDTO cell = spreadsheetEngine.getCell(coordinate);
                     Object cellValue = cell != null ? cell.effectiveValue().getValue() : ""; //TODO is object fine? (we assume its primitive inside)
 
-                    System.out.printf(" | %-" + columnWidth + "s", cellValue);
+                    String valueString = cellValue.toString();
+                    if (valueString.length() > columnWidth) {
+                        valueString = valueString.substring(0, columnWidth);
+                    }
+
+                    System.out.printf(" | %-" + columnWidth + "s", valueString);
                 }
 
                 System.out.println("|");
             }
         } catch (Exception e) {
-            System.out.println("Error! +" + e.getMessage());
+            System.out.println("Error! " + e.getMessage());
         }
     }
 
@@ -166,7 +183,7 @@ public class ConsoleUI implements UI {
         System.out.println(
                 "---------------------------------\n" +
                 "-      Welcome To Shticell      -\n" +
-                "---------------------------------"
+                "---------------------------------\n"
         );
     }
 }

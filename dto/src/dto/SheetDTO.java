@@ -2,6 +2,7 @@ package dto;
 
 import engine.sheet.coordinate.*;
 
+import java.util.List;
 import java.util.Map;
 
 public record SheetDTO(
@@ -11,6 +12,6 @@ public record SheetDTO(
         int rowHeightUnits,
         int columnWidthUnits,
         Map<Coordinate, CellDTO> activeCells,
-        Map<Coordinate, Coordinate> dependentCells
+        Map<Coordinate, List<Coordinate>> dependencies
 ) {
 }

@@ -13,6 +13,13 @@ public class InvalidCellBoundsException extends RuntimeException {
         this.sheetNumOfColumns = sheetNumOfColumns;
     }
 
+    public InvalidCellBoundsException(Coordinate actualCoordinate, int sheetNumOfRows, int sheetNumOfColumns, String message) {
+        super(message);
+        this.actualCoordinate = actualCoordinate;
+        this.sheetNumOfRows = sheetNumOfRows;
+        this.sheetNumOfColumns = sheetNumOfColumns;
+    }
+
     public Coordinate getActualCoordinate() {
         return actualCoordinate;
     }

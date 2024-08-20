@@ -1,8 +1,10 @@
 package engine.sheet.api;
 
+import engine.generated.STLSheet;
 import engine.sheet.cell.api.Cell;
 import engine.sheet.coordinate.Coordinate;
 
+import java.util.List;
 import java.util.Map;
 
 public interface Sheet {
@@ -20,6 +22,6 @@ public interface Sheet {
     int getRowHeightUnits();
     int getColumnWidthUnits();
     Map<Coordinate, Cell> getActiveCells();
-    Map<Coordinate, Coordinate> getDependentCells();
-    void resetActiveCells();
+    Map<Coordinate, List<Coordinate>> getDependentCells();
+    void init(STLSheet sheetToInitFrom);
 }

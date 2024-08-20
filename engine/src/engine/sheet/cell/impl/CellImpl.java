@@ -25,7 +25,7 @@ public class CellImpl implements Cell {
     }
 
     @Override
-    public void setCellOriginalValue(String value) {
+    public void setOriginalValue(String value) {
         this.originalValue = value;
     }
 

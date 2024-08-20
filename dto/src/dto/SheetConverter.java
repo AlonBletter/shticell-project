@@ -29,7 +29,7 @@ public class SheetConverter {
                 sheetDTO.rowHeightUnits(),
                 sheetDTO.columnWidthUnits(),
                 convertActiveCellsToEntity(sheetDTO.activeCells()),
-                sheetDTO.dependentCells()
+                sheetDTO.dependencies()
         );
     }
 

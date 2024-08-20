@@ -18,5 +18,14 @@ public enum CellType {
     public boolean isAssignableFrom(Class<?> aType) {
         return type.isAssignableFrom(aType);
     }
+
+    public static CellType getCellType(Class<?> aType) {
+        for (CellType cellType : CellType.values()) {
+            if (cellType.isAssignableFrom(aType)) {
+                return cellType;
+            }
+        }
+        return null;
+    }
 }
 

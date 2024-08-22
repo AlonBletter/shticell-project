@@ -36,9 +36,7 @@ public class CoordinateImpl implements Coordinate {
 
     @Override
     public String toString() {
-        return "Coordinate{" +
-                "row=" + row +
-                ", column=" + column +
-                '}';
+        char columnLetter = (char) ('A' + column - 1);
+        return columnLetter + Integer.toString(row);
     }
 }

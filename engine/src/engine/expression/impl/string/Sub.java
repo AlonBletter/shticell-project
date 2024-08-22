@@ -38,7 +38,7 @@ public class Sub extends TrinaryExpression {
 
         if(startIndex > endIndex || startIndex < 0 || endIndex > source.length()) {
             return new EffectiveValueImpl(CellType.TEXT, "!UNDEFINED!");
-        } //TODO: how to return undefined?
+        }
 
         return new EffectiveValueImpl(CellType.TEXT, source.substring(startIndex, endIndex + 1));
     }

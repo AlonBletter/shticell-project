@@ -1,5 +1,7 @@
 package engine.sheet.coordinate;
 
+import com.sun.istack.NotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,15 +22,26 @@ public class CoordinateFactory {
     }
 
     public static Coordinate createCoordinate(int row, String column) {
-        int parsedColumn = column.charAt(0) - 'A' + 1;
-
-        return createCoordinate(row, parsedColumn);
+        return createCoordinate(row + column);
     }
 
     public static Coordinate createCoordinate(String cellCoordinate) {
-        int parsedColumn = cellCoordinate.charAt(0) - 'A' + 1;
-        int parsedRow = Integer.parseInt(cellCoordinate.substring(1));
+        if (cellCoordinate == null || cellCoordinate.isEmpty()) {
+            throw new IllegalArgumentException("Cell coordinate cannot be null or empty.");
+        }
 
+        if (!Character.isLetter(cellCoordinate.charAt(0))) {
+            throw new IllegalArgumentException("Invalid cell coordinate: " + cellCoordinate + ". Expected format like 'A1'.");
+        }
+
+        int parsedColumn = cellCoordinate.charAt(0) - 'A' + 1;
+        int parsedRow;
+
+        try {
+            parsedRow = Integer.parseInt(cellCoordinate.substring(1));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid cell coordinate: " + cellCoordinate + ". Row part must be a number.", e);
+        }
         return createCoordinate(parsedRow, parsedColumn);
     }
 }

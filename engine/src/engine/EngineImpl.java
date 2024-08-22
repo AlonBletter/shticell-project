@@ -42,14 +42,14 @@ public class EngineImpl implements Engine {
 //            System.out.println("\t" + entry.getValue().effectiveValue());
 //        }
 //    }
-    public static final int SHEET_MAX_COLUMNS = 50;
-    public static final int SHEET_MAX_ROWS = 20;
+    public static final int SHEET_MAX_COLUMNS = 20;
+    public static final int SHEET_MAX_ROWS = 50;
 
     private Sheet sheet;
 
     @Override
     public SheetDTO getSpreadsheet() {
-        validateLoadedSheet(); //TODO Add to all methods!
+        validateLoadedSheet();
         return SheetConverter.convertToDTO(sheet);
     }
 
@@ -61,16 +61,20 @@ public class EngineImpl implements Engine {
 
     @Override
     public CellDTO getCell(Coordinate cellToGetCoordinate) {
+        validateLoadedSheet();
         return CellConverter.convertToDTO(sheet.getCell(cellToGetCoordinate));
     }
 
     @Override
     public void updateCell(Coordinate cellToUpdateCoordinate, String newCellOriginalValue) {
+        validateLoadedSheet();
         sheet.updateCell(cellToUpdateCoordinate, newCellOriginalValue);
     }
 
+    //TODO GET VERSION + SHEET VALIDATION THAT EXISTS
+
     @Override
-    public void loadSystemSettingsFromFile(String filePath) throws DataReadException {
+    public void loadSystemSettingsFromFile(String filePath) {
         validateXMLFile(filePath);
         STLSheet sheetFromFile = readSheetFromXMLFile(filePath);
         validateXMLSheetLayout(sheetFromFile);
@@ -87,14 +91,14 @@ public class EngineImpl implements Engine {
         }
     }
 
-    private STLSheet readSheetFromXMLFile(String filePath) throws DataReadException { //TODO: Should be checked or unchecked?
+    private STLSheet readSheetFromXMLFile(String filePath) {
         try {
             File file = new File(filePath);
             JAXBContext jaxbContext = JAXBContext.newInstance(STLSheet.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             return (STLSheet) jaxbUnmarshaller.unmarshal(file);
         } catch (JAXBException e) {
-            throw new DataReadException("Failed to read the sheet from XML file", e);
+            throw new RuntimeException("Failed to read the sheet from XML file", e);
         }
     }
 
@@ -105,7 +109,7 @@ public class EngineImpl implements Engine {
         if(xmlSheetNumOfRows > SHEET_MAX_ROWS || xmlSheetNumOfRows < 1 ||
                 xmlSheetNumOfColumns > SHEET_MAX_COLUMNS || xmlSheetNumOfColumns < 1)  {
             throw new IllegalArgumentException(
-                    "Sheet layout from the XML file is invalid!\n" +
+                    "Invalid sheet layout received from file!\n" +
                     "Expected number of rows between 1-" + SHEET_MAX_ROWS + " but received " + xmlSheetNumOfRows +
                     "\nExpected number of columns between 1-" + SHEET_MAX_COLUMNS + " but received " + xmlSheetNumOfColumns);
         }
@@ -114,7 +118,7 @@ public class EngineImpl implements Engine {
     private Sheet convertXMLSheetToMySheetObject(STLSheet sheetFromFile) {
         Sheet sheet = new SheetImpl();
 
-        try { //TODO is init method that receives STLSheet the best practice?
+        try {
             sheet.init(sheetFromFile);
         } catch (IllegalArgumentException e) { //TODO maybe surround the load with try catch and not here...
             throw new IllegalArgumentException("Error while loading file: " + e.getMessage());

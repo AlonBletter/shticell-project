@@ -121,7 +121,7 @@ public class ExpressionUtils {
         String numberPattern = "^\\d+(\\.\\d+)?$";
         Expression parsingResult;
 
-        try { //TODO redundant try catch?
+        try {
             if(expression.matches(numberPattern)) {
                 parsingResult = new Numeric(
                         Double.parseDouble(expression));
@@ -136,5 +136,22 @@ public class ExpressionUtils {
         }
 
         return parsingResult;
+    }
+
+    public static List<Coordinate> extractReferences(String input) {
+        List<Coordinate> coordinates = new ArrayList<>();
+
+        // Use regex to match the pattern {REF,Coordinate}
+        String regex = "\\{REF,([A-Z]+\\d+)\\}";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(input);
+
+        // Find all matches and add them to the list
+        while (matcher.find()) {
+            Coordinate coordinate = CoordinateFactory.createCoordinate(matcher.group(1));
+            coordinates.add(coordinate); // group(1) gets the coordinate part (e.g., A4, A5)
+        }
+
+        return coordinates;
     }
 }

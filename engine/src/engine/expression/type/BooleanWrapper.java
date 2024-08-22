@@ -20,6 +20,6 @@ public class BooleanWrapper implements Expression {
 
     @Override
     public String toString() {
-        return aBoolean ? "true" : "false";
+        return aBoolean ? "TRUE" : "FALSE";
     }
 }

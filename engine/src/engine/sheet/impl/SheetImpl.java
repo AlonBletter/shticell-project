@@ -14,8 +14,6 @@ import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class SheetImpl implements Sheet {
     private String name;
@@ -24,21 +22,27 @@ public class SheetImpl implements Sheet {
     private int rowHeightUnits;
     private int columnWidthUnits;
     private Map<Coordinate, Cell> activeCells;
-    private Map<Coordinate, List<Coordinate>> dependentCells;
+    private Map<Coordinate, List<Coordinate>> cellDependents;
+    private Map<Coordinate, List<Coordinate>> cellReferences;
 
     public SheetImpl(String name, int numberOfRows, int numberOfColumns, int rowHeightUnits, int columnWidthUnits,
-                     Map<Coordinate, Cell> activeCells, Map<Coordinate, List<Coordinate>> dependentCells) {
+                     Map<Coordinate, Cell> activeCells,
+                     Map<Coordinate, List<Coordinate>> cellDependents,
+                     Map<Coordinate, List<Coordinate>> cellReferences) {
         this.name = name;
         this.numberOfRows = numberOfRows;
         this.numberOfColumns = numberOfColumns;
         this.rowHeightUnits = rowHeightUnits;
         this.columnWidthUnits = columnWidthUnits;
         this.activeCells = activeCells;
-        this.dependentCells = dependentCells;
+        this.cellDependents = cellDependents;
+        this.cellReferences = cellReferences;
     }
 
     public SheetImpl() {
-        //TODO maybe new to data structures members
+        activeCells = new HashMap<>();
+        cellDependents = new HashMap<>();
+        cellReferences = new HashMap<>();
     }
 
     @Override
@@ -83,7 +87,6 @@ public class SheetImpl implements Sheet {
         setNumberOfColumns(sheetToInitFrom.getSTLLayout().getColumns());
         setRowHeightUnits(sheetToInitFrom.getSTLLayout().getSTLSize().getRowsHeightUnits());
         setColumnWidthUnits(sheetToInitFrom.getSTLLayout().getSTLSize().getColumnWidthUnits());
-        activeCells = new HashMap<>();
 
         STLCells cellsFromFile = sheetToInitFrom.getSTLCells();
         List<STLCell> cellsList = cellsFromFile.getSTLCell();
@@ -106,7 +109,8 @@ public class SheetImpl implements Sheet {
             updateCellEffectiveValue(getCell(coordinate));
         }
 
-        dependentCells = dependencyGraph;
+        cellDependents = dependencyGraph;
+        updateReferenceGraph();
     }
 
     private void updateCellEffectiveValue(Cell cellToUpdate) {
@@ -126,7 +130,7 @@ public class SheetImpl implements Sheet {
                 dependencyGraph.put(entry.getKey(), new LinkedList<>());
             }
 
-            List<Coordinate> currentCellReferences = extractReferences(entry.getValue().getOriginalValue());
+            List<Coordinate> currentCellReferences = ExpressionUtils.extractReferences(entry.getValue().getOriginalValue());
 
             for (Coordinate coordinate : currentCellReferences) {
                 // Adding an inactive cell to the dependency graph
@@ -139,13 +143,21 @@ public class SheetImpl implements Sheet {
 
                 // Add the current cell coordinate to the list of references
                 referencesList.add(entry.getKey());
-
-//                // Update the map with the new or updated list of references
-//                dependencyGraph.put(coordinate, referencesList);
             }
         }
 
         return dependencyGraph;
+    }
+
+    private void updateReferenceGraph() {
+        for (Map.Entry<Coordinate, List<Coordinate>> entry : cellDependents.entrySet()) {
+            Coordinate dependent = entry.getKey();
+            List<Coordinate> references = entry.getValue();
+
+            for (Coordinate reference : references) {
+                cellReferences.computeIfAbsent(reference, k -> new LinkedList<>()).add(dependent);
+            }
+        }
     }
 
     private List<Coordinate> getEffectiveValueCalculationOrder(Map<Coordinate, List<Coordinate>> dependencyGraph) {
@@ -193,38 +205,9 @@ public class SheetImpl implements Sheet {
         return sortedList;
     }
 
-    //TODO is this the best place to put the method? its too coupled to the sheet
-    private List<Coordinate> extractReferences(String input) {
-        List<Coordinate> coordinates = new ArrayList<>();
-
-        // Use regex to match the pattern {REF,Coordinate}
-        String regex = "\\{REF,([A-Z]+\\d+)\\}";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(input);
-
-        // Find all matches and add them to the list
-        while (matcher.find()) {
-            Coordinate coordinate = CoordinateFactory.createCoordinate(matcher.group(1));
-            coordinates.add(coordinate); // group(1) gets the coordinate part (e.g., A4, A5)
-        }
-
-        return coordinates;
-    }
-
-
     @Override
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Override
-    public void setRowHeightUnits(int rowHeightUnits) {
-        this.rowHeightUnits = rowHeightUnits;
-    }
-
-    @Override
-    public void setColumnWidthUnits(int columnWidthUnits) {
-        this.columnWidthUnits = columnWidthUnits;
     }
 
     @Override
@@ -238,18 +221,28 @@ public class SheetImpl implements Sheet {
     }
 
     @Override
+    public void setRowHeightUnits(int rowHeightUnits) {
+        this.rowHeightUnits = rowHeightUnits;
+    }
+
+    @Override
+    public void setColumnWidthUnits(int columnWidthUnits) {
+        this.columnWidthUnits = columnWidthUnits;
+    }
+
+    @Override
     public String getName() {
         return name;
     }
 
     @Override
-    public Map<Coordinate, Cell> getActiveCells() {
-        return activeCells;
+    public int getNumberOfColumns() {
+        return numberOfColumns;
     }
 
     @Override
-    public Map<Coordinate, List<Coordinate>> getDependentCells() {
-        return dependentCells;
+    public int getNumberOfRows() {
+        return numberOfRows;
     }
 
     @Override
@@ -263,12 +256,16 @@ public class SheetImpl implements Sheet {
     }
 
     @Override
-    public int getNumberOfColumns() {
-        return numberOfColumns;
+    public Map<Coordinate, Cell> getActiveCells() {
+        return activeCells;
     }
 
     @Override
-    public int getNumberOfRows() {
-        return numberOfRows;
+    public Map<Coordinate, List<Coordinate>> getCellDependents() {
+        return cellDependents;
+    }
+
+    public Map<Coordinate, List<Coordinate>> getCellReferences() {
+        return cellReferences;
     }
 }

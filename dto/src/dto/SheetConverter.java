@@ -17,7 +17,8 @@ public class SheetConverter {
                 sheet.getRowHeightUnits(),
                 sheet.getColumnWidthUnits(),
                 convertActiveCellsToDTO(sheet.getActiveCells()),
-                sheet.getDependentCells()
+                sheet.getCellDependents(),
+                sheet.getCellReferences()
         );
     }
 
@@ -29,7 +30,8 @@ public class SheetConverter {
                 sheetDTO.rowHeightUnits(),
                 sheetDTO.columnWidthUnits(),
                 convertActiveCellsToEntity(sheetDTO.activeCells()),
-                sheetDTO.dependencies()
+                sheetDTO.cellDependents(),
+                sheetDTO.cellReferences()
         );
     }
 

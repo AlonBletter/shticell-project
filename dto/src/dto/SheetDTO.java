@@ -12,6 +12,7 @@ public record SheetDTO(
         int rowHeightUnits,
         int columnWidthUnits,
         Map<Coordinate, CellDTO> activeCells,
-        Map<Coordinate, List<Coordinate>> dependencies
+        Map<Coordinate, List<Coordinate>> cellDependents,
+        Map<Coordinate, List<Coordinate>> cellReferences
 ) {
 }

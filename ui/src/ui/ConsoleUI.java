@@ -5,11 +5,13 @@ import dto.SheetDTO;
 import engine.Engine;
 import engine.EngineImpl;
 import engine.exception.InvalidCellBoundsException;
+import engine.sheet.api.CellType;
+import engine.sheet.api.EffectiveValue;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
 
 import java.util.InputMismatchException;
-import java.util.Map;
+import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleUI implements UI {
@@ -66,6 +68,8 @@ public class ConsoleUI implements UI {
                 System.out.println("Error! " + e.getMessage());
             }
         }
+
+        System.out.println();
 
         return userSelection - 1;
     }
@@ -124,11 +128,11 @@ public class ConsoleUI implements UI {
     public void displaySpreadsheet() {
         try {
             SheetDTO spreadsheet = spreadsheetEngine.getSpreadsheet();
-            Map<Coordinate, CellDTO> cells = spreadsheet.activeCells();
             int columnWidth = spreadsheet.columnWidthUnits();
 
-            //System.out.println("Spreadsheet version: " + spreadsheet.getVersion()); //TODO version
-            System.out.println("Spreadsheet name: " + spreadsheet.name());
+            System.out.println("Displaying the current sheet state:");
+            //System.out.println("version #" + spreadsheet.getVersion()); //TODO version feature
+            System.out.println("name: " + spreadsheet.name());
             System.out.println();
 
             // Prints columns headers
@@ -147,9 +151,8 @@ public class ConsoleUI implements UI {
                 for (int j = 0; j < spreadsheet.numOfColumns(); j++) {
                     Coordinate coordinate = CoordinateFactory.createCoordinate(i + 1, j + 1);
                     CellDTO cell = spreadsheetEngine.getCell(coordinate);
-                    Object cellValue = cell != null ? cell.effectiveValue().getValue() : ""; //TODO is object fine? (we assume its primitive inside)
 
-                    String valueString = cellValue.toString();
+                    String valueString = formatValueFromSheet(cell.effectiveValue());
                     if (valueString.length() > columnWidth) {
                         valueString = valueString.substring(0, columnWidth);
                     }
@@ -166,17 +169,103 @@ public class ConsoleUI implements UI {
 
     @Override
     public void displayCellValue() {
+        String userInput;
+        Scanner scanner = new Scanner(System.in);
 
+        while (true) {
+            try {
+                System.out.print("Please enter the desirable cell identifier (For example: A4) to display (Or enter 'q'/'Q' return to the main menu): ");
+                userInput = scanner.nextLine();
+
+                if(userInput.equalsIgnoreCase("q")) {
+                    System.out.println("Returning to main menu...");
+                    break;
+                }
+
+                Coordinate cellToDisplayCoordinate = CoordinateFactory.createCoordinate(userInput);
+                printBasicCellInformation(cellToDisplayCoordinate);
+                printAdvancedCellInformation(cellToDisplayCoordinate);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
     }
 
     @Override
     public void updateCellValue() {
+        String userInput;
+        Scanner scanner = new Scanner(System.in);
 
+        while (true) {
+            try {
+                System.out.print("Please enter the desirable cell identifier (For example: A4) to update (Or enter 'q'/'Q' return to the main menu): ");
+                userInput = scanner.nextLine();
+
+                if(userInput.equalsIgnoreCase("q")) {
+                    System.out.println("Returning to main menu...");
+                    break;
+                }
+
+                Coordinate cellToUpdateCoordinate = CoordinateFactory.createCoordinate(userInput);
+                printBasicCellInformation(cellToUpdateCoordinate);
+                String newCellValue = scanner.nextLine().trim();
+                spreadsheetEngine.updateCell(cellToUpdateCoordinate, newCellValue);
+                break;
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    private void printBasicCellInformation(Coordinate cellToDisplay) {
+        CellDTO cellToDisplayDTO = spreadsheetEngine.getCell(cellToDisplay);
+
+        System.out.println("Cell identifier: " + cellToDisplayDTO);
+        System.out.println("Cell original value: " + cellToDisplayDTO.effectiveValue());
+        System.out.println("Cell effective value: " + cellToDisplayDTO.effectiveValue());
+    }
+
+    private void printAdvancedCellInformation(Coordinate cellToDisplay) {
+        SheetDTO sheetDTO = spreadsheetEngine.getSpreadsheet();
+        printCoordinates("Cell dependents: ", sheetDTO.cellDependents().get(cellToDisplay));
+        printCoordinates("Cell references: ", sheetDTO.cellReferences().get(cellToDisplay));
+    }
+
+    private void printCoordinates(String label, List<Coordinate> coordinates) {
+        System.out.print(label);
+        if (coordinates != null && !coordinates.isEmpty()) {
+            coordinates.forEach(coordinate -> System.out.print(" " + coordinate));
+        } else {
+            System.out.print("None");
+        }
+        System.out.println();
     }
 
     @Override
     public void displaySpreadsheetVersion() {
 
+    }
+
+    private String formatValueFromSheet(EffectiveValue objectFromSheet) {
+        String formattedObject = objectFromSheet.getValue().toString();
+
+        if(CellType.NUMERIC == objectFromSheet.getCellType()) {
+            double doubleValue = (Double) objectFromSheet.getValue();
+
+            if(doubleValue % 1 == 0) {
+                int intValue = (int) doubleValue;
+
+                formattedObject = String.format("%,d", intValue);
+            } else {
+                formattedObject = String.format("%,.2f", doubleValue);
+            }
+        } else if(CellType.BOOLEAN == objectFromSheet.getCellType()) {
+            boolean booleanValue = (Boolean) objectFromSheet.getValue();
+
+            formattedObject = Boolean.toString(booleanValue).toUpperCase();
+        }
+
+        return formattedObject;
     }
 
     private void displayProgramTitle() {

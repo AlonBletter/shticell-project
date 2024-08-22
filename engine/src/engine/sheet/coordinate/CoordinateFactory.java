@@ -22,7 +22,7 @@ public class CoordinateFactory {
     }
 
     public static Coordinate createCoordinate(int row, String column) {
-        return createCoordinate(row + column);
+        return createCoordinate(column + row);
     }
 
     public static Coordinate createCoordinate(String cellCoordinate) {

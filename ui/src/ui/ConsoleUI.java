@@ -185,6 +185,7 @@ public class ConsoleUI implements UI {
                 Coordinate cellToDisplayCoordinate = CoordinateFactory.createCoordinate(userInput);
                 printBasicCellInformation(cellToDisplayCoordinate);
                 printAdvancedCellInformation(cellToDisplayCoordinate);
+                break;
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -208,8 +209,10 @@ public class ConsoleUI implements UI {
 
                 Coordinate cellToUpdateCoordinate = CoordinateFactory.createCoordinate(userInput);
                 printBasicCellInformation(cellToUpdateCoordinate);
+                System.out.print("Please enter the new value of the cell (Or leave empty to clear the cell value): ");
                 String newCellValue = scanner.nextLine().trim();
                 spreadsheetEngine.updateCell(cellToUpdateCoordinate, newCellValue);
+                System.out.println("Cell updated successfully...");
                 break;
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -220,15 +223,16 @@ public class ConsoleUI implements UI {
     private void printBasicCellInformation(Coordinate cellToDisplay) {
         CellDTO cellToDisplayDTO = spreadsheetEngine.getCell(cellToDisplay);
 
-        System.out.println("Cell identifier: " + cellToDisplayDTO);
-        System.out.println("Cell original value: " + cellToDisplayDTO.effectiveValue());
-        System.out.println("Cell effective value: " + cellToDisplayDTO.effectiveValue());
+        System.out.println("Cell identifier: " + cellToDisplay);
+        System.out.println("Cell original value: " + cellToDisplayDTO.effectiveValue().getValue());
+        System.out.println("Cell effective value: " + cellToDisplayDTO.effectiveValue().getValue());
     }
 
     private void printAdvancedCellInformation(Coordinate cellToDisplay) {
         SheetDTO sheetDTO = spreadsheetEngine.getSpreadsheet();
-        printCoordinates("Cell dependents: ", sheetDTO.cellDependents().get(cellToDisplay));
-        printCoordinates("Cell references: ", sheetDTO.cellReferences().get(cellToDisplay));
+        //TODO +last version modified
+        printCoordinates("Cell dependents:", sheetDTO.cellDependents().get(cellToDisplay));
+        printCoordinates("Cell references:", sheetDTO.cellReferences().get(cellToDisplay));
     }
 
     private void printCoordinates(String label, List<Coordinate> coordinates) {
@@ -236,7 +240,7 @@ public class ConsoleUI implements UI {
         if (coordinates != null && !coordinates.isEmpty()) {
             coordinates.forEach(coordinate -> System.out.print(" " + coordinate));
         } else {
-            System.out.print("None");
+            System.out.print(" None");
         }
         System.out.println();
     }
@@ -253,9 +257,9 @@ public class ConsoleUI implements UI {
             double doubleValue = (Double) objectFromSheet.getValue();
 
             if(doubleValue % 1 == 0) {
-                int intValue = (int) doubleValue;
+                long longValue = (long) doubleValue;
 
-                formattedObject = String.format("%,d", intValue);
+                formattedObject = String.format("%,d", longValue);
             } else {
                 formattedObject = String.format("%,.2f", doubleValue);
             }

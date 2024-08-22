@@ -18,30 +18,6 @@ import jakarta.xml.bind.Unmarshaller;
 import java.io.File;
 
 public class EngineImpl implements Engine {
-//    public static void main(String[] args) {
-//        Engine engine = new EngineImpl();
-//
-//        try {
-//            engine.loadSystemSettingsFromFile("C:\\Users\\Alon-PC\\Downloads\\basic.xml");
-//        } catch (DataReadException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//        SheetDTO sheet = engine.getSpreadsheet();
-//        Map<Coordinate, CellDTO> cells = sheet.activeCells();
-//
-//        System.out.println(sheet.name());
-//        System.out.println(sheet.numOfRows());
-//        System.out.println(sheet.numOfColumns());
-//        System.out.println(sheet.rowHeightUnits());
-//        System.out.println(sheet.columnWidthUnits());
-//
-//        for(Map.Entry<Coordinate, CellDTO> entry : cells.entrySet()) {
-//            System.out.println("\t" + entry.getKey());
-//            System.out.println("\t" + entry.getValue().originalValue());
-//            System.out.println("\t" + entry.getValue().effectiveValue());
-//        }
-//    }
     public static final int SHEET_MAX_COLUMNS = 20;
     public static final int SHEET_MAX_ROWS = 50;
 

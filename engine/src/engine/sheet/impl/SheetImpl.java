@@ -199,7 +199,7 @@ public class SheetImpl implements Sheet {
 
         // Step 4: Check for cycles (i.e., if sortedList doesn't contain all nodes)
         if (sortedList.size() != inDegree.size()) {
-            throw new IllegalArgumentException("Circular reference detected");
+            throw new IllegalArgumentException("Invalid usage of REF function! Circular reference detected");
         }
 
         return sortedList;

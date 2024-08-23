@@ -5,6 +5,7 @@ import engine.sheet.coordinate.Coordinate;
 
 public record CellDTO(
         String originalValue,
-        EffectiveValue effectiveValue
+        EffectiveValue effectiveValue,
+        int lastModifiedVersion
 ) {
 }

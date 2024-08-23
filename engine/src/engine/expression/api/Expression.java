@@ -5,4 +5,4 @@ import engine.sheet.api.EffectiveValue;
 
 public interface Expression {
     EffectiveValue evaluate(SheetDTO currentWorkingSheet);
-}
+} //TODO PREFERABLE IS SHEETREADACTIONS

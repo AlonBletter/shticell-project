@@ -10,4 +10,6 @@ public interface Cell {
     void setOriginalValue(String value);
     EffectiveValue getEffectiveValue();
     void setEffectiveValue(EffectiveValue value);
+    int getLastModifiedVersion();
+    void setLastModifiedVersion(int value);
 }

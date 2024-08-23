@@ -13,6 +13,8 @@ public record SheetDTO(
         int columnWidthUnits,
         Map<Coordinate, CellDTO> activeCells,
         Map<Coordinate, List<Coordinate>> cellDependents,
-        Map<Coordinate, List<Coordinate>> cellReferences
+        Map<Coordinate, List<Coordinate>> cellReferences,
+        Map<Integer, SheetDTO> versions,
+        List<CellDTO> lastModifiedCells
 ) {
 }

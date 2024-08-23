@@ -8,14 +8,16 @@ public class CellConverter {
     public static CellDTO convertToDTO(Cell cell) {
         return new CellDTO(
                 cell.getOriginalValue(),
-                cell.getEffectiveValue()
+                cell.getEffectiveValue(),
+                cell.getLastModifiedVersion()
         );
     }
 
     public static Cell convertToEntity(CellDTO cellDTO) {
         return new CellImpl(
                 cellDTO.originalValue(),
-                cellDTO.effectiveValue()
+                cellDTO.effectiveValue(),
+                cellDTO.lastModifiedVersion()
         );
     }
 }

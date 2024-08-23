@@ -12,6 +12,7 @@ import engine.sheet.coordinate.CoordinateFactory;
 
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class ConsoleUI implements UI {
@@ -126,8 +127,11 @@ public class ConsoleUI implements UI {
 
     @Override
     public void displaySpreadsheet() {
+        printASpreadsheet(spreadsheetEngine.getSpreadsheet());
+    }
+
+    private void printASpreadsheet(SheetDTO spreadsheet) {
         try {
-            SheetDTO spreadsheet = spreadsheetEngine.getSpreadsheet();
             int columnWidth = spreadsheet.columnWidthUnits();
 
             System.out.println("Displaying the current sheet state:");
@@ -150,9 +154,9 @@ public class ConsoleUI implements UI {
                 // Prints cells values
                 for (int j = 0; j < spreadsheet.numOfColumns(); j++) {
                     Coordinate coordinate = CoordinateFactory.createCoordinate(i + 1, j + 1);
-                    CellDTO cell = spreadsheetEngine.getCell(coordinate);
+                    CellDTO cell = spreadsheet.activeCells().get(coordinate);
 
-                    String valueString = formatValueFromSheet(cell.effectiveValue());
+                    String valueString = (cell != null ? formatValueFromSheet(cell.effectiveValue()) : "");
                     if (valueString.length() > columnWidth) {
                         valueString = valueString.substring(0, columnWidth);
                     }
@@ -222,17 +226,20 @@ public class ConsoleUI implements UI {
 
     private void printBasicCellInformation(Coordinate cellToDisplay) {
         CellDTO cellToDisplayDTO = spreadsheetEngine.getCell(cellToDisplay);
+        EffectiveValue cellEffectiveValue = cellToDisplayDTO.effectiveValue();
 
-        System.out.println("Cell identifier: " + cellToDisplay);
-        System.out.println("Cell original value: " + cellToDisplayDTO.effectiveValue().getValue());
-        System.out.println("Cell effective value: " + cellToDisplayDTO.effectiveValue().getValue());
+        System.out.println("Cell's identifier : " + cellToDisplay);
+        System.out.println("Cell's original value: " + cellToDisplayDTO.originalValue());
+        System.out.println("Cell's effective value: " + formatValueFromSheet(cellEffectiveValue));
     }
 
     private void printAdvancedCellInformation(Coordinate cellToDisplay) {
         SheetDTO sheetDTO = spreadsheetEngine.getSpreadsheet();
-        //TODO +last version modified
-        printCoordinates("Cell dependents:", sheetDTO.cellDependents().get(cellToDisplay));
-        printCoordinates("Cell references:", sheetDTO.cellReferences().get(cellToDisplay));
+        int numberOfCellsModifiedInVersion = spreadsheetEngine.getCell(cellToDisplay).lastModifiedVersion();
+
+        System.out.println("The cell was last modified at version #" + numberOfCellsModifiedInVersion);
+        printCoordinates("The cells that " + cellToDisplay + " depends on:", sheetDTO.cellReferences().get(cellToDisplay));
+        printCoordinates("The cells that depends on " + cellToDisplay + ":", sheetDTO.cellDependents().get(cellToDisplay));
     }
 
     private void printCoordinates(String label, List<Coordinate> coordinates) {
@@ -247,7 +254,51 @@ public class ConsoleUI implements UI {
 
     @Override
     public void displaySpreadsheetVersion() {
+        Map<Integer, SheetDTO> versionsDTO = spreadsheetEngine.getSpreadsheet().versions();
 
+        System.out.println("Displaying the versions of the spreadsheet:");
+        System.out.printf("%-10s | %-20s%n", "Version #", "Cells Modified");
+
+        for (Map.Entry<Integer, SheetDTO> entry : versionsDTO.entrySet()) {
+            int versionNum = entry.getKey();
+            SheetDTO sheetDTO = entry.getValue();
+            int numberOfCellsModifiedInVersion = sheetDTO.lastModifiedCells().size();
+
+            System.out.printf("%-10d | %-20d%n", versionNum, numberOfCellsModifiedInVersion);
+        }
+
+        getVersionToDisplayFromUser(versionsDTO);
+    }
+
+    private void getVersionToDisplayFromUser(Map<Integer, SheetDTO> versionsDTO) {
+        String userInput;
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            try {
+                System.out.print("Please enter the version you'd like to display (Or enter 'q'/'Q' to return to the main menu): ");
+                userInput = scanner.nextLine().trim();
+
+                if (userInput.equalsIgnoreCase("q")) {
+                    System.out.println("Returning to main menu...");
+                    break;
+                }
+
+                int versionNumber = Integer.parseInt(userInput);
+
+                if (versionNumber < 1 || versionNumber > versionsDTO.size()) {
+                    System.out.println("Invalid option! Please enter a number between 1 and " + versionsDTO.size() + ".");
+                } else {
+                    printASpreadsheet(versionsDTO.get(versionNumber));
+                    break;
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input! Please enter a number corresponding to the versions.");
+            } catch (Exception e) {
+                System.out.println("Error! " + e.getMessage());
+            }
+        }
     }
 
     private String formatValueFromSheet(EffectiveValue objectFromSheet) {

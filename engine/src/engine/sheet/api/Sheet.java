@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface Sheet { //TODO separate to read/update interfaces (also in cell)
-    int getVersion();
     Cell getCell(Coordinate coordinate);
     void updateCell(Coordinate coordinate, String value);
     void setName(String name);
@@ -24,5 +23,7 @@ public interface Sheet { //TODO separate to read/update interfaces (also in cell
     Map<Coordinate, Cell> getActiveCells();
     Map<Coordinate, List<Coordinate>> getCellDependents();
     Map<Coordinate, List<Coordinate>> getCellReferences();
+    Map<Integer, Sheet> getVersions();
+    List<Cell> getLastModifiedCells();
     void init(STLSheet sheetToInitFrom);
 }

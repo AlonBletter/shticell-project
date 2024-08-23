@@ -5,8 +5,7 @@ import engine.sheet.cell.api.Cell;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.impl.SheetImpl;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class SheetConverter {
     public static SheetDTO convertToDTO(Sheet sheet) {
@@ -18,21 +17,48 @@ public class SheetConverter {
                 sheet.getColumnWidthUnits(),
                 convertActiveCellsToDTO(sheet.getActiveCells()),
                 sheet.getCellDependents(),
-                sheet.getCellReferences()
+                sheet.getCellReferences(),
+                convertVersionsToDTO(sheet.getVersions()),
+                convertLastModifiedCellsToDTO(sheet.getLastModifiedCells())
         );
     }
 
-    public static Sheet convertToEntity(SheetDTO sheetDTO) {
-        return new SheetImpl(
-                sheetDTO.name(),
-                sheetDTO.numOfRows(),
-                sheetDTO.numOfColumns(),
-                sheetDTO.rowHeightUnits(),
-                sheetDTO.columnWidthUnits(),
-                convertActiveCellsToEntity(sheetDTO.activeCells()),
-                sheetDTO.cellDependents(),
-                sheetDTO.cellReferences()
-        );
+//    public static Sheet convertToEntity(SheetDTO sheetDTO) {
+//        return new SheetImpl(
+//                sheetDTO.name(),
+//                sheetDTO.numOfRows(),
+//                sheetDTO.numOfColumns(),
+//                sheetDTO.rowHeightUnits(),
+//                sheetDTO.columnWidthUnits(),
+//                convertActiveCellsToEntity(sheetDTO.activeCells()),
+//                sheetDTO.cellDependents(),
+//                sheetDTO.cellReferences()
+//        );
+//    }
+
+    private static List<CellDTO> convertLastModifiedCellsToDTO(List<Cell> lastModifiedCells) {
+        List<CellDTO> cellDTOs = new LinkedList<>();
+
+        for (Cell cell : lastModifiedCells) {
+            CellDTO cellDTO = CellConverter.convertToDTO(cell);
+            cellDTOs.add(cellDTO);
+        }
+
+        return cellDTOs;
+    }
+
+    private static Map<Integer, SheetDTO> convertVersionsToDTO(Map<Integer, Sheet> versions) {
+        Map<Integer, SheetDTO> versionsDTO = new HashMap<>();
+
+        for (Map.Entry<Integer, Sheet> entry : versions.entrySet()) {
+            int versionNum = entry.getKey();
+            Sheet sheet = entry.getValue();
+            SheetDTO sheetDTO = convertToDTO(sheet);
+
+            versionsDTO.put(versionNum, sheetDTO);
+        }
+
+        return versionsDTO;
     }
 
     private static Map<Coordinate, CellDTO> convertActiveCellsToDTO(Map<Coordinate, Cell> activeCells) {
@@ -62,16 +88,4 @@ public class SheetConverter {
 
         return activeCellsEntity;
     }
-
-//    private static Map<Coordinate, Coordinate> convertDependantCellsToDTO(Map<Coordinate, Coordinate> activeCells) {
-//        Map<Coordinate, Coordinate> dependantCellsDTO = new HashMap<>();
-//
-//        for (Map.Entry<Coordinate, Coordinate> entry : activeCells.entrySet()) {
-//            Coordinate source = entry.getKey();
-//            Coordinate destination = entry.getValue();
-//            dependantCellsDTO.put(source, destination);
-//        }
-//
-//        return dependantCellsDTO;
-//    }
 }

@@ -13,9 +13,12 @@ import engine.sheet.cell.impl.CellImpl;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
 
+import java.io.*;
 import java.util.*;
 
-public class SheetImpl implements Sheet {
+public class SheetImpl implements Sheet, Serializable {
+    private int versionNum = 1;
+
     private String name;
     private int numberOfRows;
     private int numberOfColumns;
@@ -24,11 +27,15 @@ public class SheetImpl implements Sheet {
     private Map<Coordinate, Cell> activeCells;
     private Map<Coordinate, List<Coordinate>> cellDependents;
     private Map<Coordinate, List<Coordinate>> cellReferences;
+    private Map<Integer, Sheet> versions;
+    private List<Cell> lastModifiedCells;
 
     public SheetImpl(String name, int numberOfRows, int numberOfColumns, int rowHeightUnits, int columnWidthUnits,
                      Map<Coordinate, Cell> activeCells,
                      Map<Coordinate, List<Coordinate>> cellDependents,
-                     Map<Coordinate, List<Coordinate>> cellReferences) {
+                     Map<Coordinate, List<Coordinate>> cellReferences,
+                     Map<Integer, Sheet> versions,
+                     List<Cell> lastModifiedCells) {
         this.name = name;
         this.numberOfRows = numberOfRows;
         this.numberOfColumns = numberOfColumns;
@@ -37,17 +44,30 @@ public class SheetImpl implements Sheet {
         this.activeCells = activeCells;
         this.cellDependents = cellDependents;
         this.cellReferences = cellReferences;
+        this.versions = versions;
+        this.lastModifiedCells = lastModifiedCells;
     }
 
     public SheetImpl() {
         activeCells = new HashMap<>();
         cellDependents = new HashMap<>();
         cellReferences = new HashMap<>();
+        versions = new HashMap<>();
+        lastModifiedCells = new LinkedList<>();
     }
 
-    @Override
-    public int getVersion() {
-        return 0; //TODO
+    private SheetImpl copySheet() {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(this);
+            oos.close();
+
+            ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
+            return (SheetImpl) ois.readObject();
+        } catch (Exception e) {
+            throw new RuntimeException("Unknown error occurred");
+        }
     }
 
     public void validateCoordinateInbound(Coordinate coordinate) {
@@ -69,13 +89,18 @@ public class SheetImpl implements Sheet {
         Cell cellToUpdate = getCell(coordinate);
         String backupOriginalValue = cellToUpdate.getOriginalValue();
         EffectiveValue backupEffectiveValue = cellToUpdate.getEffectiveValue();
+        Sheet backupSheet = this.copySheet(); //TODO still in question
 
         try {
+            lastModifiedCells.clear();
             cellToUpdate.setOriginalValue(newOriginalValue);
             updateSheetEffectiveValues();
-        } catch (Exception e) { // Roll-back
+
+        } catch (Exception e) { // Roll-back //TODO possible method that rolls back
             cellToUpdate.setOriginalValue(backupOriginalValue);
             cellToUpdate.setEffectiveValue(backupEffectiveValue);
+            cellDependents = backupSheet.getCellDependents();
+            cellReferences = backupSheet.getCellReferences();
             throw e;
         }
     }
@@ -111,6 +136,7 @@ public class SheetImpl implements Sheet {
 
         cellDependents = dependencyGraph;
         updateReferenceGraph();
+        versions.put(versionNum++, this.copySheet());
     }
 
     private void updateCellEffectiveValue(Cell cellToUpdate) {
@@ -118,8 +144,12 @@ public class SheetImpl implements Sheet {
                 ExpressionUtils.buildExpressionFromString(cellToUpdate.getOriginalValue())
                         .evaluate(
                                 SheetConverter.convertToDTO(this));
-
-        cellToUpdate.setEffectiveValue(newEffectiveValue);
+        //TODO TRY CATCH AND THROW THE CELL COORDINATE TO SPECIFY THE WRONG CELL FOUND (WRITE THAT THERE MIGHT BE MORE CELLS)
+        if(!cellToUpdate.getEffectiveValue().equals(newEffectiveValue)) {
+            cellToUpdate.setEffectiveValue(newEffectiveValue);
+            cellToUpdate.setLastModifiedVersion(versionNum);
+            lastModifiedCells.add(cellToUpdate);
+        }
     }
 
     Map<Coordinate, List<Coordinate>> createDependencyGraph() {
@@ -149,17 +179,23 @@ public class SheetImpl implements Sheet {
         return dependencyGraph;
     }
 
+    // This is the transposed graph of the dependency graph
     private void updateReferenceGraph() {
+        Map<Coordinate, List<Coordinate>> referenceGraph = new HashMap<>();
+
         for (Map.Entry<Coordinate, List<Coordinate>> entry : cellDependents.entrySet()) {
             Coordinate dependent = entry.getKey();
             List<Coordinate> references = entry.getValue();
 
             for (Coordinate reference : references) {
-                cellReferences.computeIfAbsent(reference, k -> new LinkedList<>()).add(dependent);
+                referenceGraph.computeIfAbsent(reference, k -> new LinkedList<>()).add(dependent);
             }
         }
+
+        cellReferences = referenceGraph;
     }
 
+    // Using Topological Sort to get the right order
     private List<Coordinate> getEffectiveValueCalculationOrder(Map<Coordinate, List<Coordinate>> dependencyGraph) {
         List<Coordinate> sortedList = new ArrayList<>();
         Map<Coordinate, Integer> inDegree = new HashMap<>();
@@ -230,6 +266,10 @@ public class SheetImpl implements Sheet {
         this.columnWidthUnits = columnWidthUnits;
     }
 
+    public void setLastModifiedCells(List<Cell> lastModifiedCells) {
+        this.lastModifiedCells = lastModifiedCells;
+    }
+
     @Override
     public String getName() {
         return name;
@@ -267,5 +307,14 @@ public class SheetImpl implements Sheet {
 
     public Map<Coordinate, List<Coordinate>> getCellReferences() {
         return cellReferences;
+    }
+
+    @Override
+    public Map<Integer, Sheet> getVersions() {
+        return versions;
+    }
+
+    public List<Cell> getLastModifiedCells() {
+        return lastModifiedCells;
     }
 }

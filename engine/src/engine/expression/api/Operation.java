@@ -90,9 +90,8 @@ public enum Operation {
         }
 
         if (!matchFound) {
-            //throw new ParameterCountMismatchException(constructorParameterCount, parameters.size());
             throw new IllegalArgumentException("Invalid number of arguments in " + operationClazz.getSimpleName().toUpperCase() + " function!\n" +
-                    "Expected [" + parameters.size() + "] arguments but received [" + constructorParameterCount + "]");
+                    "Expected [" + constructorParameterCount + "] arguments but received [" + parameters.size() + "]");
         }
     }
 }

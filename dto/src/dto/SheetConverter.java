@@ -3,9 +3,11 @@ package dto;
 import engine.sheet.api.Sheet;
 import engine.sheet.cell.api.Cell;
 import engine.sheet.coordinate.Coordinate;
-import engine.sheet.impl.SheetImpl;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class SheetConverter {
     public static SheetDTO convertToDTO(Sheet sheet) {
@@ -23,19 +25,6 @@ public class SheetConverter {
                 sheet.getVersionNum()
         );
     }
-
-//    public static Sheet convertToEntity(SheetDTO sheetDTO) {
-//        return new SheetImpl(
-//                sheetDTO.name(),
-//                sheetDTO.numOfRows(),
-//                sheetDTO.numOfColumns(),
-//                sheetDTO.rowHeightUnits(),
-//                sheetDTO.columnWidthUnits(),
-//                convertActiveCellsToEntity(sheetDTO.activeCells()),
-//                sheetDTO.cellDependents(),
-//                sheetDTO.cellReferences()
-//        );
-//    }
 
     private static List<CellDTO> convertLastModifiedCellsToDTO(List<Cell> lastModifiedCells) {
         List<CellDTO> cellDTOs = new LinkedList<>();
@@ -74,19 +63,5 @@ public class SheetConverter {
         }
 
         return activeCellsDTO;
-    }
-
-    private static Map<Coordinate, Cell> convertActiveCellsToEntity(Map<Coordinate, CellDTO> activeCells) {
-        Map<Coordinate, Cell> activeCellsEntity = new HashMap<>();
-
-        for (Map.Entry<Coordinate, CellDTO> entry : activeCells.entrySet()) {
-            Coordinate coordinate = entry.getKey();
-            CellDTO cellDTO = entry.getValue();
-            Cell cell = CellConverter.convertToEntity(cellDTO);
-
-            activeCellsEntity.put(coordinate, cell);
-        }
-
-        return activeCellsEntity;
     }
 }

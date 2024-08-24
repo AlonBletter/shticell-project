@@ -2,13 +2,12 @@ package engine;
 
 import dto.CellDTO;
 import dto.SheetDTO;
-import engine.exception.DataReadException;
 import engine.sheet.coordinate.Coordinate;
 
 import java.io.IOException;
 
 public interface Engine {
-    void loadSystemSettingsFromFile(String filePath) throws DataReadException;
+    void loadSystemSettingsFromFile(String filePath);
     SheetDTO getSpreadsheet();
     CellDTO getCell(Coordinate cellToGetCoordinate);
     void updateCell(Coordinate cellToUpdateCoordinate, String newCellOriginalValue);

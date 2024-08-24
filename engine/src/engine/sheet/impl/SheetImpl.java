@@ -29,25 +29,6 @@ public class SheetImpl implements Sheet, Serializable {
     private List<Cell> lastModifiedCells;
     private int versionNum;
 
-    public SheetImpl(String name, int numberOfRows, int numberOfColumns, int rowHeightUnits, int columnWidthUnits,
-                     Map<Coordinate, Cell> activeCells,
-                     Map<Coordinate, List<Coordinate>> cellDependents,
-                     Map<Coordinate, List<Coordinate>> cellReferences,
-                     Map<Integer, Sheet> versions,
-                     List<Cell> lastModifiedCells, int versionNum) {
-        this.name = name;
-        this.numberOfRows = numberOfRows;
-        this.numberOfColumns = numberOfColumns;
-        this.rowHeightUnits = rowHeightUnits;
-        this.columnWidthUnits = columnWidthUnits;
-        this.activeCells = activeCells;
-        this.cellDependents = cellDependents;
-        this.cellReferences = cellReferences;
-        this.versions = versions;
-        this.lastModifiedCells = lastModifiedCells;
-        this.versionNum = versionNum;
-    }
-
     public SheetImpl() {
         versionNum = 1;
         activeCells = new HashMap<>();
@@ -90,7 +71,7 @@ public class SheetImpl implements Sheet, Serializable {
         Cell cellToUpdate = getCell(coordinate);
         String backupOriginalValue = cellToUpdate.getOriginalValue();
         EffectiveValue backupEffectiveValue = cellToUpdate.getEffectiveValue();
-        Sheet backupSheet = this.copySheet(); //TODO still in question
+        Sheet backupSheet = this.copySheet();
 
         try {
             lastModifiedCells.clear();
@@ -273,10 +254,6 @@ public class SheetImpl implements Sheet, Serializable {
         }
 
         this.columnWidthUnits = columnWidthUnits;
-    }
-
-    public void setLastModifiedCells(List<Cell> lastModifiedCells) {
-        this.lastModifiedCells = lastModifiedCells;
     }
 
     @Override

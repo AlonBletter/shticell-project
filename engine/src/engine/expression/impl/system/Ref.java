@@ -30,7 +30,7 @@ public class Ref extends UnaryExpression {
 
         //TODO: we need to separate the two scenarios that we got an empty cell (INBOUND) or cell out of bounds. ASK AVIAD...
         if(cell == null) {
-            return new EffectiveValueImpl(CellType.TEXT, 0);
+            return new EffectiveValueImpl(CellType.TEXT, "!UNDEFINED!");
         }
 
         return cell.effectiveValue();

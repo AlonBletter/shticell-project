@@ -99,7 +99,7 @@ public class ConsoleUI implements UI {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            System.out.print("Please enter the absolute file path of the .XML file you'd like to load (Or enter 'q'/'Q' return to the main menu): ");
+            System.out.print("Please enter the absolute file path of the .XML file you'd like to load (or enter 'q'/'Q' return to the main menu): ");
 
             try {
                 userInput = scanner.nextLine();
@@ -184,7 +184,7 @@ public class ConsoleUI implements UI {
 
         while (true) {
             try {
-                System.out.print("Please enter the desirable cell identifier (For example: A4) to display (Or enter 'q'/'Q' return to the main menu): ");
+                System.out.print("Please enter the desirable cell identifier (for example: A4) to display (or enter 'q'/'Q' return to the main menu): ");
                 userInput = scanner.nextLine();
 
                 if(userInput.equalsIgnoreCase("q")) {
@@ -236,7 +236,7 @@ public class ConsoleUI implements UI {
 
         while (true) {
             try {
-                System.out.print("Please enter the desirable cell identifier (For example: A4) to update (Or enter 'q'/'Q' return to the main menu): ");
+                System.out.print("Please enter the desirable cell identifier (for example: A4) to update (or enter 'q'/'Q' return to the main menu): ");
                 userInput = scanner.nextLine();
 
                 if(userInput.equalsIgnoreCase("q")) {
@@ -246,7 +246,7 @@ public class ConsoleUI implements UI {
 
                 Coordinate cellToUpdateCoordinate = CoordinateFactory.createCoordinate(userInput);
                 printBasicCellInformation(cellToUpdateCoordinate);
-                System.out.print("Please enter the new value of the cell (Or leave empty to clear the cell value): ");
+                System.out.print("Please enter the new value of the cell (or press 'Enter' to clear the cell value): ");
                 String newCellValue = scanner.nextLine().trim();
                 spreadsheetEngine.updateCell(cellToUpdateCoordinate, newCellValue);
                 System.out.println("Cell updated successfully...");
@@ -280,7 +280,7 @@ public class ConsoleUI implements UI {
 
         while (true) {
             try {
-                System.out.print("Please enter the version you'd like to display (Or enter 'q'/'Q' to return to the main menu): ");
+                System.out.print("Please enter the version you'd like to display (or enter 'q'/'Q' to return to the main menu): ");
                 userInput = scanner.nextLine().trim();
 
                 if (userInput.equalsIgnoreCase("q")) {
@@ -310,7 +310,7 @@ public class ConsoleUI implements UI {
 
         while (true) {
             try {
-                System.out.print("Please enter the absolute file path (Without file extension) of where you'd like to save the system to (Or enter 'q'/'Q' to return to the main menu): ");
+                System.out.print("Please enter the absolute file path (without file extension) of where you'd like to save the system to (or enter 'q'/'Q' to return to the main menu): ");
                 userInput = scanner.nextLine().trim();
 
                 if (userInput.equalsIgnoreCase("q")) {
@@ -333,7 +333,7 @@ public class ConsoleUI implements UI {
 
         while (true) {
             try {
-                System.out.print("Please enter the absolute file path (Without file extension) from which the system is saved (Or enter 'q'/'Q' to return to the main menu): ");
+                System.out.print("Please enter the absolute file path (w1ithout file extension) from which the system is saved (or enter 'q'/'Q' to return to the main menu): ");
                 userInput = scanner.nextLine().trim();
 
                 if (userInput.equalsIgnoreCase("q")) {

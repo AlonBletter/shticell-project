@@ -26,6 +26,6 @@ public class Minus extends BinaryExpression {
                     "Arg1=<" + effectiveValue1.getCellType() + ">, Arg2=<" + effectiveValue2.getCellType() + ">");
         }
 
-        return new EffectiveValueImpl(CellType.NUMERIC, arg1 + arg2);
+        return new EffectiveValueImpl(CellType.NUMERIC, arg1 - arg2);
     }
 }

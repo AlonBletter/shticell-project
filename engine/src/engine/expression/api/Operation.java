@@ -52,6 +52,13 @@ public enum Operation {
             return new Abs(parameters.getFirst());
         }
     },
+    TIMES {
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateNumberOfParameters(Times.class, parameters);
+            return new Times(parameters.get(0), parameters.get(1));
+        }
+    },
     CONCAT {
         @Override
         public Expression createExpression(List<Expression> parameters) {

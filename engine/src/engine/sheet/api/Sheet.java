@@ -25,5 +25,6 @@ public interface Sheet { //TODO separate to read/update interfaces (also in cell
     Map<Coordinate, List<Coordinate>> getCellReferences();
     Map<Integer, Sheet> getVersions();
     List<Cell> getLastModifiedCells();
+    int getVersionNum();
     void init(STLSheet sheetToInitFrom);
 }

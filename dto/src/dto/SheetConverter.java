@@ -19,7 +19,8 @@ public class SheetConverter {
                 sheet.getCellDependents(),
                 sheet.getCellReferences(),
                 convertVersionsToDTO(sheet.getVersions()),
-                convertLastModifiedCellsToDTO(sheet.getLastModifiedCells())
+                convertLastModifiedCellsToDTO(sheet.getLastModifiedCells()),
+                sheet.getVersionNum()
         );
     }
 

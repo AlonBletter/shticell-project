@@ -30,18 +30,23 @@ public class CoordinateFactory {
             throw new IllegalArgumentException("Cell coordinate cannot be null or empty.");
         }
 
-        if (!Character.isLetter(cellCoordinate.charAt(0))) {
-            throw new IllegalArgumentException("Invalid cell coordinate: " + cellCoordinate + ". Expected format like 'A1'.");
+        char columnLetter = Character.toUpperCase(cellCoordinate.charAt(0));
+
+        if (!Character.isLetter(columnLetter)) {
+            throw new IllegalArgumentException("Invalid cell coordinate: " + cellCoordinate + ".\n" +
+                    "Expected format like 'A1' with a single letter for the column.");
         }
 
-        int parsedColumn = cellCoordinate.charAt(0) - 'A' + 1;
+        int parsedColumn = columnLetter - 'A' + 1;
         int parsedRow;
 
         try {
             parsedRow = Integer.parseInt(cellCoordinate.substring(1));
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid cell coordinate: " + cellCoordinate + ". Row part must be a number.", e);
+            throw new IllegalArgumentException("Invalid cell coordinate: " + cellCoordinate + ".\n" +
+                    "Expected format like 'A1' with a single letter for the column.", e);
         }
+
         return createCoordinate(parsedRow, parsedColumn);
     }
 }

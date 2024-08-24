@@ -23,6 +23,6 @@ public class Abs extends UnaryExpression {
                     "Expected <"+ CellType.NUMERIC +"> but received <" + effectiveValue.getCellType() + ">");
         }
 
-        return new EffectiveValueImpl(CellType.NUMERIC, result);
+        return new EffectiveValueImpl(CellType.NUMERIC, Math.abs(result));
     }
 }

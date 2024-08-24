@@ -13,7 +13,8 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 
-import java.io.File;
+import java.io.*;
+import java.util.ArrayList;
 
 public class EngineImpl implements Engine {
     public static final int SHEET_MAX_COLUMNS = 20;
@@ -45,14 +46,18 @@ public class EngineImpl implements Engine {
         sheet.updateCell(cellToUpdateCoordinate, newCellOriginalValue);
     }
 
-    //TODO GET VERSION + SHEET VALIDATION THAT EXISTS
-
     @Override
     public void loadSystemSettingsFromFile(String filePath) {
-        validateXMLFile(filePath);
-        STLSheet sheetFromFile = readSheetFromXMLFile(filePath);
-        validateXMLSheetLayout(sheetFromFile);
-        sheet = convertXMLSheetToMySheetObject(sheetFromFile);
+        try {
+            validateXMLFile(filePath);
+            STLSheet sheetFromFile = readSheetFromXMLFile(filePath);
+            validateXMLSheetLayout(sheetFromFile);
+            sheet = convertXMLSheetToMySheetObject(sheetFromFile);
+        } catch (InvalidCellBoundsException e) {
+            throw new InvalidCellBoundsException(e.getActualCoordinate(), e.getSheetNumOfRows(), e.getSheetNumOfColumns(), "Error while loading file: ");
+        } catch (IllegalArgumentException | ClassCastException e) {
+            throw new IllegalArgumentException("Error while loading file: " + e.getMessage());
+        }
     }
 
     private void validateXMLFile(String filePath) {
@@ -60,7 +65,7 @@ public class EngineImpl implements Engine {
             throw new IllegalArgumentException("File path cannot be null");
         } else if (filePath.isEmpty()) {
             throw new IllegalArgumentException("File path cannot be empty");
-        } else if (!filePath.endsWith(".xml")) {
+        } else if (!filePath.toLowerCase().endsWith(".xml")) {
             throw new IllegalArgumentException("File path must end with .xml");
         }
     }
@@ -77,6 +82,10 @@ public class EngineImpl implements Engine {
     }
 
     private void validateXMLSheetLayout(STLSheet sheetFromFile) {
+        if(sheetFromFile.getSTLLayout() == null) {
+            throw new IllegalArgumentException("Cannot load sheet without a specified layout");
+        }
+
         int xmlSheetNumOfRows = sheetFromFile.getSTLLayout().getRows();
         int xmlSheetNumOfColumns = sheetFromFile.getSTLLayout().getColumns();
 
@@ -84,24 +93,57 @@ public class EngineImpl implements Engine {
                 xmlSheetNumOfColumns > SHEET_MAX_COLUMNS || xmlSheetNumOfColumns < 1)  {
             throw new IllegalArgumentException(
                     "Invalid sheet layout received from file!\n" +
-                    "Expected number of rows between 1-" + SHEET_MAX_ROWS + " but received " + xmlSheetNumOfRows +
-                    "\nExpected number of columns between 1-" + SHEET_MAX_COLUMNS + " but received " + xmlSheetNumOfColumns);
+                    "Expected number of rows between 1-" + SHEET_MAX_ROWS + " but received " + xmlSheetNumOfRows + "\n" +
+                    "Expected number of columns between 1-" + SHEET_MAX_COLUMNS + " but received " + xmlSheetNumOfColumns);
         }
     }
 
     private Sheet convertXMLSheetToMySheetObject(STLSheet sheetFromFile) {
         Sheet sheet = new SheetImpl();
 
-        try {
-            sheet.init(sheetFromFile);
-        } catch (IllegalArgumentException e) { //TODO maybe surround the load with try catch and not here...
-            throw new IllegalArgumentException("Error while loading file: " + e.getMessage());
-        } catch (InvalidCellBoundsException e) {
-            throw new InvalidCellBoundsException(e.getActualCoordinate(), e.getSheetNumOfRows(), e.getSheetNumOfColumns(), "Error while loading file: ");
-        } catch (ClassCastException e) {
-            throw new IllegalArgumentException("Error while loading file: " + e.getMessage());
-        }
+        sheet.init(sheetFromFile);
 
         return sheet;
+    }
+
+    @Override
+    public void writeSystemDataToFile(String filePath) throws IOException {
+        if (filePath == null || filePath.trim().isEmpty()) {
+            throw new IllegalArgumentException("File path cannot be null or empty.");
+        }
+
+        File file = new File(filePath);
+        if (file.exists() && !file.canWrite()) {
+            throw new IOException("Cannot write to file: " + filePath + ". Check file permissions.");
+        }
+
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath))) {
+            out.writeObject(sheet);
+            out.flush();
+        }
+    }
+
+    @Override
+    public void readSystemDataFromFile(String filePath) throws IOException, ClassNotFoundException {
+        if (filePath == null || filePath.trim().isEmpty()) {
+            throw new IllegalArgumentException("File path cannot be null or empty.");
+        }
+
+        File file = new File(filePath);
+        if (!file.exists()) {
+            throw new FileNotFoundException("File not found: " + filePath);
+        }
+
+        if (!file.canRead()) {
+            throw new IOException("Cannot read file: " + filePath + ".");
+        }
+
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filePath))) {
+            sheet = (Sheet) in.readObject();
+
+            if (sheet == null) {
+                throw new IOException("Failed to read the sheet data from the file: " + filePath + ".");
+            }
+        }
     }
 }

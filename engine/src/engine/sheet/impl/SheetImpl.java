@@ -17,8 +17,6 @@ import java.io.*;
 import java.util.*;
 
 public class SheetImpl implements Sheet, Serializable {
-    private int versionNum = 1;
-
     private String name;
     private int numberOfRows;
     private int numberOfColumns;
@@ -29,13 +27,14 @@ public class SheetImpl implements Sheet, Serializable {
     private Map<Coordinate, List<Coordinate>> cellReferences;
     private Map<Integer, Sheet> versions;
     private List<Cell> lastModifiedCells;
+    private int versionNum;
 
     public SheetImpl(String name, int numberOfRows, int numberOfColumns, int rowHeightUnits, int columnWidthUnits,
                      Map<Coordinate, Cell> activeCells,
                      Map<Coordinate, List<Coordinate>> cellDependents,
                      Map<Coordinate, List<Coordinate>> cellReferences,
                      Map<Integer, Sheet> versions,
-                     List<Cell> lastModifiedCells) {
+                     List<Cell> lastModifiedCells, int versionNum) {
         this.name = name;
         this.numberOfRows = numberOfRows;
         this.numberOfColumns = numberOfColumns;
@@ -46,9 +45,11 @@ public class SheetImpl implements Sheet, Serializable {
         this.cellReferences = cellReferences;
         this.versions = versions;
         this.lastModifiedCells = lastModifiedCells;
+        this.versionNum = versionNum;
     }
 
     public SheetImpl() {
+        versionNum = 1;
         activeCells = new HashMap<>();
         cellDependents = new HashMap<>();
         cellReferences = new HashMap<>();
@@ -144,7 +145,7 @@ public class SheetImpl implements Sheet, Serializable {
                 ExpressionUtils.buildExpressionFromString(cellToUpdate.getOriginalValue())
                         .evaluate(
                                 SheetConverter.convertToDTO(this));
-        //TODO TRY CATCH AND THROW THE CELL COORDINATE TO SPECIFY THE WRONG CELL FOUND (WRITE THAT THERE MIGHT BE MORE CELLS)
+
         if(!cellToUpdate.getEffectiveValue().equals(newEffectiveValue)) {
             cellToUpdate.setEffectiveValue(newEffectiveValue);
             cellToUpdate.setLastModifiedVersion(versionNum);
@@ -258,11 +259,19 @@ public class SheetImpl implements Sheet, Serializable {
 
     @Override
     public void setRowHeightUnits(int rowHeightUnits) {
+        if (rowHeightUnits < 1) {
+            throw new IllegalArgumentException("Row height units must be at least 1. Provided value: " + rowHeightUnits);
+        }
+
         this.rowHeightUnits = rowHeightUnits;
     }
 
     @Override
     public void setColumnWidthUnits(int columnWidthUnits) {
+        if (columnWidthUnits < 1) {
+            throw new IllegalArgumentException("Column width units must be at least 1. Provided value: " + columnWidthUnits);
+        }
+
         this.columnWidthUnits = columnWidthUnits;
     }
 
@@ -316,5 +325,10 @@ public class SheetImpl implements Sheet, Serializable {
 
     public List<Cell> getLastModifiedCells() {
         return lastModifiedCells;
+    }
+
+    @Override
+    public int getVersionNum() {
+        return versionNum - 1;
     }
 }

@@ -79,14 +79,22 @@ public class ConsoleUI implements UI {
         ConsoleCommands command = ConsoleCommands.values()[userSelection];
 
         try {
-            command.invoke(this);
+            switch (command) {
+                case ConsoleCommands.LOAD_SYSTEM_FROM_XML_FILE -> loadSystemSettings();
+                case ConsoleCommands.DISPLAY_SPREADSHEET -> displaySpreadsheet();
+                case ConsoleCommands.DISPLAY_CELL_VALUE -> displayCellInformation();
+                case ConsoleCommands.UPDATE_CELL_VALUE -> updateCellValue();
+                case ConsoleCommands.DISPLAY_SPREADSHEET_VERSION -> displaySpreadsheetVersion();
+                case ConsoleCommands.SAVE_SYSTEM_TO_FILE -> saveSystemFromFile();
+                case ConsoleCommands.LOAD_SYSTEM_FROM_FILE -> loadSystemFromFile();
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    @Override
-    public void loadSystemSettings() {
+
+    private void loadSystemSettings() {
         String userInput;
         Scanner scanner = new Scanner(System.in);
 
@@ -94,7 +102,7 @@ public class ConsoleUI implements UI {
             System.out.print("Please enter the absolute file path of the .XML file you'd like to load (Or enter 'q'/'Q' return to the main menu): ");
 
             try {
-                userInput = scanner.next();
+                userInput = scanner.nextLine();
 
                 if (userInput.equalsIgnoreCase("q")) {
                     System.out.println("Returning to main menu...");
@@ -121,21 +129,20 @@ public class ConsoleUI implements UI {
         char cellColumnChar = (char) (coordinate.getColumn() + 'A' - 1);
 
         System.out.println(e.getMessage() + "Invalid cell bounds!\n" +
-                "Expected column between A-" + sheetColumnRange + " and row between 1-" + sheetNumOfRows +
-                " But received column: " + cellColumnChar + ", row: " + coordinate.getRow());
+                "Expected column between A-" + sheetColumnRange + " and row between 1-" + sheetNumOfRows + "\n" +
+                "But received column [" + cellColumnChar + "] and row [" + coordinate.getRow() + "]");
     }
 
-    @Override
-    public void displaySpreadsheet() {
-        printASpreadsheet(spreadsheetEngine.getSpreadsheet());
+    private void displaySpreadsheet() {
+        printSpreadsheet(spreadsheetEngine.getSpreadsheet());
     }
 
-    private void printASpreadsheet(SheetDTO spreadsheet) {
+    private void printSpreadsheet(SheetDTO spreadsheet) {
         try {
             int columnWidth = spreadsheet.columnWidthUnits();
 
             System.out.println("Displaying the current sheet state:");
-            //System.out.println("version #" + spreadsheet.getVersion()); //TODO version feature
+            System.out.println("version #" + spreadsheet.versionNum());
             System.out.println("name: " + spreadsheet.name());
             System.out.println();
 
@@ -155,8 +162,8 @@ public class ConsoleUI implements UI {
                 for (int j = 0; j < spreadsheet.numOfColumns(); j++) {
                     Coordinate coordinate = CoordinateFactory.createCoordinate(i + 1, j + 1);
                     CellDTO cell = spreadsheet.activeCells().get(coordinate);
-
                     String valueString = (cell != null ? formatValueFromSheet(cell.effectiveValue()) : "");
+
                     if (valueString.length() > columnWidth) {
                         valueString = valueString.substring(0, columnWidth);
                     }
@@ -171,8 +178,7 @@ public class ConsoleUI implements UI {
         }
     }
 
-    @Override
-    public void displayCellValue() {
+    private void displayCellInformation() {
         String userInput;
         Scanner scanner = new Scanner(System.in);
 
@@ -189,34 +195,6 @@ public class ConsoleUI implements UI {
                 Coordinate cellToDisplayCoordinate = CoordinateFactory.createCoordinate(userInput);
                 printBasicCellInformation(cellToDisplayCoordinate);
                 printAdvancedCellInformation(cellToDisplayCoordinate);
-                break;
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        }
-    }
-
-    @Override
-    public void updateCellValue() {
-        String userInput;
-        Scanner scanner = new Scanner(System.in);
-
-        while (true) {
-            try {
-                System.out.print("Please enter the desirable cell identifier (For example: A4) to update (Or enter 'q'/'Q' return to the main menu): ");
-                userInput = scanner.nextLine();
-
-                if(userInput.equalsIgnoreCase("q")) {
-                    System.out.println("Returning to main menu...");
-                    break;
-                }
-
-                Coordinate cellToUpdateCoordinate = CoordinateFactory.createCoordinate(userInput);
-                printBasicCellInformation(cellToUpdateCoordinate);
-                System.out.print("Please enter the new value of the cell (Or leave empty to clear the cell value): ");
-                String newCellValue = scanner.nextLine().trim();
-                spreadsheetEngine.updateCell(cellToUpdateCoordinate, newCellValue);
-                System.out.println("Cell updated successfully...");
                 break;
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -252,8 +230,34 @@ public class ConsoleUI implements UI {
         System.out.println();
     }
 
-    @Override
-    public void displaySpreadsheetVersion() {
+    private void updateCellValue() {
+        String userInput;
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            try {
+                System.out.print("Please enter the desirable cell identifier (For example: A4) to update (Or enter 'q'/'Q' return to the main menu): ");
+                userInput = scanner.nextLine();
+
+                if(userInput.equalsIgnoreCase("q")) {
+                    System.out.println("Returning to main menu...");
+                    break;
+                }
+
+                Coordinate cellToUpdateCoordinate = CoordinateFactory.createCoordinate(userInput);
+                printBasicCellInformation(cellToUpdateCoordinate);
+                System.out.print("Please enter the new value of the cell (Or leave empty to clear the cell value): ");
+                String newCellValue = scanner.nextLine().trim();
+                spreadsheetEngine.updateCell(cellToUpdateCoordinate, newCellValue);
+                System.out.println("Cell updated successfully...");
+                break;
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    private void displaySpreadsheetVersion() {
         Map<Integer, SheetDTO> versionsDTO = spreadsheetEngine.getSpreadsheet().versions();
 
         System.out.println("Displaying the versions of the spreadsheet:");
@@ -289,12 +293,57 @@ public class ConsoleUI implements UI {
                 if (versionNumber < 1 || versionNumber > versionsDTO.size()) {
                     System.out.println("Invalid option! Please enter a number between 1 and " + versionsDTO.size() + ".");
                 } else {
-                    printASpreadsheet(versionsDTO.get(versionNumber));
+                    printSpreadsheet(versionsDTO.get(versionNumber));
+                    break;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input! Please enter a number corresponding to the versions.");
+            } catch (Exception e) {
+                System.out.println("Error! " + e.getMessage());
+            }
+        }
+    }
+
+    private void saveSystemFromFile() {
+        String userInput;
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            try {
+                System.out.print("Please enter the absolute file path (Without file extension) of where you'd like to save the system to (Or enter 'q'/'Q' to return to the main menu): ");
+                userInput = scanner.nextLine().trim();
+
+                if (userInput.equalsIgnoreCase("q")) {
+                    System.out.println("Returning to main menu...");
                     break;
                 }
 
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input! Please enter a number corresponding to the versions.");
+                spreadsheetEngine.writeSystemDataToFile(userInput);
+                System.out.println("The system data was saved successfully...");
+                break;
+            } catch (Exception e) {
+                System.out.println("Error! " + e.getMessage());
+            }
+        }
+    }
+
+    private void loadSystemFromFile() {
+        String userInput;
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            try {
+                System.out.print("Please enter the absolute file path (Without file extension) from which the system is saved (Or enter 'q'/'Q' to return to the main menu): ");
+                userInput = scanner.nextLine().trim();
+
+                if (userInput.equalsIgnoreCase("q")) {
+                    System.out.println("Returning to main menu...");
+                    break;
+                }
+
+                spreadsheetEngine.readSystemDataFromFile(userInput);
+                System.out.println("The system data was loaded successfully...");
+                break;
             } catch (Exception e) {
                 System.out.println("Error! " + e.getMessage());
             }

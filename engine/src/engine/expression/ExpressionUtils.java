@@ -15,24 +15,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ExpressionUtils {
-    public static void main(String[] args) {
-//        System.out.println(tokenizeExpression("{PLUS,2,3}")); // Output: 5
-//        System.out.println(tokenizeExpression("{MINUS,{PLUS,4,5},{POW,2,3}}")); // Output: 1
-//        System.out.println(tokenizeExpression("{CONCAT,Hello,World}")); // Output: HelloWorld
-//        System.out.println(tokenizeExpression("{ABS,{MINUS,4,5}}")); // Output: 1
-//        System.out.println(tokenizeExpression("{POW,2,3}")); // Output: 8
-//        System.out.println(tokenizeExpression("{SUB,hello,2,3}")); // Output: 8
-//        System.out.println(tokenizeExpression("{MOD,4, 2}")); // Output: 0
-//        System.out.println(tokenizeExpression("5"));
-//        System.out.println(tokenizeExpression("BLABLBALLBA"));
-//        Expression exp = buildExpressionFromString("{CONCAT,HELLO   ,123}");
-//        System.out.println(exp.evaluate(null).extractValueWithExpectation(exp.evaluate(null).getCellType().getType()));
-
-        String str = "{PLUS,{REF,A4},{MINUS,{REF,A5},6}}";
-
-        System.out.println();
-    }
-
     private static class Node {
         String value;
         List<Node> children;
@@ -60,7 +42,7 @@ public class ExpressionUtils {
     }
 
     public static Expression buildExpressionFromString(String inputToParse) {
-        Node tokenized = tokenizeExpression(inputToParse);
+        Node tokenized = tokenizeExpression(inputToParse.trim());
 
         return parseExpression(tokenized);
     }
@@ -68,7 +50,7 @@ public class ExpressionUtils {
     private static Node tokenizeExpression(String inputToTokenize) {
         if (inputToTokenize.startsWith("{") && inputToTokenize.endsWith("}")) {
             int commaIndex = inputToTokenize.indexOf(',');
-            String function = inputToTokenize.substring(1, commaIndex);
+            String function = inputToTokenize.substring(1, commaIndex).toUpperCase();
             Node root = new Node(function, new ArrayList<>());
 
             return tokenizeFunctionExpression(root, inputToTokenize.substring(1, inputToTokenize.length() - 1));
@@ -118,7 +100,7 @@ public class ExpressionUtils {
     }
 
     private static Expression parseLeafExpression(String expression) {
-        String numberPattern = "^\\d+(\\.\\d+)?$";
+        String numberPattern = "^-?\\d+(\\.\\d+)?$";
         Expression parsingResult;
 
         try {
@@ -141,15 +123,15 @@ public class ExpressionUtils {
     public static List<Coordinate> extractReferences(String input) {
         List<Coordinate> coordinates = new ArrayList<>();
 
-        // Use regex to match the pattern {REF,Coordinate}
+        // Use regex to match the pattern {REF,Coordinate}, case-insensitively
         String regex = "\\{REF,([A-Z]+\\d+)\\}";
-        Pattern pattern = Pattern.compile(regex);
+        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE); // Enable case-insensitive matching for the entire pattern
         Matcher matcher = pattern.matcher(input);
 
         // Find all matches and add them to the list
         while (matcher.find()) {
-            Coordinate coordinate = CoordinateFactory.createCoordinate(matcher.group(1));
-            coordinates.add(coordinate); // group(1) gets the coordinate part (e.g., A4, A5)
+            Coordinate coordinate = CoordinateFactory.createCoordinate(matcher.group(1).toUpperCase()); // Convert to uppercase before creating the coordinate
+            coordinates.add(coordinate); // group(1) gets the coordinate part (e.g., A4, a5)
         }
 
         return coordinates;

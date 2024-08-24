@@ -15,6 +15,7 @@ public record SheetDTO(
         Map<Coordinate, List<Coordinate>> cellDependents,
         Map<Coordinate, List<Coordinate>> cellReferences,
         Map<Integer, SheetDTO> versions,
-        List<CellDTO> lastModifiedCells
+        List<CellDTO> lastModifiedCells,
+        int versionNum
 ) {
 }

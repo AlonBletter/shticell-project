@@ -24,14 +24,6 @@ public class ExpressionUtils {
             this.children = children;
         }
 
-        public String getValue() {
-            return value;
-        }
-
-        public List<Node> getChildren() {
-            return children;
-        }
-
         @Override
         public String toString() {
             return "{" +

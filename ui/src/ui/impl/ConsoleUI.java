@@ -255,7 +255,8 @@ public class ConsoleUI implements UI {
 
                 Coordinate cellToUpdateCoordinate = CoordinateFactory.createCoordinate(userInput);
                 printBasicCellInformation(cellToUpdateCoordinate);
-                System.out.print("Please enter the new value of the cell (or press 'Enter' to clear the cell value): ");
+                System.out.print("Please enter a new value or a function (format: {<function name>,<arg-1>,<arg-2>,...,<arg-n>})\n" +
+                        "or press 'Enter' to clear the cell value: ");
                 String newCellValue = scanner.nextLine().trim();
                 spreadsheetEngine.updateCell(cellToUpdateCoordinate, newCellValue);
                 System.out.println("Cell updated successfully...");

@@ -5,6 +5,7 @@ import engine.expression.api.Expression;
 import engine.expression.type.TrinaryExpression;
 import engine.sheet.api.CellType;
 import engine.sheet.api.EffectiveValue;
+import engine.sheet.api.SheetReadActions;
 import engine.sheet.impl.EffectiveValueImpl;
 
 public class Sub extends TrinaryExpression {
@@ -13,7 +14,7 @@ public class Sub extends TrinaryExpression {
     }
 
     @Override
-    protected EffectiveValue evaluate(SheetDTO sheet, Expression expression1, Expression expression2, Expression expression3) {
+    protected EffectiveValue evaluate(SheetReadActions sheet, Expression expression1, Expression expression2, Expression expression3) {
         EffectiveValue effectiveValue1 = expression1.evaluate(sheet);
         EffectiveValue effectiveValue2 = expression2.evaluate(sheet);
         EffectiveValue effectiveValue3 = expression3.evaluate(sheet);
@@ -23,9 +24,7 @@ public class Sub extends TrinaryExpression {
         Double arg3 = effectiveValue3.extractValueWithExpectation(Double.class);
 
         if (source == null || arg2 == null || arg3 == null) {
-            throw new IllegalArgumentException("Invalid arguments to " + this.getClass().getSimpleName().toUpperCase() + " function!\n" +
-                    "Expected Arg1=<"+ CellType.NUMERIC +">, Arg2=<" + CellType.TEXT + ">, Arg3=<" + CellType.TEXT + "> but received " +
-                    "Arg1=<" + effectiveValue1.getCellType() + ">, Arg2=<" + effectiveValue2.getCellType() + ">, Arg3=<" + effectiveValue2.getCellType() + ">");
+            return new EffectiveValueImpl(CellType.TEXT, "!UNDEFINED!");
         }
 
         if (arg2 % 1 != 0 || arg3 % 1 != 0) {
@@ -41,5 +40,9 @@ public class Sub extends TrinaryExpression {
         }
 
         return new EffectiveValueImpl(CellType.TEXT, source.substring(startIndex, endIndex + 1));
+    }
+
+    public CellType getFunctionResultType() {
+        return CellType.TEXT;
     }
 }

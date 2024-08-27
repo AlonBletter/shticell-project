@@ -12,12 +12,4 @@ public class CellConverter {
                 cell.getLastModifiedVersion()
         );
     }
-
-    public static Cell convertToEntity(CellDTO cellDTO) {
-        return new CellImpl(
-                cellDTO.originalValue(),
-                cellDTO.effectiveValue(),
-                cellDTO.lastModifiedVersion()
-        );
-    }
 }

@@ -1,9 +1,11 @@
 package engine.sheet.api;
 
 public enum CellType {
-    NUMERIC(Double.class) ,
-    TEXT(String.class) ,
-    BOOLEAN(Boolean.class) ;
+    NUMERIC(Double.class),
+    TEXT(String.class),
+    BOOLEAN(Boolean.class),
+    UNKNOWN(void.class),
+    EMPTY(void.class);
 
     private Class<?> type;
 

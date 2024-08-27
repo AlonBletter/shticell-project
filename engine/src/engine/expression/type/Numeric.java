@@ -4,6 +4,7 @@ import dto.SheetDTO;
 import engine.expression.api.Expression;
 import engine.sheet.api.CellType;
 import engine.sheet.api.EffectiveValue;
+import engine.sheet.api.SheetReadActions;
 import engine.sheet.impl.EffectiveValueImpl;
 
 public class Numeric implements Expression {
@@ -14,8 +15,13 @@ public class Numeric implements Expression {
     }
 
     @Override
-    public EffectiveValue evaluate(SheetDTO currentWorkingSheet) {
+    public EffectiveValue evaluate(SheetReadActions currentWorkingSheet) {
         return new EffectiveValueImpl(CellType.NUMERIC, number);
+    }
+
+    @Override
+    public CellType getFunctionResultType() {
+        return CellType.NUMERIC;
     }
 
     @Override

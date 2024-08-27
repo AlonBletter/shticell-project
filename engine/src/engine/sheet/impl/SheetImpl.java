@@ -1,6 +1,5 @@
 package engine.sheet.impl;
 
-import dto.SheetConverter;
 import engine.exception.InvalidCellBoundsException;
 import engine.expression.ExpressionUtils;
 import engine.generated.STLCell;
@@ -9,7 +8,9 @@ import engine.generated.STLSheet;
 import engine.sheet.api.EffectiveValue;
 import engine.sheet.api.Sheet;
 import engine.sheet.cell.api.Cell;
+import engine.sheet.cell.api.CellReadActions;
 import engine.sheet.cell.impl.CellImpl;
+import engine.sheet.cell.impl.EmptyCell;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
 
@@ -60,15 +61,34 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     @Override
-    public Cell getCell(Coordinate coordinate) {
+    public CellReadActions getCell(Coordinate coordinate) {
         validateCoordinateInbound(coordinate);
 
-        return activeCells.computeIfAbsent(coordinate, k -> new CellImpl());
+        Cell cell = activeCells.get(coordinate);
+
+        if(cell == null) {
+            activeCells.put(coordinate, EmptyCell.INSTANCE);
+            return activeCells.get(coordinate);
+        }
+
+        return cell;
     }
+
+     private Cell addNewCellIfEmptyCell(Coordinate coordinate) {
+         CellReadActions cellReadActions = getCell(coordinate);
+
+         if (cellReadActions instanceof EmptyCell) {
+             Cell newCell = new CellImpl();
+             activeCells.put(coordinate, newCell);
+             return newCell;
+         }
+
+         return (Cell) cellReadActions;
+     }
 
     @Override
     public void updateCell(Coordinate coordinate, String newOriginalValue) {
-        Cell cellToUpdate = getCell(coordinate);
+        Cell cellToUpdate = addNewCellIfEmptyCell(coordinate);
         String backupOriginalValue = cellToUpdate.getOriginalValue();
         EffectiveValue backupEffectiveValue = cellToUpdate.getEffectiveValue();
         Sheet backupSheet = this.copySheet();
@@ -77,13 +97,16 @@ public class SheetImpl implements Sheet, Serializable {
             lastModifiedCells.clear();
             cellToUpdate.setOriginalValue(newOriginalValue);
             updateSheetEffectiveValues();
-
-        } catch (Exception e) { // Roll-back //TODO possible method that rolls back
+        } catch (Exception e) { // Roll-back
             cellToUpdate.setOriginalValue(backupOriginalValue);
             cellToUpdate.setEffectiveValue(backupEffectiveValue);
             cellDependents = backupSheet.getCellDependents();
             cellReferences = backupSheet.getCellReferences();
             throw e;
+        } finally {
+            if(cellToUpdate.getOriginalValue().isEmpty()) {
+                activeCells.remove(coordinate);
+            }
         }
     }
 
@@ -100,7 +123,7 @@ public class SheetImpl implements Sheet, Serializable {
 
         for (STLCell stlCell : cellsList) {
             Coordinate cellCoordinate = CoordinateFactory.createCoordinate(stlCell.getRow(), stlCell.getColumn());
-            Cell cell = getCell(cellCoordinate);
+            Cell cell = addNewCellIfEmptyCell(cellCoordinate);
             cell.setOriginalValue(stlCell.getSTLOriginalValue());
             activeCells.put(cellCoordinate, cell);
         }
@@ -113,7 +136,9 @@ public class SheetImpl implements Sheet, Serializable {
         List<Coordinate> effectiveValueCalculationOrder = getEffectiveValueCalculationOrder(dependencyGraph);
 
         for(Coordinate coordinate : effectiveValueCalculationOrder) {
-            updateCellEffectiveValue(getCell(coordinate));
+            if(getCell(coordinate) != EmptyCell.INSTANCE) {
+                updateCellEffectiveValue(addNewCellIfEmptyCell(coordinate));
+            }
         }
 
         cellDependents = dependencyGraph;
@@ -124,8 +149,7 @@ public class SheetImpl implements Sheet, Serializable {
     private void updateCellEffectiveValue(Cell cellToUpdate) {
         EffectiveValue newEffectiveValue =
                 ExpressionUtils.buildExpressionFromString(cellToUpdate.getOriginalValue())
-                        .evaluate(
-                                SheetConverter.convertToDTO(this));
+                        .evaluate(this);
 
         if(!cellToUpdate.getEffectiveValue().equals(newEffectiveValue)) {
             cellToUpdate.setEffectiveValue(newEffectiveValue);

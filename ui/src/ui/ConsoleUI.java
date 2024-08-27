@@ -156,7 +156,7 @@ public class ConsoleUI implements UI {
 
             for (int i = 0; i < spreadsheet.numOfRows(); i++) {
                 // Prints rows headers
-                System.out.printf("%2d", i + 1);
+                System.out.printf("%02d", i + 1);
 
                 // Prints cells values
                 for (int j = 0; j < spreadsheet.numOfColumns(); j++) {
@@ -206,18 +206,25 @@ public class ConsoleUI implements UI {
         CellDTO cellToDisplayDTO = spreadsheetEngine.getCell(cellToDisplay);
         EffectiveValue cellEffectiveValue = cellToDisplayDTO.effectiveValue();
 
-        System.out.println("Cell's identifier : " + cellToDisplay);
-        System.out.println("Cell's original value: " + cellToDisplayDTO.originalValue());
-        System.out.println("Cell's effective value: " + formatValueFromSheet(cellEffectiveValue));
+        if (cellEffectiveValue.getCellType() == CellType.EMPTY) {
+            System.out.println("The cell is empty.");
+        } else {
+            System.out.println("Cell's identifier: " + cellToDisplay);
+            System.out.println("Cell's original value: " + cellToDisplayDTO.originalValue());
+            System.out.println("Cell's effective value: " + formatValueFromSheet(cellEffectiveValue));
+        }
     }
 
     private void printAdvancedCellInformation(Coordinate cellToDisplay) {
         SheetDTO sheetDTO = spreadsheetEngine.getSpreadsheet();
-        int numberOfCellsModifiedInVersion = spreadsheetEngine.getCell(cellToDisplay).lastModifiedVersion();
+        CellDTO cellToDisplayDTO = spreadsheetEngine.getCell(cellToDisplay);
 
-        System.out.println("The cell was last modified at version #" + numberOfCellsModifiedInVersion);
-        printCoordinates("The cells that " + cellToDisplay + " depends on:", sheetDTO.cellReferences().get(cellToDisplay));
-        printCoordinates("The cells that depends on " + cellToDisplay + ":", sheetDTO.cellDependents().get(cellToDisplay));
+        if (cellToDisplayDTO.effectiveValue().getCellType() != CellType.EMPTY) {
+            int numberOfCellsModifiedInVersion = cellToDisplayDTO.lastModifiedVersion();
+            System.out.println("The cell was last modified at version #" + numberOfCellsModifiedInVersion);
+            printCoordinates("The cells that " + cellToDisplay + " depends on:", sheetDTO.cellReferences().get(cellToDisplay));
+            printCoordinates("The cells that depends on " + cellToDisplay + ":", sheetDTO.cellDependents().get(cellToDisplay));
+        }
     }
 
     private void printCoordinates(String label, List<Coordinate> coordinates) {
@@ -250,6 +257,7 @@ public class ConsoleUI implements UI {
                 String newCellValue = scanner.nextLine().trim();
                 spreadsheetEngine.updateCell(cellToUpdateCoordinate, newCellValue);
                 System.out.println("Cell updated successfully...");
+                displaySpreadsheet();
                 break;
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -333,7 +341,7 @@ public class ConsoleUI implements UI {
 
         while (true) {
             try {
-                System.out.print("Please enter the absolute file path (w1ithout file extension) from which the system is saved (or enter 'q'/'Q' to return to the main menu): ");
+                System.out.print("Please enter the absolute file path (without file extension) from which the system is saved (or enter 'q'/'Q' to return to the main menu): ");
                 userInput = scanner.nextLine().trim();
 
                 if (userInput.equalsIgnoreCase("q")) {
@@ -367,6 +375,8 @@ public class ConsoleUI implements UI {
             boolean booleanValue = (Boolean) objectFromSheet.getValue();
 
             formattedObject = Boolean.toString(booleanValue).toUpperCase();
+        } else if (CellType.EMPTY == objectFromSheet.getCellType()) {
+            formattedObject = "";
         }
 
         return formattedObject;

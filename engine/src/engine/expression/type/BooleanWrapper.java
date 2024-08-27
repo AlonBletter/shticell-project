@@ -4,6 +4,7 @@ import dto.SheetDTO;
 import engine.expression.api.Expression;
 import engine.sheet.api.CellType;
 import engine.sheet.api.EffectiveValue;
+import engine.sheet.api.SheetReadActions;
 import engine.sheet.impl.EffectiveValueImpl;
 
 public class BooleanWrapper implements Expression {
@@ -14,12 +15,17 @@ public class BooleanWrapper implements Expression {
     }
 
     @Override
-    public EffectiveValue evaluate(SheetDTO currentWorkingSheet) {
+    public EffectiveValue evaluate(SheetReadActions currentWorkingSheet) {
         return new EffectiveValueImpl(CellType.BOOLEAN, aBoolean);
     }
 
     @Override
     public String toString() {
         return aBoolean ? "TRUE" : "FALSE";
+    }
+
+    @Override
+    public CellType getFunctionResultType() {
+        return CellType.BOOLEAN;
     }
 }

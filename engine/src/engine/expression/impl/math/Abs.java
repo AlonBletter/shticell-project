@@ -5,6 +5,7 @@ import engine.expression.api.Expression;
 import engine.expression.type.UnaryExpression;
 import engine.sheet.api.CellType;
 import engine.sheet.api.EffectiveValue;
+import engine.sheet.api.SheetReadActions;
 import engine.sheet.impl.EffectiveValueImpl;
 
 public class Abs extends UnaryExpression {
@@ -13,16 +14,20 @@ public class Abs extends UnaryExpression {
     }
 
     @Override
-    protected EffectiveValue evaluate(SheetDTO sheet, Expression expression) {
+    protected EffectiveValue evaluate(SheetReadActions sheet, Expression expression) {
         EffectiveValue effectiveValue = expression.evaluate(sheet);
 
         Double result = effectiveValue.extractValueWithExpectation(Double.class);
 
         if (result == null) {
-            throw new IllegalArgumentException("Invalid arguments to " + this.getClass().getSimpleName().toUpperCase() + " function!\n" +
-                    "Expected <"+ CellType.NUMERIC +"> but received <" + effectiveValue.getCellType() + ">");
+            return new EffectiveValueImpl(CellType.NUMERIC, Double.NaN);
         }
 
         return new EffectiveValueImpl(CellType.NUMERIC, Math.abs(result));
+    }
+
+    @Override
+    public CellType getFunctionResultType() {
+        return CellType.NUMERIC;
     }
 }

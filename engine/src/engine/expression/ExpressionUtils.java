@@ -82,7 +82,14 @@ public class ExpressionUtils {
                 argumentsList.add(parseExpression(expression.children.get(i)));
             }
 
-            Operation operation = Operation.valueOf(expression.value);
+            Operation operation;
+
+            try {
+                operation = Operation.valueOf(expression.value);
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("The system does not support " + expression.value.toUpperCase() + " function.");
+            }
+
             resultExpression = operation.createExpression(argumentsList);
         } else {
             resultExpression = parseLeafExpression(expression.value);

@@ -5,6 +5,7 @@ import engine.sheet.api.CellType;
 import engine.sheet.api.EffectiveValue;
 import engine.expression.api.Expression;
 import engine.expression.type.BinaryExpression;
+import engine.sheet.api.SheetReadActions;
 import engine.sheet.impl.EffectiveValueImpl;
 
 public class Divide extends BinaryExpression {
@@ -14,23 +15,22 @@ public class Divide extends BinaryExpression {
     }
 
     @Override
-    protected EffectiveValue evaluate(SheetDTO sheet, Expression expression1, Expression expression2) {
+    protected EffectiveValue evaluate(SheetReadActions sheet, Expression expression1, Expression expression2) {
         EffectiveValue effectiveValue1 = expression1.evaluate(sheet);
         EffectiveValue effectiveValue2 = expression2.evaluate(sheet);
 
         Double arg1 = effectiveValue1.extractValueWithExpectation(Double.class);
         Double arg2 = effectiveValue2.extractValueWithExpectation(Double.class);
 
-        if (arg1 == null || arg2 == null) {
-            throw new IllegalArgumentException("Invalid arguments to " + this.getClass().getSimpleName().toUpperCase() + " function!\n" +
-                    "Expected Arg1=<"+ CellType.NUMERIC +">, Arg2=<" + CellType.NUMERIC + "> but received " +
-                    "Arg1=<" + effectiveValue1.getCellType() + ">, Arg2=<" + effectiveValue2.getCellType() + ">");
-        }
-
-        if(arg2 == 0) {
+        if (arg1 == null || arg2 == null || arg2 == 0) {
             return new EffectiveValueImpl(CellType.NUMERIC, Double.NaN);
         }
 
         return new EffectiveValueImpl(CellType.NUMERIC, arg1 / arg2);
+    }
+
+    @Override
+    public CellType getFunctionResultType() {
+        return CellType.NUMERIC;
     }
 }

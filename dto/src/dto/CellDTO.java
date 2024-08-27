@@ -1,7 +1,6 @@
 package dto;
 
-import engine.sheet.api.EffectiveValue;
-import engine.sheet.coordinate.Coordinate;
+import engine.sheet.effectivevalue.EffectiveValue;
 
 public record CellDTO(
         String originalValue,

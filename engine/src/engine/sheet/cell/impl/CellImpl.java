@@ -1,9 +1,9 @@
 package engine.sheet.cell.impl;
 
-import engine.sheet.api.CellType;
-import engine.sheet.api.EffectiveValue;
+import engine.sheet.cell.api.CellType;
+import engine.sheet.effectivevalue.EffectiveValue;
 import engine.sheet.cell.api.Cell;
-import engine.sheet.impl.EffectiveValueImpl;
+import engine.sheet.effectivevalue.EffectiveValueImpl;
 
 import java.io.Serializable;
 

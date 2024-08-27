@@ -1,7 +1,6 @@
-package engine.sheet.impl;
+package engine.sheet.effectivevalue;
 
-import engine.sheet.api.CellType;
-import engine.sheet.api.EffectiveValue;
+import engine.sheet.cell.api.CellType;
 
 import java.io.Serializable;
 import java.util.Objects;

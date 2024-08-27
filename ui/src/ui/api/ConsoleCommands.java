@@ -1,4 +1,4 @@
-package ui;
+package ui.api;
 
 public enum ConsoleCommands {
 

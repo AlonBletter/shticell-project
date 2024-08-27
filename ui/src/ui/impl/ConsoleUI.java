@@ -1,14 +1,16 @@
-package ui;
+package ui.impl;
 
 import dto.CellDTO;
 import dto.SheetDTO;
 import engine.Engine;
 import engine.EngineImpl;
 import engine.exception.InvalidCellBoundsException;
-import engine.sheet.api.CellType;
-import engine.sheet.api.EffectiveValue;
+import engine.sheet.cell.api.CellType;
+import engine.sheet.effectivevalue.EffectiveValue;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
+import ui.api.ConsoleCommands;
+import ui.api.UI;
 
 import java.util.InputMismatchException;
 import java.util.List;

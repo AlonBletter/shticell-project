@@ -1,6 +1,6 @@
 package engine.sheet.cell.api;
 
-import engine.sheet.api.EffectiveValue;
+import engine.sheet.effectivevalue.EffectiveValue;
 
 public interface CellReadActions {
     String getOriginalValue();

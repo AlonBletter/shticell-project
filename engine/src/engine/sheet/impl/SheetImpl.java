@@ -5,7 +5,7 @@ import engine.expression.ExpressionUtils;
 import engine.generated.STLCell;
 import engine.generated.STLCells;
 import engine.generated.STLSheet;
-import engine.sheet.api.EffectiveValue;
+import engine.sheet.effectivevalue.EffectiveValue;
 import engine.sheet.api.Sheet;
 import engine.sheet.cell.api.Cell;
 import engine.sheet.cell.api.CellReadActions;

@@ -1,12 +1,11 @@
 package engine.expression.impl.string;
 
-import dto.SheetDTO;
 import engine.expression.api.Expression;
 import engine.expression.type.TrinaryExpression;
-import engine.sheet.api.CellType;
-import engine.sheet.api.EffectiveValue;
+import engine.sheet.cell.api.CellType;
+import engine.sheet.effectivevalue.EffectiveValue;
 import engine.sheet.api.SheetReadActions;
-import engine.sheet.impl.EffectiveValueImpl;
+import engine.sheet.effectivevalue.EffectiveValueImpl;
 
 public class Sub extends TrinaryExpression {
     public Sub(Expression expression1, Expression expression2, Expression expression3) {

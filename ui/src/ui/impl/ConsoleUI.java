@@ -91,7 +91,7 @@ public class ConsoleUI implements UI {
                 case ConsoleCommands.LOAD_SYSTEM_FROM_FILE -> loadSystemFromFile();
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
     }
 

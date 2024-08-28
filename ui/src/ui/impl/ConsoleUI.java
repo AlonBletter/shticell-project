@@ -19,16 +19,19 @@ import java.util.Scanner;
 
 public class ConsoleUI implements UI {
     private final Engine spreadsheetEngine = new EngineImpl();
+    private Scanner scanner;
 
     @Override
     public void executeProgram() {
         int userSelection;
+        scanner = new Scanner(System.in);
 
         displayProgramTitle();
 
         while (true) {
             displayMenu();
             userSelection = getInputFromUser();
+            scanner.nextLine();
 
             if (ConsoleCommands.values()[userSelection] == ConsoleCommands.EXIT_SYSTEM) {
                 break;
@@ -38,6 +41,7 @@ public class ConsoleUI implements UI {
             System.out.println();
         }
 
+        scanner.close();
         System.out.println("Exiting shticell...");
     }
 
@@ -51,7 +55,6 @@ public class ConsoleUI implements UI {
 
     private int getInputFromUser() {
         int userSelection;
-        Scanner scanner = new Scanner(System.in);
 
         while (true) {
             System.out.print("Please select your option by entering the command number: ");
@@ -98,7 +101,6 @@ public class ConsoleUI implements UI {
 
     private void loadSystemSettings() {
         String userInput;
-        Scanner scanner = new Scanner(System.in);
 
         while (true) {
             System.out.print("Please enter the absolute file path of the .XML file you'd like to load (or enter 'q'/'Q' return to the main menu): ");
@@ -130,7 +132,9 @@ public class ConsoleUI implements UI {
         char sheetColumnRange = (char) (SheetNumOfColumns + 'A' - 1);
         char cellColumnChar = (char) (coordinate.getColumn() + 'A' - 1);
 
-        System.out.println(e.getMessage() + "Invalid cell bounds!\n" +
+        String message = e.getMessage() != null ? e.getMessage() : "";
+
+        System.out.println(message + "Invalid cell bounds!\n" +
                 "Expected column between A-" + sheetColumnRange + " and row between 1-" + sheetNumOfRows + "\n" +
                 "But received column [" + cellColumnChar + "] and row [" + coordinate.getRow() + "]");
     }
@@ -182,7 +186,6 @@ public class ConsoleUI implements UI {
 
     private void displayCellInformation() {
         String userInput;
-        Scanner scanner = new Scanner(System.in);
 
         while (true) {
             try {
@@ -198,6 +201,8 @@ public class ConsoleUI implements UI {
                 printBasicCellInformation(cellToDisplayCoordinate);
                 printAdvancedCellInformation(cellToDisplayCoordinate);
                 break;
+            } catch (InvalidCellBoundsException e) {
+                handleInvalidCellBoundException(e);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -241,7 +246,6 @@ public class ConsoleUI implements UI {
 
     private void updateCellValue() {
         String userInput;
-        Scanner scanner = new Scanner(System.in);
 
         while (true) {
             try {
@@ -262,6 +266,8 @@ public class ConsoleUI implements UI {
                 System.out.println("Cell updated successfully...");
                 displaySpreadsheet();
                 break;
+            } catch (InvalidCellBoundsException e) {
+                handleInvalidCellBoundException(e);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -287,7 +293,6 @@ public class ConsoleUI implements UI {
 
     private void getVersionToDisplayFromUser(Map<Integer, SheetDTO> versionsDTO) {
         String userInput;
-        Scanner scanner = new Scanner(System.in);
 
         while (true) {
             try {
@@ -317,7 +322,6 @@ public class ConsoleUI implements UI {
 
     private void saveSystemFromFile() {
         String userInput;
-        Scanner scanner = new Scanner(System.in);
 
         while (true) {
             try {
@@ -340,7 +344,6 @@ public class ConsoleUI implements UI {
 
     private void loadSystemFromFile() {
         String userInput;
-        Scanner scanner = new Scanner(System.in);
 
         while (true) {
             try {

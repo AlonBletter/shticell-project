@@ -19,7 +19,7 @@ public class Abs extends UnaryExpression {
         Double result = effectiveValue.extractValueWithExpectation(Double.class);
 
         if (result == null) {
-            return new EffectiveValueImpl(CellType.NUMERIC, Double.NaN);
+            return new EffectiveValueImpl(CellType.ERROR, Double.NaN);
         }
 
         return new EffectiveValueImpl(CellType.NUMERIC, Math.abs(result));

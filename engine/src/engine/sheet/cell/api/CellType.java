@@ -5,7 +5,8 @@ public enum CellType {
     TEXT(String.class),
     BOOLEAN(Boolean.class),
     UNKNOWN(void.class),
-    EMPTY(void.class);
+    EMPTY(void.class),
+    ERROR(void.class);
 
     private Class<?> type;
 

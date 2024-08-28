@@ -21,7 +21,7 @@ public class Concat extends BinaryExpression {
         String arg2 = effectiveValue2.extractValueWithExpectation(String.class);
 
         if (arg1 == null || arg2 == null) {
-            return new EffectiveValueImpl(CellType.TEXT, "!UNDEFINED!");
+            return new EffectiveValueImpl(CellType.ERROR, "!UNDEFINED!");
         }
 
         return new EffectiveValueImpl(CellType.TEXT, arg1 + arg2);

@@ -23,7 +23,7 @@ public class Sub extends TrinaryExpression {
         Double arg3 = effectiveValue3.extractValueWithExpectation(Double.class);
 
         if (source == null || arg2 == null || arg3 == null) {
-            return new EffectiveValueImpl(CellType.TEXT, "!UNDEFINED!");
+            return new EffectiveValueImpl(CellType.ERROR, "!UNDEFINED!");
         }
 
         if (arg2 % 1 != 0 || arg3 % 1 != 0) {
@@ -35,7 +35,7 @@ public class Sub extends TrinaryExpression {
         int endIndex = arg3.intValue();
 
         if(startIndex > endIndex || startIndex < 0 || endIndex > source.length()) {
-            return new EffectiveValueImpl(CellType.TEXT, "!UNDEFINED!");
+            return new EffectiveValueImpl(CellType.ERROR, "!UNDEFINED!");
         }
 
         return new EffectiveValueImpl(CellType.TEXT, source.substring(startIndex, endIndex + 1));

@@ -22,7 +22,7 @@ public class Divide extends BinaryExpression {
         Double arg2 = effectiveValue2.extractValueWithExpectation(Double.class);
 
         if (arg1 == null || arg2 == null || arg2 == 0) {
-            return new EffectiveValueImpl(CellType.NUMERIC, Double.NaN);
+            return new EffectiveValueImpl(CellType.ERROR, Double.NaN);
         }
 
         return new EffectiveValueImpl(CellType.NUMERIC, arg1 / arg2);

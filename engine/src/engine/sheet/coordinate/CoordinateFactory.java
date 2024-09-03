@@ -26,8 +26,10 @@ public class CoordinateFactory {
     }
 
     public static Coordinate createCoordinate(String cellCoordinate) {
-        if (cellCoordinate == null || cellCoordinate.isEmpty()) {
-            throw new IllegalArgumentException("Cell coordinate cannot be null or empty.");
+        if (cellCoordinate == null ) {
+            throw new IllegalArgumentException("Cell coordinate cannot be null.");
+        } else if (cellCoordinate.isEmpty()) {
+            throw new IllegalArgumentException("Cell coordinate cannot be empty.");
         }
 
         char columnLetter = Character.toUpperCase(cellCoordinate.charAt(0));

@@ -4,21 +4,21 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class CellModel {
-    protected SimpleStringProperty value;
+    protected SimpleStringProperty effectiveValue;
 
-    public CellModel(String value) {
-        this.value = new SimpleStringProperty(value);
+    public CellModel(String effectiveValue) {
+        this.effectiveValue = new SimpleStringProperty(effectiveValue);
     }
 
-    public String getValue() {
-        return value.get();
+    public String getEffectiveValue() {
+        return effectiveValue.get();
     }
 
-    public void setValue(String value) {
-        this.value.set(value);
+    public void setEffectiveValue(String effectiveValue) {
+        this.effectiveValue.set(effectiveValue);
     }
 
-    public StringProperty valueProperty() {
-        return value;
+    public StringProperty effectiveValueProperty() {
+        return effectiveValue;
     }
 }

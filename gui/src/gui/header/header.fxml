@@ -12,7 +12,6 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-
 <GridPane prefHeight="115.0" prefWidth="801.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.header.HeaderController">
   <columnConstraints>
     <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="NEVER" maxWidth="285.0" minWidth="10.0" prefWidth="113.0" />
@@ -45,7 +44,7 @@
       <Label fx:id="selectedCellIDLabel" text="Selected Cell ID" GridPane.rowIndex="2" />
       <Label fx:id="originalCellValueLabel" text="Original Cell Value" GridPane.columnIndex="1" GridPane.rowIndex="2" />
       <Label fx:id="lastUpdatedCellVersionLabel" text="Last Updated Cell Version" textOverrun="CLIP" GridPane.columnIndex="4" GridPane.rowIndex="2" />
-      <Separator prefHeight="9.0" prefWidth="785.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="3" />
+      <Separator prefHeight="9.0" prefWidth="785.0" GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS" />
       <StackPane GridPane.columnIndex="5" GridPane.rowIndex="2">
          <children>
             <ChoiceBox fx:id="versionSelectorChoiceBox" prefWidth="150.0" />

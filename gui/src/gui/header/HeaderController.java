@@ -2,6 +2,7 @@ package gui.header;
 
 import engine.Engine;
 import gui.app.AppController;
+import gui.singlecell.CellModel;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -79,7 +80,7 @@ public class HeaderController {
 
     }
 
-
-
-
+    public void updateHeaderData(CellModel selectedCell) {
+        selectedCell.setValue();
+    }
 }

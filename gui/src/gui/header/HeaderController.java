@@ -1,5 +1,6 @@
 package gui.header;
 
+import dto.CellDTO;
 import engine.Engine;
 import gui.app.AppController;
 import gui.singlecell.CellModel;
@@ -35,25 +36,16 @@ public class HeaderController {
     @FXML private Label versionNumberLabel;
 
     private SimpleStringProperty filePath;
-    private SimpleStringProperty selectedCellCoordinate;
-    private SimpleStringProperty cellOriginalValue;
-    private SimpleIntegerProperty cellVersionNumber;
 
     private Stage primaryStage;
 
     public HeaderController() {
         filePath = new SimpleStringProperty();
-        selectedCellCoordinate = new SimpleStringProperty();
-        cellOriginalValue = new SimpleStringProperty();
-        cellVersionNumber = new SimpleIntegerProperty();
     }
 
     @FXML
     private void initialize() {
         loadedFilePathLabel.textProperty().bind(filePath);
-        selectedCellIDLabel.textProperty().bind(selectedCellCoordinate);
-        originalCellValueLabel.textProperty().bind(cellOriginalValue);
-        lastUpdatedCellVersionLabel.textProperty().bind(Bindings.format("%d", cellVersionNumber));
     }
 
     public void setMainController(AppController mainController) {
@@ -80,7 +72,9 @@ public class HeaderController {
 
     }
 
-    public void updateHeaderData(CellModel selectedCell) {
-        selectedCell.setValue();
+    public void updateHeaderData(CellDTO selectedCell) {
+        selectedCellIDLabel.setText(selectedCell.coordinate().toString());
+        originalCellValueLabel.setText(selectedCell.originalValue());
+        lastUpdatedCellVersionLabel.setText(String.valueOf(selectedCell.lastModifiedVersion()));
     }
 }

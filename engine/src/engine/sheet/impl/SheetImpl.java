@@ -78,7 +78,7 @@ public class SheetImpl implements Sheet, Serializable {
          CellReadActions cellReadActions = getCell(coordinate);
 
          if (cellReadActions instanceof EmptyCell) {
-             Cell newCell = new CellImpl();
+             Cell newCell = new CellImpl(coordinate);
              activeCells.put(coordinate, newCell);
              return newCell;
          }

@@ -43,6 +43,10 @@ public class AppController {
         }
     }
 
+    public void updateHeaderOnCellClick(Coordinate coordinateOfSelectedCell) {
+        headerComponentController.updateHeaderData(engine.getCell(coordinateOfSelectedCell));
+    }
+
     private void showErrorAlert(String title, String headerText, String contentText) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -50,9 +54,5 @@ public class AppController {
         alert.setContentText(contentText);
 
         alert.showAndWait();
-    }
-
-    public void updateHeaderOnCellClick(CellModel currentSelectedCell) {
-        headerComponentController.update
     }
 }

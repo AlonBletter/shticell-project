@@ -1,6 +1,7 @@
 package engine.sheet.cell.impl;
 
 import engine.sheet.cell.api.CellType;
+import engine.sheet.coordinate.Coordinate;
 import engine.sheet.effectivevalue.EffectiveValue;
 import engine.sheet.cell.api.Cell;
 import engine.sheet.effectivevalue.EffectiveValueImpl;
@@ -23,6 +24,11 @@ public enum EmptyCell implements Cell, Serializable {
     @Override
     public int getLastModifiedVersion() {
         return 0;
+    }
+
+    @Override
+    public Coordinate getCoordinate() {
+        return null; //TODO REMOVE EMPTYCELL
     }
 
     @Override

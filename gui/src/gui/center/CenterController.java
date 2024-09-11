@@ -2,25 +2,25 @@ package gui.center;
 
 import dto.CellDTO;
 import dto.SheetDTO;
-import engine.sheet.cell.api.CellType;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
-import engine.sheet.effectivevalue.EffectiveValue;
 import gui.ShticellResourcesConstants;
 import gui.app.AppController;
-import gui.singlecell.CellModel;
 import gui.singlecell.SingleCellController;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.HPos;
+import javafx.geometry.VPos;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 public class CenterController {
     private AppController mainController;
@@ -45,27 +45,13 @@ public class CenterController {
         int rowsUnits = sheet.rowHeightUnits();
         int columnUnits = sheet.columnWidthUnits();
 
-        centerGrid = new GridPane();
-        centerGrid.getChildren().clear();
-        centerGrid.setHgap(1);
-        centerGrid.setVgap(1);
+        gridPaneReset();
+        setRowsConstrains(numOfRows + 1, rowsUnits);
+        setColumnsConstraints(numOfColumns + 1, columnUnits);
+        insertColumnsTitle(numOfColumns);
+        insertRowsTitle(numOfRows);
 
-        for (int row = 0; row < numOfRows; row++) {
-            RowConstraints rowConstraints = new RowConstraints();
-            rowConstraints.setMinHeight(rowsUnits);
-            rowConstraints.setMaxHeight(rowsUnits);
-            rowConstraints.setPrefHeight(rowsUnits);
-            centerGrid.getRowConstraints().add(rowConstraints);
-        }
-
-        for (int col = 0; col < numOfColumns; col++) {
-            ColumnConstraints colConstraints = new ColumnConstraints();
-            colConstraints.setMinWidth(columnUnits);
-            colConstraints.setMaxWidth(columnUnits);
-            colConstraints.setPrefWidth(columnUnits);
-            centerGrid.getColumnConstraints().add(colConstraints);
-        }
-
+        // Add grid cells
         for (int row = 0; row < numOfRows; row++) {
             for (int col = 0; col < numOfColumns; col++) {
                 try {
@@ -76,21 +62,79 @@ public class CenterController {
 
                     Coordinate coordinate = CoordinateFactory.createCoordinate(row + 1, col + 1);
                     CellDTO cell = sheet.activeCells().get(coordinate);
-
-
-                    cellController.setValue(valueString);
-                    cellController.setCoordinate(coordinate);
+                    cellController.setDataFromDTO(coordinate, cell);
                     cellController.setMainController(mainController);
                     gridCells.put(coordinate, cellController);
 
-                    centerGrid.add(singleCell, col, row);
+                    // Add cell to grid, shifting by 1 to account for titles
+                    centerGrid.add(singleCell, col + 1, row + 1); // Shift by 1
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
+
+        centerGrid.getStylesheets().add(getClass().getResource("/gui/center/center.css").toExternalForm());
     }
 
+    private void gridPaneReset() {
+        centerGrid = new GridPane();
+        centerGrid.getChildren().clear();
+        centerGrid.setHgap(1);
+        centerGrid.setVgap(1);
+    }
 
+    private void insertRowsTitle(int numOfRows) {
+        for (int row = 1; row <= numOfRows; row++) {
+            Label rowTitle = new Label(String.valueOf(row));
+            rowTitle.getStyleClass().add("column-title");
+            centerGrid.add(rowTitle, 0, row);
+            GridPane.setHalignment(rowTitle, HPos.RIGHT);
+            GridPane.setValignment(rowTitle, VPos.CENTER);
+        }
+    }
 
+    private void insertColumnsTitle(int numOfColumns) {
+        for (int col = 1; col <= numOfColumns; col++) {
+            Label columnTitle = new Label(getColumnLetter(col));
+            columnTitle.getStyleClass().add("column-title");
+            centerGrid.add(columnTitle, col, 0);
+            GridPane.setHalignment(columnTitle, HPos.CENTER);
+            GridPane.setValignment(columnTitle, VPos.CENTER);
+        }
+    }
+
+    private String getColumnLetter(int columnNumber) {
+        return String.valueOf((char) ('A' + columnNumber - 1));
+    }
+
+    private void setColumnsConstraints(int numOfColumns, int columnUnits) {
+        for (int col = 0; col < numOfColumns; col++) {
+            ColumnConstraints colConstraints = new ColumnConstraints();
+            colConstraints.setMinWidth(columnUnits);
+            colConstraints.setMaxWidth(columnUnits);
+            colConstraints.setPrefWidth(columnUnits);
+            centerGrid.getColumnConstraints().add(colConstraints);
+        }
+    }
+
+    private void setRowsConstrains(int numOfRows, int rowsUnits) {
+        for (int row = 0; row < numOfRows; row++) {
+            RowConstraints rowConstraints = new RowConstraints();
+            rowConstraints.setMinHeight(rowsUnits);
+            rowConstraints.setMaxHeight(rowsUnits);
+            rowConstraints.setPrefHeight(rowsUnits);
+            centerGrid.getRowConstraints().add(rowConstraints);
+        }
+    }
+
+    public void updateCells(List<CellDTO> cellDTOS) {
+        if(!cellDTOS.isEmpty()) {
+            for(CellDTO cellDTO : cellDTOS) {
+                Coordinate coordinate = cellDTO.coordinate();
+                SingleCellController cellController = gridCells.get(coordinate);
+                cellController.setDataFromDTO(coordinate, cellDTO);
+            }
+        }
+    }
 }

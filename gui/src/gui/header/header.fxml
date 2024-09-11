@@ -39,12 +39,12 @@
             <Insets />
          </GridPane.margin>
       </Label>
-      <TextField fx:id="actionLineLabel" alignment="CENTER" prefHeight="25.0" prefWidth="150.0" promptText="Action Line" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+      <TextField fx:id="actionLineTextField" alignment="CENTER" prefHeight="25.0" prefWidth="150.0" promptText="Action Line" GridPane.columnIndex="2" GridPane.rowIndex="2" />
       <Button fx:id="updateValueButton" mnemonicParsing="false" onAction="#updateValueButtonAction" prefHeight="25.0" prefWidth="140.0" text="Update Value" GridPane.columnIndex="3" GridPane.rowIndex="2" />
       <Label fx:id="selectedCellIDLabel" text="Selected Cell ID" GridPane.rowIndex="2" />
       <Label fx:id="originalCellValueLabel" text="Original Cell Value" GridPane.columnIndex="1" GridPane.rowIndex="2" />
       <Label fx:id="lastUpdatedCellVersionLabel" text="Last Updated Cell Version" textOverrun="CLIP" GridPane.columnIndex="4" GridPane.rowIndex="2" />
-      <Separator prefHeight="9.0" prefWidth="785.0" GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS" />
+      <Separator prefHeight="9.0" prefWidth="785.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="3" />
       <StackPane GridPane.columnIndex="5" GridPane.rowIndex="2">
          <children>
             <ChoiceBox fx:id="versionSelectorChoiceBox" prefWidth="150.0" />

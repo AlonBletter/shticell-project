@@ -23,7 +23,7 @@ public class SingleCellController extends CellModel {
     @FXML
     void onCellClickUpdate(MouseEvent event) {
         if (mainController != null) {
-            mainController.updateHeaderOnCellClick(coordinate);
+            mainController.updateHeaderOnCellClick(this);
         }
     }
 
@@ -31,18 +31,23 @@ public class SingleCellController extends CellModel {
         super();
     }
 
+    public void setDataFromDTO(Coordinate coordinate, CellDTO cell) {
+        setCoordinate(coordinate);
+
+        if(cell != null) {
+            setEffectiveValue(formatEffectiveValue(cell.effectiveValue()));
+            setOriginalValue(cell.originalValue());
+            setLastModifiedVersion(String.valueOf(cell.lastModifiedVersion()));
+        } else {
+            setEffectiveValue("");
+            setOriginalValue("");
+            setLastModifiedVersion("1"); //TODO PROBABLY AFTER REMOVING SINGLETON THERE WILL BE SOMETHING THERE
+        }
+    }
+
     @FXML
     private void initialize() {
         valueLabel.textProperty().bind(effectiveValue);
-    }
-
-    public void setDataFromDTO(CellDTO cell) {
-        String valueString = (cell != null ? formatEffectiveValue(cell.effectiveValue()) : "");
-
-        setCoordinate(cell.coordinate());
-        setEffectiveValue(valueString);
-        setOriginalValue(cell.originalValue());
-        setLastModifiedVersion(String.valueOf(cell.lastModifiedVersion()));
     }
 
     private String formatEffectiveValue(EffectiveValue effectiveValue) {

@@ -6,7 +6,6 @@ import engine.sheet.coordinate.Coordinate;
 import gui.center.CenterController;
 import gui.header.HeaderController;
 import gui.singlecell.CellModel;
-import gui.singlecell.SingleCellController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.BorderPane;
@@ -43,9 +42,21 @@ public class AppController {
         }
     }
 
-    public void updateHeaderOnCellClick(Coordinate coordinateOfSelectedCell) {
-        headerComponentController.updateHeaderData(engine.getCell(coordinateOfSelectedCell));
+    public void updateCell(Coordinate cellToUpdateCoordinate, String newCellValue) {
+        try {
+            engine.updateCell(cellToUpdateCoordinate, newCellValue);
+            centerComponentController.updateCells(engine.getSpreadsheet().lastModifiedCells());
+        } catch (Exception e) {
+            showErrorAlert("Updating Cell Error", "An error occurred while updating the cell.", e.getMessage());
+        }
     }
+
+    public void updateHeaderOnCellClick(CellModel selectedCell) {
+        headerComponentController.updateHeaderCellData(selectedCell);
+        headerComponentController.requestActionLineFocus();
+    }
+
+
 
     private void showErrorAlert(String title, String headerText, String contentText) {
         Alert alert = new Alert(Alert.AlertType.ERROR);

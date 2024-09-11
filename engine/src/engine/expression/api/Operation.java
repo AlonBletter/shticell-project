@@ -18,13 +18,6 @@ public enum Operation {
             CellType leftCellType = parameters.get(0).getFunctionResultType();
             CellType rightCellType = parameters.get(1).getFunctionResultType();
 
-            if ( (!leftCellType.equals(CellType.NUMERIC) && !leftCellType.equals(CellType.UNKNOWN)) ||
-                    (!rightCellType.equals(CellType.NUMERIC) && !rightCellType.equals(CellType.UNKNOWN)) ) {
-                throw new IllegalArgumentException("Invalid arguments to " + this.name() + " function!\n" +
-                        "Expected Arg1=<"+ CellType.NUMERIC +">, Arg2=<" + CellType.NUMERIC + "> but received " +
-                        "Arg1=<" + leftCellType + ">, Arg2=<" + rightCellType + ">");
-            }
-
             return new Divide(parameters.get(0), parameters.get(1));
         }
     },
@@ -35,13 +28,6 @@ public enum Operation {
 
             CellType leftCellType = parameters.get(0).getFunctionResultType();
             CellType rightCellType = parameters.get(1).getFunctionResultType();
-
-            if ( (!leftCellType.equals(CellType.NUMERIC) && !leftCellType.equals(CellType.UNKNOWN)) ||
-                    (!rightCellType.equals(CellType.NUMERIC) && !rightCellType.equals(CellType.UNKNOWN)) ) {
-                throw new IllegalArgumentException("Invalid arguments to " + this.name() + " function!\n" +
-                        "Expected Arg1=<"+ CellType.NUMERIC +">, Arg2=<" + CellType.NUMERIC + "> but received " +
-                        "Arg1=<" + leftCellType + ">, Arg2=<" + rightCellType + ">");
-            }
 
             return new Minus(parameters.get(0), parameters.get(1));
         }
@@ -54,13 +40,6 @@ public enum Operation {
             CellType leftCellType = parameters.get(0).getFunctionResultType();
             CellType rightCellType = parameters.get(1).getFunctionResultType();
 
-            if ( (!leftCellType.equals(CellType.NUMERIC) && !leftCellType.equals(CellType.UNKNOWN)) ||
-                    (!rightCellType.equals(CellType.NUMERIC) && !rightCellType.equals(CellType.UNKNOWN)) ) {
-                throw new IllegalArgumentException("Invalid arguments to " + this.name() + " function!\n" +
-                        "Expected Arg1=<"+ CellType.NUMERIC +">, Arg2=<" + CellType.NUMERIC + "> but received " +
-                        "Arg1=<" + leftCellType + ">, Arg2=<" + rightCellType + ">");
-            }
-
             return new Mod(parameters.get(0), parameters.get(1));
         }
     },
@@ -71,13 +50,6 @@ public enum Operation {
 
             CellType leftCellType = parameters.get(0).getFunctionResultType();
             CellType rightCellType = parameters.get(1).getFunctionResultType();
-
-            if ( (!leftCellType.equals(CellType.NUMERIC) && !leftCellType.equals(CellType.UNKNOWN)) ||
-                    (!rightCellType.equals(CellType.NUMERIC) && !rightCellType.equals(CellType.UNKNOWN)) ) {
-                throw new IllegalArgumentException("Invalid arguments to " + this.name() + " function!\n" +
-                        "Expected Arg1=<"+ CellType.NUMERIC +">, Arg2=<" + CellType.NUMERIC + "> but received " +
-                        "Arg1=<" + leftCellType + ">, Arg2=<" + rightCellType + ">");
-            }
 
             return new Plus(parameters.get(0), parameters.get(1));
         }
@@ -90,13 +62,6 @@ public enum Operation {
             CellType leftCellType = parameters.get(0).getFunctionResultType();
             CellType rightCellType = parameters.get(1).getFunctionResultType();
 
-            if ( (!leftCellType.equals(CellType.NUMERIC) && !leftCellType.equals(CellType.UNKNOWN)) ||
-                    (!rightCellType.equals(CellType.NUMERIC) && !rightCellType.equals(CellType.UNKNOWN)) ) {
-                throw new IllegalArgumentException("Invalid arguments to " + this.name() + " function!\n" +
-                        "Expected Arg1=<"+ CellType.NUMERIC +">, Arg2=<" + CellType.NUMERIC + "> but received " +
-                        "Arg1=<" + leftCellType + ">, Arg2=<" + rightCellType + ">");
-            }
-
             return new Pow(parameters.get(0), parameters.get(1));
         }
     },
@@ -106,11 +71,6 @@ public enum Operation {
             validateNumberOfParameters(Abs.class, parameters);
 
             CellType expressionCellType = parameters.getFirst().getFunctionResultType();
-
-            if (!expressionCellType.equals(CellType.NUMERIC) && !expressionCellType.equals(CellType.UNKNOWN)) {
-                throw new IllegalArgumentException("Invalid arguments to " + this.name() + " function!\n" +
-                        "Expected <"+ CellType.NUMERIC +"> but received <" + expressionCellType + ">");
-            }
 
             return new Abs(parameters.getFirst());
         }
@@ -123,13 +83,6 @@ public enum Operation {
             CellType leftCellType = parameters.get(0).getFunctionResultType();
             CellType rightCellType = parameters.get(1).getFunctionResultType();
 
-            if ( (!leftCellType.equals(CellType.NUMERIC) && !leftCellType.equals(CellType.UNKNOWN)) ||
-                    (!rightCellType.equals(CellType.NUMERIC) && !rightCellType.equals(CellType.UNKNOWN)) ) {
-                throw new IllegalArgumentException("Invalid arguments to " + this.name() + " function!\n" +
-                        "Expected Arg1=<"+ CellType.NUMERIC +">, Arg2=<" + CellType.NUMERIC + "> but received " +
-                        "Arg1=<" + leftCellType + ">, Arg2=<" + rightCellType + ">");
-            }
-
             return new Times(parameters.get(0), parameters.get(1));
         }
     },
@@ -140,13 +93,6 @@ public enum Operation {
 
             CellType leftCellType = parameters.get(0).getFunctionResultType();
             CellType rightCellType = parameters.get(1).getFunctionResultType();
-
-            if ( (!leftCellType.equals(CellType.TEXT) && !leftCellType.equals(CellType.UNKNOWN)) ||
-                    (!rightCellType.equals(CellType.TEXT) && !rightCellType.equals(CellType.UNKNOWN)) ) {
-                throw new IllegalArgumentException("Invalid arguments to " + this.name() + " function!\n" +
-                        "Expected Arg1=<"+ CellType.TEXT +">, Arg2=<" + CellType.TEXT + "> but received " +
-                        "Arg1=<" + leftCellType + ">, Arg2=<" + rightCellType + ">");
-            }
 
             return new Concat(parameters.get(0), parameters.get(1));
         }
@@ -160,14 +106,6 @@ public enum Operation {
             CellType expressionType2 = parameters.get(1).getFunctionResultType();
             CellType expressionType3 = parameters.get(2).getFunctionResultType();
 
-            if ( (!expressionType1.equals(CellType.TEXT) && !expressionType1.equals(CellType.UNKNOWN)) ||
-                    (!expressionType2.equals(CellType.NUMERIC) && !expressionType2.equals(CellType.UNKNOWN)) ||
-                    (!expressionType3.equals(CellType.NUMERIC) && !expressionType3.equals(CellType.UNKNOWN))) {
-                throw new IllegalArgumentException("Invalid arguments to " + this.name() + " function!\n" +
-                        "Expected Arg1=<"+ CellType.TEXT +">, Arg2=<" + CellType.NUMERIC + ">, Arg3=<" + CellType.NUMERIC + "> but received " +
-                        "Arg1=<" + expressionType1 + ">, Arg2=<" + expressionType2 + ">, Arg3=<" + expressionType3 + ">");
-            }
-
             return new Sub(parameters.get(0), parameters.get(1), parameters.get(2));
         }
     },
@@ -177,11 +115,6 @@ public enum Operation {
             validateNumberOfParameters(Ref.class, parameters);
 
             CellType expressionCellType = parameters.getFirst().getFunctionResultType();
-
-            if (!expressionCellType.equals(CellType.TEXT) && !expressionCellType.equals(CellType.UNKNOWN)) {
-                throw new IllegalArgumentException("Invalid arguments to " + this.name() + " function!\n" +
-                        "Expected <"+ CellType.TEXT +"> but received <" + expressionCellType + ">");
-            }
 
             return new Ref(parameters.getFirst());
         }

@@ -27,7 +27,7 @@ public class Ref extends UnaryExpression {
 
         Coordinate coordinate = CoordinateFactory.createCoordinate(arg);
         CellReadActions cell = sheet.getCell(coordinate);
-
+        //TODO FIX?
 
 //        if(cell == null) { celltype empty
 //            return new EffectiveValueImpl(CellType.TEXT, "!UNDEFINED!");

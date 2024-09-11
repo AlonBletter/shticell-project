@@ -10,6 +10,6 @@ import java.util.Map;
 
 public interface Sheet extends SheetReadActions, SheetUpdateActions {
     Map<Coordinate, Cell> getActiveCells();
-    Map<Integer, Sheet> getVersions();
     List<Cell> getLastModifiedCells();
+    Sheet copySheet();
 }

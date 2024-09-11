@@ -148,7 +148,7 @@ public class ConsoleUI implements UI {
             int columnWidth = spreadsheet.columnWidthUnits();
 
             System.out.println("Displaying the current sheet state:");
-            System.out.println("version #" + spreadsheet.versionNum());
+            System.out.println("version #" + spreadsheet.versionNumber());
             System.out.println("name: " + spreadsheet.name());
             System.out.println();
 

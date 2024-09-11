@@ -1,20 +1,21 @@
 package gui.header;
 
-import dto.CellDTO;
 import engine.Engine;
 import engine.sheet.coordinate.Coordinate;
 import gui.app.AppController;
 import gui.singlecell.CellModel;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class HeaderController {
     private AppController mainController;
@@ -28,11 +29,11 @@ public class HeaderController {
     @FXML private Label selectedCellIDLabel;
     @FXML private Label titleLabel;
     @FXML private Button updateValueButton;
-    @FXML private ChoiceBox<?> versionSelectorChoiceBox;
-    @FXML private Label versionNumberLabel;
+    @FXML private ComboBox<String> versionSelectorComboBox;
 
     private SimpleStringProperty filePath;
     private Coordinate selectedCellCoordinate;
+    private ObservableList<Integer> versionList = FXCollections.observableArrayList();
 
     private Stage primaryStage;
 
@@ -43,6 +44,22 @@ public class HeaderController {
     @FXML
     private void initialize() {
         loadedFilePathLabel.textProperty().bind(filePath);
+        initializeVersionSelectorComboBox();
+    }
+
+    private void initializeVersionSelectorComboBox() {
+        versionSelectorComboBox.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                versionSelectorComboBox.getEditor().setText(newValue.replaceAll("\\D", ""));
+            }
+        });
+
+        versionSelectorComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldVersion, newVersion) -> {
+            if (newVersion != null && !newVersion.isEmpty()) {
+                int version = Integer.parseInt(newVersion.toString());
+                mainController.displaySheetByVersion(version);
+            }
+        });
     }
 
     public void setMainController(AppController mainController) {
@@ -79,6 +96,19 @@ public class HeaderController {
         selectedCellIDLabel.setText(selectedCellCoordinate.toString());
         originalCellValueLabel.textProperty().bind(selectedCell.originalValueProperty());
         lastUpdatedCellVersionLabel.textProperty().bind(selectedCell.lastModifiedVersionProperty());
+    }
+
+    private List<String> getAvailableVersionsFromEngine() {
+        return IntStream.rangeClosed(1, mainController.getSheetCurrentVersion())
+                .mapToObj(String::valueOf)
+                .collect(Collectors.toList());
+    }
+
+    public void enableButtonsAfterLoad() {
+        versionSelectorComboBox.setDisable(false);
+        actionLineTextField.setDisable(false);
+        updateValueButton.setDisable(false);
+        versionSelectorComboBox.setItems(FXCollections.observableArrayList(getAvailableVersionsFromEngine()));
     }
 
     public void requestActionLineFocus() {

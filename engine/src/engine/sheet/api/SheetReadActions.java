@@ -16,5 +16,5 @@ public interface SheetReadActions {
     int getNumberOfColumns();
     Map<Coordinate, List<Coordinate>> getCellDependents();
     Map<Coordinate, List<Coordinate>> getCellReferences();
-    int getVersionNum();
+    int getVersionNumber();
 }

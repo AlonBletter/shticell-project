@@ -10,6 +10,8 @@ import engine.sheet.api.Sheet;
 import engine.sheet.cell.api.Cell;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.impl.SheetImpl;
+import engine.sheet.verisonmanager.VersionManager;
+import engine.sheet.verisonmanager.VersionManagerImpl;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
@@ -20,16 +22,16 @@ public class EngineImpl implements Engine {
     public static final int SHEET_MAX_COLUMNS = 20;
     public static final int SHEET_MAX_ROWS = 50;
 
-    private Sheet sheet;
+    private final VersionManager versionManager = new VersionManagerImpl();
 
     @Override
     public SheetDTO getSpreadsheet() {
         validateLoadedSheet();
-        return SheetConverter.convertToDTO(sheet);
+        return SheetConverter.convertToDTO(versionManager.getCurrentVersionSheet());
     }
 
     private void validateLoadedSheet() {
-        if(sheet == null) {
+        if(versionManager.getCurrentVersionSheet() == null) {
             throw new IllegalStateException("Sheet isn't loaded yet");
         }
     }
@@ -37,13 +39,29 @@ public class EngineImpl implements Engine {
     @Override
     public CellDTO getCell(Coordinate cellToGetCoordinate) {
         validateLoadedSheet();
-        return CellConverter.convertToDTO((Cell)sheet.getCell(cellToGetCoordinate)); //TODO think of a better way
+        Sheet currentVersion = versionManager.getCurrentVersionSheet();
+        return CellConverter.convertToDTO((Cell)currentVersion.getCell(cellToGetCoordinate)); //TODO think of a better way
     }
 
     @Override
     public void updateCell(Coordinate cellToUpdateCoordinate, String newCellOriginalValue) {
         validateLoadedSheet();
-        sheet.updateCell(cellToUpdateCoordinate, newCellOriginalValue);
+        Sheet copyOfCurrentVersion = versionManager.getCurrentVersionSheet().copySheet();
+
+        copyOfCurrentVersion.updateCell(cellToUpdateCoordinate, newCellOriginalValue);
+        versionManager.addNewVersion(copyOfCurrentVersion);
+    }
+
+    @Override
+    public int getCurrentVersionNumber() {
+        validateLoadedSheet();
+        return versionManager.getCurrentVersionNumber();
+    }
+
+    @Override
+    public SheetDTO getSheetByVersion(int requestedVersionNumber) {
+        validateLoadedSheet();
+        return SheetConverter.convertToDTO(versionManager.getSheetByVersionNumber(requestedVersionNumber));
     }
 
     @Override
@@ -52,7 +70,8 @@ public class EngineImpl implements Engine {
             validateXMLFile(filePath);
             STLSheet sheetFromFile = readSheetFromXMLFile(filePath);
             validateXMLSheetLayout(sheetFromFile);
-            sheet = convertXMLSheetToMySheetObject(sheetFromFile);
+            Sheet loadedSheet = convertXMLSheetToMySheetObject(sheetFromFile);
+            versionManager.addNewVersion(loadedSheet);
         } catch (InvalidCellBoundsException e) {
             throw new InvalidCellBoundsException(e.getActualCoordinate(), e.getSheetNumOfRows(), e.getSheetNumOfColumns(), "Error while loading file: ");
         } catch (IllegalArgumentException | ClassCastException e) {
@@ -118,7 +137,7 @@ public class EngineImpl implements Engine {
         }
 
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath))) {
-            out.writeObject(sheet);
+            out.writeObject(versionManager.getCurrentVersionSheet());
             out.flush();
         }
     }
@@ -139,9 +158,9 @@ public class EngineImpl implements Engine {
         }
 
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filePath))) {
-            sheet = (Sheet) in.readObject();
+            Sheet sheetFromFile = (Sheet) in.readObject();
 
-            if (sheet == null) {
+            if (sheetFromFile == null) {
                 throw new IOException("Failed to read the sheet data from the file: " + filePath + ".");
             }
         }

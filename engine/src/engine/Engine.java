@@ -11,6 +11,8 @@ public interface Engine {
     SheetDTO getSpreadsheet();
     CellDTO getCell(Coordinate cellToGetCoordinate);
     void updateCell(Coordinate cellToUpdateCoordinate, String newCellOriginalValue);
+    int getCurrentVersionNumber();
+    SheetDTO getSheetByVersion(int requestedVersionNumber);
     void writeSystemDataToFile(String filePath) throws IOException;
     void readSystemDataFromFile(String filePath) throws IOException, ClassNotFoundException;
 }

@@ -26,20 +26,18 @@ public class SheetImpl implements Sheet, Serializable {
     private Map<Coordinate, Cell> activeCells;
     private Map<Coordinate, List<Coordinate>> cellDependents;
     private Map<Coordinate, List<Coordinate>> cellReferences;
-    private Map<Integer, Sheet> versions;
     private List<Cell> lastModifiedCells;
-    private int versionNum;
+    private int versionNumber;
 
     public SheetImpl() {
-        versionNum = 1;
         activeCells = new HashMap<>();
         cellDependents = new HashMap<>();
         cellReferences = new HashMap<>();
-        versions = new HashMap<>();
         lastModifiedCells = new LinkedList<>();
+        versionNumber = 1;
     }
 
-    private SheetImpl copySheet() {
+    public SheetImpl copySheet() {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -89,25 +87,10 @@ public class SheetImpl implements Sheet, Serializable {
     @Override
     public void updateCell(Coordinate coordinate, String newOriginalValue) {
         Cell cellToUpdate = addNewCellIfEmptyCell(coordinate);
-        String backupOriginalValue = cellToUpdate.getOriginalValue();
-        EffectiveValue backupEffectiveValue = cellToUpdate.getEffectiveValue();
-        Sheet backupSheet = this.copySheet();
 
-        try {
-            lastModifiedCells.clear();
-            cellToUpdate.setOriginalValue(newOriginalValue);
-            updateSheetEffectiveValues();
-        } catch (Exception e) { // Roll-back
-            cellToUpdate.setOriginalValue(backupOriginalValue);
-            cellToUpdate.setEffectiveValue(backupEffectiveValue);
-            cellDependents = backupSheet.getCellDependents();
-            cellReferences = backupSheet.getCellReferences();
-            throw e;
-        } finally {
-            if(cellToUpdate.getOriginalValue().isEmpty()) {
-                activeCells.remove(coordinate);
-            }
-        }
+        lastModifiedCells.clear();
+        cellToUpdate.setOriginalValue(newOriginalValue);
+        updateSheetEffectiveValues();
     }
 
     @Override
@@ -143,7 +126,7 @@ public class SheetImpl implements Sheet, Serializable {
 
         cellDependents = dependencyGraph;
         updateReferenceGraph();
-        versions.put(versionNum++, this.copySheet());
+        versionNumber++;
     }
 
     private void updateCellEffectiveValue(Cell cellToUpdate) {
@@ -153,7 +136,7 @@ public class SheetImpl implements Sheet, Serializable {
 
         if(!cellToUpdate.getEffectiveValue().equals(newEffectiveValue)) {
             cellToUpdate.setEffectiveValue(newEffectiveValue);
-            cellToUpdate.setLastModifiedVersion(versionNum);
+            cellToUpdate.setLastModifiedVersion(versionNumber);
             lastModifiedCells.add(cellToUpdate);
         }
     }
@@ -315,21 +298,18 @@ public class SheetImpl implements Sheet, Serializable {
         return cellDependents;
     }
 
+    @Override
     public Map<Coordinate, List<Coordinate>> getCellReferences() {
         return cellReferences;
     }
 
     @Override
-    public Map<Integer, Sheet> getVersions() {
-        return versions;
-    }
-
-    public List<Cell> getLastModifiedCells() {
-        return lastModifiedCells;
+    public int getVersionNumber() {
+        return versionNumber - 1;
     }
 
     @Override
-    public int getVersionNum() {
-        return versionNum - 1;
+    public List<Cell> getLastModifiedCells() {
+        return lastModifiedCells;
     }
 }

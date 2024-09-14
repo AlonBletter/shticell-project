@@ -25,6 +25,8 @@ public class ShticellMain extends Application {
         URL url = getClass().getResource(ShticellResourcesConstants.APP_FXML_RESOURCE_IDENTIFIER);
         fxmlLoader.setLocation(url);
         Parent root = fxmlLoader.load(url.openStream());
+        AppController appController = fxmlLoader.getController();
+        appController.setPrimaryStage(stage);
 
         Scene scene = new Scene(root, 1050, 600);
         stage.setScene(scene);

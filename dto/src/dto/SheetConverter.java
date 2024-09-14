@@ -18,7 +18,7 @@ public class SheetConverter {
                 sheet.getRowHeightUnits(),
                 sheet.getColumnWidthUnits(),
                 convertActiveCellsToDTO(sheet.getActiveCells()),
-                sheet.getCellDependents(),
+                sheet.getCellDependents(), //TODO Maybe needs a copy
                 sheet.getCellReferences(),
                 convertLastModifiedCellsToDTO(sheet.getLastModifiedCells()),
                 sheet.getVersionNumber()

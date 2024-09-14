@@ -7,6 +7,8 @@ import engine.sheet.coordinate.CoordinateFactory;
 import gui.ShticellResourcesConstants;
 import gui.app.AppController;
 import gui.singlecell.SingleCellController;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +16,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -51,7 +54,6 @@ public class CenterController {
         insertColumnsTitle(numOfColumns);
         insertRowsTitle(numOfRows);
 
-        // Add grid cells
         for (int row = 0; row < numOfRows; row++) {
             for (int col = 0; col < numOfColumns; col++) {
                 try {
@@ -65,9 +67,7 @@ public class CenterController {
                     cellController.setDataFromDTO(coordinate, cell);
                     cellController.setMainController(mainController);
                     gridCells.put(coordinate, cellController);
-
-                    // Add cell to grid, shifting by 1 to account for titles
-                    centerGrid.add(singleCell, col + 1, row + 1); // Shift by 1
+                    centerGrid.add(singleCell, col + 1, row + 1);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -87,7 +87,7 @@ public class CenterController {
     private void insertRowsTitle(int numOfRows) {
         for (int row = 1; row <= numOfRows; row++) {
             Label rowTitle = new Label(String.valueOf(row));
-            rowTitle.getStyleClass().add("column-title");
+            rowTitle.getStyleClass().add("row-title");
             centerGrid.add(rowTitle, 0, row);
             GridPane.setHalignment(rowTitle, HPos.RIGHT);
             GridPane.setValignment(rowTitle, VPos.CENTER);

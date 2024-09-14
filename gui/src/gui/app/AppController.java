@@ -1,5 +1,6 @@
 package gui.app;
 
+import dto.CellDTO;
 import dto.SheetDTO;
 import engine.Engine;
 import engine.EngineImpl;
@@ -17,9 +18,12 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.util.List;
+
 public class AppController {
     private Engine engine = new EngineImpl();
     private CenterController centerComponentController;
+    private Stage primaryStage;
 
     public AppController() {
         this.centerComponentController = new CenterController();
@@ -37,7 +41,15 @@ public class AppController {
         }
     }
 
-    // Functionality
+    public void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+
+        if(headerComponentController != null) {
+            headerComponentController.setPrimaryStage(primaryStage);
+        }
+    }
+
+
     public void loadFile(String filePath) {
         try {
             engine.loadSystemSettingsFromFile(filePath);
@@ -52,7 +64,12 @@ public class AppController {
     public void updateCell(Coordinate cellToUpdateCoordinate, String newCellValue) {
         try {
             engine.updateCell(cellToUpdateCoordinate, newCellValue);
-            centerComponentController.updateCells(engine.getSpreadsheet().lastModifiedCells());
+            List<CellDTO> lastModifiedCells = engine.getSpreadsheet().lastModifiedCells();
+            centerComponentController.updateCells(lastModifiedCells);
+
+            if(!lastModifiedCells.isEmpty()) {
+                headerComponentController.increaseComboBoxVersion();
+            }
         } catch (Exception e) {
             showErrorAlert("Updating Cell Error", "An error occurred while updating the cell.", e.getMessage());
         }
@@ -81,7 +98,7 @@ public class AppController {
             Scene scene = new Scene(gridPane);
 
             sheetStage.setScene(scene);
-            sheetStage.show();
+            sheetStage.showAndWait();
         } catch (Exception e) {
             showErrorAlert("Invalid Version", "An error occurred while displaying the sheet.", e.getMessage());
         }

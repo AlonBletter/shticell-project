@@ -4,6 +4,8 @@ import engine.Engine;
 import engine.sheet.coordinate.Coordinate;
 import gui.app.AppController;
 import gui.singlecell.CellModel;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -30,20 +32,24 @@ public class HeaderController {
     @FXML private Label titleLabel;
     @FXML private Button updateValueButton;
     @FXML private ComboBox<String> versionSelectorComboBox;
+    @FXML private ProgressBar loadFileProgressBar;
 
     private SimpleStringProperty filePath;
+    private SimpleBooleanProperty isFileLoaded;
     private Coordinate selectedCellCoordinate;
-    private ObservableList<Integer> versionList = FXCollections.observableArrayList();
-
     private Stage primaryStage;
 
     public HeaderController() {
         filePath = new SimpleStringProperty();
+        isFileLoaded = new SimpleBooleanProperty(false);
     }
 
     @FXML
     private void initialize() {
         loadedFilePathLabel.textProperty().bind(filePath);
+        actionLineTextField.disableProperty().bind(isFileLoaded.not());
+        updateValueButton.disableProperty().bind(isFileLoaded.not());
+        versionSelectorComboBox.disableProperty().bind(isFileLoaded.not());
         initializeVersionSelectorComboBox();
     }
 
@@ -66,10 +72,14 @@ public class HeaderController {
         this.mainController = mainController;
     }
 
+    public void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
+
     @FXML
     public void loadFileButtonAction() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select words file");
+        fileChooser.setTitle("Select XML file");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML files", "*.xml"));
         File selectedFile = fileChooser.showOpenDialog(primaryStage);
         if (selectedFile == null) {
@@ -105,13 +115,15 @@ public class HeaderController {
     }
 
     public void enableButtonsAfterLoad() {
-        versionSelectorComboBox.setDisable(false);
-        actionLineTextField.setDisable(false);
-        updateValueButton.setDisable(false);
+        isFileLoaded.set(true);
         versionSelectorComboBox.setItems(FXCollections.observableArrayList(getAvailableVersionsFromEngine()));
     }
 
     public void requestActionLineFocus() {
         actionLineTextField.requestFocus();
+    }
+
+    public void increaseComboBoxVersion() { //TODO find a better way...
+        versionSelectorComboBox.setItems(FXCollections.observableArrayList(getAvailableVersionsFromEngine()));
     }
 }

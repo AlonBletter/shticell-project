@@ -79,7 +79,7 @@ public class SheetImpl implements Sheet, Serializable {
              Cell newCell = new CellImpl(coordinate);
              activeCells.put(coordinate, newCell);
              return newCell;
-         }
+         }//TODO FIX THIS CASTING
 
          return (Cell) cellReadActions;
      }
@@ -91,6 +91,8 @@ public class SheetImpl implements Sheet, Serializable {
         lastModifiedCells.clear();
         cellToUpdate.setOriginalValue(newOriginalValue);
         updateSheetEffectiveValues();
+        //TODO consider return true for indication for the engine so it will know if to add to version manager or not.
+        // if so, do it with lastModifiedCells == 0
     }
 
     @Override

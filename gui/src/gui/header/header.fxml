@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -12,7 +13,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<GridPane prefHeight="115.0" prefWidth="898.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.header.HeaderController">
+<GridPane prefHeight="147.0" prefWidth="896.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.header.HeaderController">
   <columnConstraints>
     <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="NEVER" maxWidth="285.0" minWidth="10.0" prefWidth="113.0" />
     <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="435.0" minWidth="0.0" prefWidth="114.0" />
@@ -24,6 +25,7 @@
   <rowConstraints>
       <RowConstraints maxHeight="37.0" minHeight="10.0" prefHeight="36.0" valignment="CENTER" />
     <RowConstraints maxHeight="46.0" minHeight="10.0" prefHeight="31.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="46.0" minHeight="10.0" prefHeight="31.0" vgrow="SOMETIMES" />
     <RowConstraints maxHeight="51.0" minHeight="10.0" prefHeight="29.0" vgrow="SOMETIMES" />
       <RowConstraints maxHeight="60.0" minHeight="8.0" prefHeight="13.0" vgrow="SOMETIMES" />
   </rowConstraints>
@@ -34,22 +36,23 @@
             <Font size="24.0" />
          </font>
       </Label>
-      <Label fx:id="loadedFilePathLabel" text="File Path" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+      <Label fx:id="loadedFilePathLabel" text="File Path" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT" GridPane.rowIndex="2">
          <GridPane.margin>
             <Insets />
          </GridPane.margin>
       </Label>
-      <TextField fx:id="actionLineTextField" alignment="CENTER" disable="true" prefHeight="25.0" prefWidth="150.0" promptText="Action Line" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-      <Button fx:id="updateValueButton" disable="true" mnemonicParsing="false" onAction="#updateValueButtonAction" prefHeight="25.0" prefWidth="140.0" text="Update Value" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-      <Label fx:id="selectedCellIDLabel" text="Selected Cell ID" GridPane.rowIndex="2" />
-      <Label fx:id="originalCellValueLabel" text="Original Cell Value" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-      <Label fx:id="lastUpdatedCellVersionLabel" text="Last Updated Cell Version" textOverrun="CLIP" GridPane.columnIndex="4" GridPane.rowIndex="2" />
-      <Separator prefHeight="9.0" prefWidth="785.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="3" />
-      <StackPane GridPane.columnIndex="5" GridPane.rowIndex="2">
+      <TextField fx:id="actionLineTextField" alignment="CENTER" disable="true" prefHeight="25.0" prefWidth="150.0" promptText="Action Line" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+      <Button fx:id="updateValueButton" disable="true" mnemonicParsing="false" onAction="#updateValueButtonAction" prefHeight="25.0" prefWidth="140.0" text="Update Value" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+      <Label fx:id="selectedCellIDLabel" text="Selected Cell ID" GridPane.rowIndex="3" />
+      <Label fx:id="originalCellValueLabel" text="Original Cell Value" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <Label fx:id="lastUpdatedCellVersionLabel" text="Last Updated Cell Version" textOverrun="CLIP" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+      <Separator prefHeight="9.0" prefWidth="1000.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="4" />
+      <StackPane GridPane.columnIndex="5" GridPane.rowIndex="3">
          <children>
             <ComboBox fx:id="versionSelectorComboBox" disable="true" editable="true" prefWidth="150.0" promptText="Version #" />
          </children>
       </StackPane>
+      <ProgressBar fx:id="loadFileProgressBar" prefHeight="18.0" prefWidth="753.0" progress="0.0" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="1" />
    </children>
    <padding>
       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

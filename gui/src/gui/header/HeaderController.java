@@ -5,7 +5,6 @@ import engine.sheet.coordinate.Coordinate;
 import gui.app.AppController;
 import gui.singlecell.CellModel;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,7 +20,6 @@ import java.util.stream.IntStream;
 
 public class HeaderController {
     private AppController mainController;
-    private Engine engine;
 
     @FXML private TextField actionLineTextField;
     @FXML private Label lastUpdatedCellVersionLabel;
@@ -32,16 +30,17 @@ public class HeaderController {
     @FXML private Label titleLabel;
     @FXML private Button updateValueButton;
     @FXML private ComboBox<String> versionSelectorComboBox;
-    @FXML private ProgressBar loadFileProgressBar;
 
     private SimpleStringProperty filePath;
     private SimpleBooleanProperty isFileLoaded;
+    private ObservableList<String> versionNumberList;
     private Coordinate selectedCellCoordinate;
     private Stage primaryStage;
 
     public HeaderController() {
         filePath = new SimpleStringProperty();
         isFileLoaded = new SimpleBooleanProperty(false);
+        versionNumberList = FXCollections.observableArrayList();
     }
 
     @FXML
@@ -49,11 +48,13 @@ public class HeaderController {
         loadedFilePathLabel.textProperty().bind(filePath);
         actionLineTextField.disableProperty().bind(isFileLoaded.not());
         updateValueButton.disableProperty().bind(isFileLoaded.not());
-        versionSelectorComboBox.disableProperty().bind(isFileLoaded.not());
         initializeVersionSelectorComboBox();
     }
 
     private void initializeVersionSelectorComboBox() {
+        versionSelectorComboBox.setItems(versionNumberList);
+        versionSelectorComboBox.disableProperty().bind(isFileLoaded.not());
+
         versionSelectorComboBox.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
                 versionSelectorComboBox.getEditor().setText(newValue.replaceAll("\\D", ""));
@@ -62,10 +63,37 @@ public class HeaderController {
 
         versionSelectorComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldVersion, newVersion) -> {
             if (newVersion != null && !newVersion.isEmpty()) {
-                int version = Integer.parseInt(newVersion.toString());
-                mainController.displaySheetByVersion(version);
+                int versionToLoadNumber = Integer.parseInt(newVersion);
+                mainController.displaySheetByVersion(versionToLoadNumber);
             }
         });
+
+        versionSelectorComboBox.getEditor().setOnAction(event -> {
+            String input = versionSelectorComboBox.getEditor().getText();
+            if (input != null && !input.isEmpty()) {
+                int versionToLoadNumber = Integer.parseInt(input);
+                mainController.displaySheetByVersion(versionToLoadNumber);
+                versionSelectorComboBox.getSelectionModel().clearSelection();
+            }
+        });
+    }
+
+    private void clearDataFromHeader() {
+        lastUpdatedCellVersionLabel.textProperty().unbind();
+        selectedCellIDLabel.textProperty().unbind();
+        originalCellValueLabel.textProperty().unbind();
+        lastUpdatedCellVersionLabel.setText("");
+        selectedCellIDLabel.setText("");
+        originalCellValueLabel.setText("");
+    }
+
+    public void enableButtonsAfterLoad() {
+        isFileLoaded.set(true);
+        refreshComboBoxVersion();
+    }
+
+    public void refreshComboBoxVersion() { //TODO find a better way...
+        versionNumberList.add(String.valueOf(mainController.getSheetCurrentVersion()));
     }
 
     public void setMainController(AppController mainController) {
@@ -78,6 +106,7 @@ public class HeaderController {
 
     @FXML
     public void loadFileButtonAction() {
+        clearDataFromHeader();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select XML file");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML files", "*.xml"));
@@ -94,7 +123,7 @@ public class HeaderController {
     @FXML
     public void updateValueButtonAction() {
         if(selectedCellCoordinate == null) {
-            throw new IllegalArgumentException("No cell was selected.");
+            throw new IllegalArgumentException("Please select a cell before updating value.");
         }
 
         mainController.updateCell(selectedCellCoordinate, actionLineTextField.getText());
@@ -108,22 +137,7 @@ public class HeaderController {
         lastUpdatedCellVersionLabel.textProperty().bind(selectedCell.lastModifiedVersionProperty());
     }
 
-    private List<String> getAvailableVersionsFromEngine() {
-        return IntStream.rangeClosed(1, mainController.getSheetCurrentVersion())
-                .mapToObj(String::valueOf)
-                .collect(Collectors.toList());
-    }
-
-    public void enableButtonsAfterLoad() {
-        isFileLoaded.set(true);
-        versionSelectorComboBox.setItems(FXCollections.observableArrayList(getAvailableVersionsFromEngine()));
-    }
-
     public void requestActionLineFocus() {
         actionLineTextField.requestFocus();
-    }
-
-    public void increaseComboBoxVersion() { //TODO find a better way...
-        versionSelectorComboBox.setItems(FXCollections.observableArrayList(getAvailableVersionsFromEngine()));
     }
 }

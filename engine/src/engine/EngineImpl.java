@@ -49,7 +49,10 @@ public class EngineImpl implements Engine {
         Sheet copyOfCurrentVersion = versionManager.getCurrentVersionSheet().copySheet();
 
         copyOfCurrentVersion.updateCell(cellToUpdateCoordinate, newCellOriginalValue);
-        versionManager.addNewVersion(copyOfCurrentVersion);
+
+        if (!copyOfCurrentVersion.getLastModifiedCells().isEmpty()) {
+            versionManager.addNewVersion(copyOfCurrentVersion);
+        }
     }
 
     @Override

@@ -6,6 +6,7 @@ import engine.sheet.coordinate.Coordinate;
 import engine.sheet.effectivevalue.EffectiveValue;
 import gui.app.AppController;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -48,6 +49,10 @@ public class SingleCellController extends CellModel {
     @FXML
     private void initialize() {
         valueLabel.textProperty().bind(effectiveValue);
+    }
+
+    public Node getCellNode() {
+        return cellPane;
     }
 
     private String formatEffectiveValue(EffectiveValue effectiveValue) {

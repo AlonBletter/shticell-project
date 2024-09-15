@@ -9,6 +9,7 @@ import engine.sheet.coordinate.Coordinate;
 import gui.common.ShticellResourcesConstants;
 import gui.center.CenterController;
 import gui.header.HeaderController;
+import gui.left.LeftController;
 import gui.singlecell.CellModel;
 import gui.task.LoadFileTask;
 import gui.task.LoadingDialogController;
@@ -20,6 +21,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -39,13 +41,16 @@ public class AppController {
 
     @FXML private GridPane headerComponent;
     @FXML private HeaderController headerComponentController;
+    @FXML private VBox leftComponent;
+    @FXML private LeftController leftComponentController;
     @FXML private BorderPane rootPane;
 
     @FXML
     public void initialize() {
-        if (headerComponentController != null && centerComponentController != null) {
+        if (headerComponentController != null && centerComponentController != null && leftComponentController != null) {
             headerComponentController.setMainController(this);
             centerComponentController.setMainController(this);
+            leftComponentController.setMainController(this);
         }
     }
 

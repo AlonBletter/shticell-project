@@ -1,7 +1,19 @@
-.column-title {
-    -fx-font-weight: bold;
+.row-title, .column-title {
+    -fx-font-size: 14px;            /* Smaller font for better alignment */
+    -fx-padding: 0;                 /* Reset padding to allow precise control */
+    -fx-alignment: center;          /* Center text within the label */
+    -fx-background-color: #f8f8f8;  /* Light background for contrast */
+    -fx-border-color: #b0b0b0;      /* Subtle border */
+    -fx-border-width: 1px;
+    -fx-text-fill: #333333;         /* Darker text color */
+    -fx-cursor: hand;               /* Pointer cursor to show it's clickable */
 }
 
-.row-title {
-    -fx-font-weight: bold;
+.row-title:hover, .column-title:hover {
+    -fx-background-color: #d0d0d0;  /* Hover effect for visual feedback */
+}
+
+
+.selected-row, .selected-column {
+    -fx-background-color: lightblue;
 }

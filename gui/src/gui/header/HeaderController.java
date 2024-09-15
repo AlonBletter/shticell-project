@@ -1,5 +1,6 @@
 package gui.header;
 
+import dto.CellDTO;
 import engine.Engine;
 import engine.sheet.coordinate.Coordinate;
 import gui.app.AppController;

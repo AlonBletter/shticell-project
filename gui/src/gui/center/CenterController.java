@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+//TODO consider moving select to the app controller instead of here.
+
 public class CenterController {
     private final static int ROW_AND_COLUMN_SIZE = 30;
     private AppController mainController;
@@ -127,7 +129,7 @@ public class CenterController {
     }
 
     private void selectRow(int rowIndex) {
-        clearSelection();
+        mainController.setSelectedRow(selectedCells);
 
         // Loop through each column for the given row
         for (int col = 1; col <= numOfColumns; col++) {
@@ -140,7 +142,7 @@ public class CenterController {
         }
     }
     private void selectColumn(int colIndex) {
-        clearSelection();
+        mainController.setSelectedColumn(selectedCells);
 
         // Loop through each row for the given column
         for (int row = 1; row <= numOfRows; row++) {
@@ -153,11 +155,12 @@ public class CenterController {
         }
     }
 
-    private void clearSelection() {
+    public void clearSelection() {
         for (SingleCellController cellController : selectedCells) {
             cellController.getCellNode().getStyleClass().removeAll("selected-row", "selected-column");
         }
-        selectedCells.clear(); // Clear the list after removing styles
+
+        selectedCells.clear();
     }
 
     private String getColumnLetter(int columnNumber) {
@@ -173,7 +176,7 @@ public class CenterController {
             centerGrid.getColumnConstraints().add(colConstraints);
         }
     }
-
+    //TODO needs a little figuring out, maybe the for-loop is redundant.
     private void setRowsConstrains() {
         for (int row = 0; row <= numOfRows; row++) {
             RowConstraints rowConstraints = new RowConstraints();

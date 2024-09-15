@@ -17,6 +17,19 @@ public class SingleCellController extends CellModel {
     @FXML private AnchorPane cellPane;
     @FXML private Label valueLabel;
 
+    public SingleCellController() {
+        super();
+    }
+
+    @FXML
+    private void initialize() {
+        valueLabel.textProperty().bind(effectiveValue);
+    }
+
+    public void clearSelection() {
+        cellPane.getStyleClass().remove("selected-cell");
+    }
+
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
     }
@@ -24,12 +37,9 @@ public class SingleCellController extends CellModel {
     @FXML
     void onCellClickUpdate(MouseEvent event) {
         if (mainController != null) {
-            mainController.updateHeaderOnCellClick(this);
+            cellPane.getStyleClass().add("selected-cell");
+            mainController.setSelectedCell(this);
         }
-    }
-
-    public SingleCellController() {
-        super();
     }
 
     public void setDataFromDTO(Coordinate coordinate, CellDTO cell) {
@@ -44,11 +54,6 @@ public class SingleCellController extends CellModel {
             setOriginalValue("");
             setLastModifiedVersion("1"); //TODO PROBABLY AFTER REMOVING SINGLETON THERE WILL BE SOMETHING THERE
         }
-    }
-
-    @FXML
-    private void initialize() {
-        valueLabel.textProperty().bind(effectiveValue);
     }
 
     public Node getCellNode() {

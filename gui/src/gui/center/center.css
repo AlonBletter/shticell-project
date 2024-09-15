@@ -1,19 +1,60 @@
+.center-grid {
+    -fx-background-color: #ffffff; /* Clean white background */
+    -fx-border-color: #d0d0d0; /* Light gray border */
+    -fx-border-width: 1px; /* Border around the grid */
+    -fx-padding: 0; /* No extra padding */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0.5, 0, 0); /* Subtle shadow around grid */
+}
+
+/* General Cell Styling */
+.cell {
+    -fx-background-color: #ffffff; /* White background */
+    -fx-border-color: #e0e0e0; /* Light gray border for cells */
+    -fx-border-width: 1px; /* Border width */
+    -fx-padding: 6px; /* Padding inside cells */
+    -fx-alignment: center; /* Centered content */
+    -fx-font-size: 14px; /* Larger font size for readability */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0.5, 0, 0); /* Light shadow for depth */
+}
+
+.cell:hover {
+    -fx-background-color: #f9f9f9; /* Very light gray on hover */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0.5, 0, 0); /* Subtle shadow on hover */
+}
+
+/* Selected Cell Styling */
+.cell.selected {
+    -fx-background-color: #b3e0ff; /* Light blue for selected cells */
+    -fx-border-color: #0056a0; /* Darker blue border */
+    -fx-border-width: 2px; /* Border width */
+}
+
+/* Title Row and Column Styling */
+.title {
+    -fx-background-color: #f0f0f0; /* Soft gray background */
+    -fx-border-color: #c0c0c0; /* Light gray border */
+    -fx-border-width: 1px; /* Border width */
+    -fx-padding: 6px; /* Padding inside title cells */
+    -fx-alignment: center; /* Centered title text */
+    -fx-font-size: 16px; /* Larger font size for titles */
+    -fx-text-fill: #2c2c2c; /* Darker text color */
+}
+
+/* Row and Column Titles */
 .row-title, .column-title {
-    -fx-font-size: 14px;            /* Smaller font for better alignment */
-    -fx-padding: 0;                 /* Reset padding to allow precise control */
-    -fx-alignment: center;          /* Center text within the label */
-    -fx-background-color: #f8f8f8;  /* Light background for contrast */
-    -fx-border-color: #b0b0b0;      /* Subtle border */
+    -fx-font-size: 16px;
+    -fx-padding: 8px;
+    -fx-alignment: center;
+    -fx-background-color: #f0f0f0; /* Soft gray background for better contrast */
+    -fx-border-color: #c0c0c0; /* Light gray border for a subtle distinction */
     -fx-border-width: 1px;
-    -fx-text-fill: #333333;         /* Darker text color */
-    -fx-cursor: hand;               /* Pointer cursor to show it's clickable */
+    -fx-text-fill: #2c2c2c; /* Darker text color for better readability */
+    -fx-cursor: hand;
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.2), 4, 0.5, 0, 0); /* Soft shadow for depth */
 }
 
 .row-title:hover, .column-title:hover {
-    -fx-background-color: #d0d0d0;  /* Hover effect for visual feedback */
-}
-
-
-.selected-row, .selected-column {
-    -fx-background-color: lightblue;
+    -fx-background-color: #e0e0e0; /* Slightly darker gray on hover */
+    -fx-border-color: #a0a0a0; /* Darker border on hover */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 6, 0.5, 0, 0); /* Enhanced shadow effect on hover */
 }

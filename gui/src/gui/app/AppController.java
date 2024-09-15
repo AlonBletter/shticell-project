@@ -11,8 +11,11 @@ import gui.center.CenterController;
 import gui.header.HeaderController;
 import gui.left.LeftController;
 import gui.singlecell.CellModel;
+import gui.singlecell.SingleCellController;
 import gui.task.LoadFileTask;
 import gui.task.LoadingDialogController;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -30,20 +33,24 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class AppController {
-    private Engine engine = new EngineImpl();
-    private CenterController centerComponentController;
-    private Stage primaryStage;
-    private Task<Boolean> currentRunningTask;
-
-    public AppController() {
-        this.centerComponentController = new CenterController();
-    }
-
     @FXML private GridPane headerComponent;
     @FXML private HeaderController headerComponentController;
     @FXML private VBox leftComponent;
     @FXML private LeftController leftComponentController;
     @FXML private BorderPane rootPane;
+
+    private Engine engine;
+    private CenterController centerComponentController;
+    private Stage primaryStage;
+    private Task<Boolean> currentRunningTask;
+    private SingleCellController selectedCell;
+    private List<SingleCellController> selectedRow;
+    private List<SingleCellController> selectedColumn;
+
+    public AppController() {
+        engine = new EngineImpl();
+        this.centerComponentController = new CenterController();
+    }
 
     @FXML
     public void initialize() {
@@ -54,11 +61,40 @@ public class AppController {
         }
     }
 
+    public void setSelectedCell(SingleCellController selectedCell) {
+        clearSelections();
+        this.selectedCell = selectedCell;
+        updateHeaderOnCellClick(); //TODO CHANGE TO UPDATEUI?
+    }
+
+    public void setSelectedRow(List<SingleCellController> selectedRow) {
+        clearSelections();
+        this.selectedRow = selectedRow;
+    }
+
+    public void setSelectedColumn(List<SingleCellController> selectedColumn) {
+        clearSelections();
+        this.selectedColumn = selectedColumn;
+    }
+
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
 
         if(headerComponentController != null) {
             headerComponentController.setPrimaryStage(primaryStage);
+        }
+    }
+
+    public void updateHeaderOnCellClick() {
+        headerComponentController.updateHeaderCellData(selectedCell);
+        headerComponentController.requestActionLineFocus();
+    }
+
+    private void clearSelections() {
+        centerComponentController.clearSelection();
+
+        if(selectedCell != null) {
+            selectedCell.clearSelection();
         }
     }
 
@@ -86,8 +122,8 @@ public class AppController {
             showErrorAlert("File Loading Error", "An error occurred while opening the file dialog.", e.getMessage());
         }
     }
-
     //TODO is this good?
+
     private Consumer<Exception> getLoadFileConsumerFailure() {
         return (exception) -> {
             showErrorAlert("File Loading Error", "An error occurred while loading the file.", exception.getMessage());
@@ -124,11 +160,6 @@ public class AppController {
         } catch (Exception e) {
             showErrorAlert("Updating Cell Error", "An error occurred while updating the cell.", e.getMessage());
         }
-    }
-
-    public void updateHeaderOnCellClick(CellModel selectedCell) {
-        headerComponentController.updateHeaderCellData(selectedCell);
-        headerComponentController.requestActionLineFocus();
     }
 
     public int getSheetCurrentVersion() {

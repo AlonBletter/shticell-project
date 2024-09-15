@@ -3,8 +3,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="cellPane" onMouseClicked="#onCellClickUpdate" style="-fx-border-color: grey; -fx-border-width: 1;" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.singlecell.SingleCellController">
+<AnchorPane fx:id="cellPane" onMouseClicked="#onCellClickUpdate" styleClass="single-cell" stylesheets="@singleCell.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.singlecell.SingleCellController">
    <children>
-      <Label fx:id="valueLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0" prefWidth="22.0" text="Cell" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <Label fx:id="valueLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="19.0" prefWidth="22.0" styleClass="value-label" stylesheets="@singleCell.css" text="Cell" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
    </children>
 </AnchorPane>

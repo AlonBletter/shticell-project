@@ -10,26 +10,20 @@ import gui.common.ShticellResourcesConstants;
 import gui.center.CenterController;
 import gui.header.HeaderController;
 import gui.left.LeftController;
-import gui.singlecell.CellModel;
 import gui.singlecell.SingleCellController;
 import gui.task.LoadFileTask;
 import gui.task.LoadingDialogController;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -54,27 +48,15 @@ public class AppController {
     private List<SingleCellController> selectedRow;
     private List<SingleCellController> selectedColumn;
     private SimpleBooleanProperty isFileLoaded;
-    private SimpleDoubleProperty columnWidthUnits;
-    private SimpleDoubleProperty rowHeightUnits;
 
     public AppController() {
         engine = new EngineImpl();
         this.centerComponentController = new CenterController();
         this.isFileLoaded = new SimpleBooleanProperty(false);
-        this.columnWidthUnits = new SimpleDoubleProperty();
-        this.rowHeightUnits = new SimpleDoubleProperty();
     }
 
     public SimpleBooleanProperty isFileLoadedProperty() {
         return isFileLoaded;
-    }
-
-    public SimpleDoubleProperty columnWidthUnitsProperty() {
-        return columnWidthUnits;
-    }
-
-    public SimpleDoubleProperty rowHeightUnitsProperty() {
-        return rowHeightUnits;
     }
 
     @FXML
@@ -90,6 +72,7 @@ public class AppController {
         clearSelections();
         this.selectedCell = selectedCell;
         updateHeaderOnCellClick(); //TODO CHANGE TO UPDATE UI?
+        leftComponentController.updateView(selectedCell.getAlignment());
     }
 
     public void setSelectedRow(List<SingleCellController> selectedRow) {
@@ -109,6 +92,14 @@ public class AppController {
             headerComponentController.setPrimaryStage(primaryStage);
             leftComponentController.setPrimaryStage(primaryStage);
         }
+    }
+
+    public double getCurrentSelectedRowHeight() {
+        return centerComponentController.getRowHeight(selectedCell.getCoordinate().getRow());
+    }
+
+    public double getCurrentSelectedColumnWidth() {
+        return centerComponentController.getColumnWidth(selectedCell.getCoordinate().getColumn());
     }
 
     public void updateHeaderOnCellClick() {
@@ -258,5 +249,9 @@ public class AppController {
         }
 
         centerComponentController.updateRowHeight(rowIndex, result);
+    }
+
+    public void alignColumnCells(Pos pos) {
+        centerComponentController.alignColumnCells(selectedCell.getCoordinate().getColumn(), pos);
     }
 }

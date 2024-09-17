@@ -6,6 +6,7 @@ import engine.sheet.coordinate.Coordinate;
 import engine.sheet.effectivevalue.EffectiveValue;
 import gui.app.AppController;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -40,6 +41,14 @@ public class SingleCellController extends CellModel {
             cellPane.getStyleClass().add("selected-cell");
             mainController.setSelectedCell(this);
         }
+    }
+
+    public void setAlignment(Pos pos) {
+        valueLabel.setAlignment(pos);
+    }
+
+    public Pos getAlignment() {
+        return valueLabel.getAlignment();
     }
 
     public void setDataFromDTO(Coordinate coordinate, CellDTO cell) {

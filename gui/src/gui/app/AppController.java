@@ -14,6 +14,10 @@ import gui.singlecell.CellModel;
 import gui.singlecell.SingleCellController;
 import gui.task.LoadFileTask;
 import gui.task.LoadingDialogController;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -22,8 +26,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -37,7 +43,8 @@ public class AppController {
     @FXML private HeaderController headerComponentController;
     @FXML private VBox leftComponent;
     @FXML private LeftController leftComponentController;
-    @FXML private BorderPane rootPane;
+    @FXML private BorderPane borderPane;
+    @FXML private ScrollPane scrollPane;
 
     private Engine engine;
     private CenterController centerComponentController;
@@ -46,10 +53,28 @@ public class AppController {
     private SingleCellController selectedCell;
     private List<SingleCellController> selectedRow;
     private List<SingleCellController> selectedColumn;
+    private SimpleBooleanProperty isFileLoaded;
+    private SimpleDoubleProperty columnWidthUnits;
+    private SimpleDoubleProperty rowHeightUnits;
 
     public AppController() {
         engine = new EngineImpl();
         this.centerComponentController = new CenterController();
+        this.isFileLoaded = new SimpleBooleanProperty(false);
+        this.columnWidthUnits = new SimpleDoubleProperty();
+        this.rowHeightUnits = new SimpleDoubleProperty();
+    }
+
+    public SimpleBooleanProperty isFileLoadedProperty() {
+        return isFileLoaded;
+    }
+
+    public SimpleDoubleProperty columnWidthUnitsProperty() {
+        return columnWidthUnits;
+    }
+
+    public SimpleDoubleProperty rowHeightUnitsProperty() {
+        return rowHeightUnits;
     }
 
     @FXML
@@ -64,7 +89,7 @@ public class AppController {
     public void setSelectedCell(SingleCellController selectedCell) {
         clearSelections();
         this.selectedCell = selectedCell;
-        updateHeaderOnCellClick(); //TODO CHANGE TO UPDATEUI?
+        updateHeaderOnCellClick(); //TODO CHANGE TO UPDATE UI?
     }
 
     public void setSelectedRow(List<SingleCellController> selectedRow) {
@@ -80,8 +105,9 @@ public class AppController {
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
 
-        if(headerComponentController != null) {
+        if(headerComponentController != null && leftComponentController != null) {
             headerComponentController.setPrimaryStage(primaryStage);
+            leftComponentController.setPrimaryStage(primaryStage);
         }
     }
 
@@ -136,8 +162,9 @@ public class AppController {
             try {
                 engine.loadSystemSettingsFromFile(filePath);
                 centerComponentController.initializeGrid(engine.getSpreadsheet());
-                rootPane.setCenter(centerComponentController.getCenterGrid());
-                headerComponentController.enableButtonsAfterLoad();
+                borderPane.setCenter(centerComponentController.getCenterGrid());
+                headerComponentController.enableButtonsAfterLoad(); // TODO not enables anymore, only refresh combo box
+                isFileLoaded.set(true);
             } catch (InvalidCellBoundsException e) {
                 handleInvalidCellBoundException(e);
             } catch (Exception e) { //TODO think about closing both windows when error occurs.
@@ -207,5 +234,29 @@ public class AppController {
         showErrorAlert("Invalid cells bounds", "An error occurred while processing the loaded file..",
                 message + "Expected column between A-" + sheetColumnRange + " and row between 1-" + sheetNumOfRows + "\n" +
                 "But received column [" + cellColumnChar + "] and row [" + coordinate.getRow() + "]");
+    }
+
+    public void updateColumnWidth(Double result) {
+        int columnIndex;
+
+        if(selectedCell != null) {
+            columnIndex = selectedCell.getCoordinate().getColumn();
+        } else {
+            columnIndex = selectedColumn.getFirst().getCoordinate().getColumn();
+        }
+
+        centerComponentController.updateColumnWidth(columnIndex, result);
+    }
+
+    public void updateRowHeight(Double result) {
+        int rowIndex;
+
+        if(selectedCell != null) {
+            rowIndex = selectedCell.getCoordinate().getRow();
+        } else {
+            rowIndex = selectedRow.getFirst().getCoordinate().getRow();
+        }
+
+        centerComponentController.updateRowHeight(rowIndex, result);
     }
 }

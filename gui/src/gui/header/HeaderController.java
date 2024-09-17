@@ -9,8 +9,10 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -44,12 +46,23 @@ public class HeaderController {
         versionNumberList = FXCollections.observableArrayList();
     }
 
+    public void setMainController(AppController mainController) {
+        this.mainController = mainController;
+        isFileLoaded.bind(mainController.isFileLoadedProperty());
+    }
+
     @FXML
     private void initialize() {
         loadedFilePathLabel.textProperty().bind(filePath);
         actionLineTextField.disableProperty().bind(isFileLoaded.not());
         updateValueButton.disableProperty().bind(isFileLoaded.not());
         initializeVersionSelectorComboBox();
+
+        actionLineTextField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                updateValueButton.fire(); // Trigger the button action
+            }
+        });
     }
 
     private void initializeVersionSelectorComboBox() {
@@ -88,17 +101,16 @@ public class HeaderController {
         originalCellValueLabel.setText("");
     }
 
+
+    // TODO change this maybe?
     public void enableButtonsAfterLoad() {
-        isFileLoaded.set(true);
+        //isFileLoaded.set(true);
+        versionSelectorComboBox.getItems().clear();
         refreshComboBoxVersion();
     }
 
     public void refreshComboBoxVersion() { //TODO find a better way...
         versionNumberList.add(String.valueOf(mainController.getSheetCurrentVersion()));
-    }
-
-    public void setMainController(AppController mainController) {
-        this.mainController = mainController;
     }
 
     public void setPrimaryStage(Stage primaryStage) {

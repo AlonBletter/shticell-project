@@ -1,0 +1,57 @@
+.gridPane {
+    /* Soft, light background with subtle depth */
+    -fx-background-color: #e0e0e0; /* Light gray */
+
+    /* Adding subtle shadows for a neumorphic effect */
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 8, 0.5, 0, 1);
+
+    /* Optional: Light border to enhance neumorphic effect */
+    -fx-border-color: #d0d0d0; /* Light gray */
+    -fx-border-width: 1px;
+}
+
+.button {
+    /* Background gradient: from #67EE75 (0%) to #11B622 (100%) */
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #67EE75, #11B622);
+
+    /* Border (stroke) gradient inside the button */
+    -fx-border-color: linear-gradient(from 0% 100% to 0% 0%, #11B622, #67EE75);
+
+    -fx-border-width: 2px; /* Border thickness */
+    -fx-background-radius: 10px; /* Rounded corners for the background */
+    -fx-border-radius: 13px; /* Make border slightly smaller for inside effect */
+
+    /* Inset the background and border to simulate an inside stroke */
+    -fx-background-insets: 2; /* Push the background in by 2px */
+    -fx-border-insets: 2; /* Push the border inside */
+
+    -fx-text-fill: white; /* Text color */
+    -fx-font-weight: bold; /* Make text bold */
+
+    /* Add a slight shadow for a lifted effect */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 3, 0, 0, 1);
+}
+
+/* Hover state */
+.button:hover {
+    /* Slightly lighter background for hover state */
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #76F485, #22C232);
+
+    /* Slightly lighter border gradient */
+    -fx-border-color: linear-gradient(from 0% 100% to 0% 0%, #22C232, #76F485);
+
+    /* Increase the shadow for a more noticeable hover effect */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 4, 0, 0, 1.5);
+}
+
+/* Pressed state */
+.button:pressed {
+    /* Darker background for pressed state */
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #56c964, #0e8e1b);
+
+    /* Darker border gradient */
+    -fx-border-color: linear-gradient(from 0% 100% to 0% 0%, #0e8e1b, #56c964);
+
+    /* Reduced shadow to simulate pressing in */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 2, 0, 0, 0.5);
+}

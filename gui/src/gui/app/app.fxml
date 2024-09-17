@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="527.0" prefWidth="920.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.app.AppController">
-    <top>
-        <fx:include fx:id="headerComponent" source="../header/header.fxml" />
-    </top>
-   <left>
-      <fx:include fx:id="leftComponent" source="../left/left.fxml" />
-   </left>
-</BorderPane>
+
+<ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.app.AppController">
+   <content>
+      <BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="527.0" minWidth="920.0" prefHeight="527.0" prefWidth="920.0">
+          <top>
+              <fx:include fx:id="headerComponent" minHeight="-Infinity" minWidth="-Infinity" source="../header/header.fxml" />
+          </top>
+         <left>
+            <fx:include fx:id="leftComponent" minHeight="-Infinity" minWidth="-Infinity" source="../left/left.fxml" />
+         </left>
+      </BorderPane>
+   </content>
+</ScrollPane>

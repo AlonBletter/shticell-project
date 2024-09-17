@@ -43,7 +43,7 @@
 /* Row and Column Titles */
 .row-title, .column-title {
     -fx-font-size: 16px;
-    -fx-padding: 8px;
+    /*-fx-padding: 8px;*/
     -fx-alignment: center;
     -fx-background-color: #f0f0f0; /* Soft gray background for better contrast */
     -fx-border-color: #c0c0c0; /* Light gray border for a subtle distinction */

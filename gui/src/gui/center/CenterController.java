@@ -7,6 +7,9 @@ import engine.sheet.coordinate.CoordinateFactory;
 import gui.common.ShticellResourcesConstants;
 import gui.app.AppController;
 import gui.singlecell.SingleCellController;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;
@@ -22,6 +25,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 //TODO consider moving select to the app controller instead of here.
 
@@ -31,18 +35,29 @@ public class CenterController {
     private GridPane centerGrid;
     private ObservableMap<Coordinate, SingleCellController> gridCells;
     private List<SingleCellController> selectedCells;
+    private Map<String, Label> columnTitles;
+    private Map<Integer, Label> rowTitles;
     private int numOfRows;
     private int numOfColumns;
-    private int rowHeightUnits;
-    private int columnWidthUnits;
+    private SimpleDoubleProperty rowHeightUnits;
+    private SimpleDoubleProperty columnWidthUnits;
 
     public CenterController() {
         this.gridCells = FXCollections.observableMap(new HashMap<>());
         selectedCells = new LinkedList<>();
+        columnTitles = new HashMap<>();
+        rowTitles = new HashMap<>();
+        rowHeightUnits = new SimpleDoubleProperty();
+        columnWidthUnits = new SimpleDoubleProperty();
     }
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
+
+        if (mainController != null) {
+            mainController.columnWidthUnitsProperty().bind(columnWidthUnits);
+            mainController.rowHeightUnitsProperty().bind(rowHeightUnits);
+        }
     }
 
     public GridPane getCenterGrid() {
@@ -52,8 +67,8 @@ public class CenterController {
     public void initializeGrid(SheetDTO sheet) {
         numOfRows = sheet.numOfRows();
         numOfColumns = sheet.numOfColumns();
-        rowHeightUnits = sheet.rowHeightUnits();
-        columnWidthUnits = sheet.columnWidthUnits();
+        rowHeightUnits.setValue(sheet.rowHeightUnits());
+        columnWidthUnits.setValue(sheet.columnWidthUnits());
 
         gridPaneReset();
         setRowsConstrains();
@@ -82,6 +97,7 @@ public class CenterController {
         }
 
         centerGrid.getStylesheets().add(getClass().getResource("/gui/center/center.css").toExternalForm());
+        gridCells.get(CoordinateFactory.createCoordinate(1, 1)).onCellClickUpdate(null);
     }
 
     private void gridPaneReset() {
@@ -92,17 +108,19 @@ public class CenterController {
     }
 
     private void initializeRowsTitle() {
+        double rowHeightUnitsValue = rowHeightUnits.getValue();
+
         for (int row = 1; row <= numOfRows; row++) {
             Label rowTitle = new Label(String.valueOf(row));
             rowTitle.getStyleClass().add("row-title");
-            rowTitle.setMinHeight(rowHeightUnits);   // Match the cell height
-            rowTitle.setMaxHeight(rowHeightUnits);   // Keep the label's size consistent
-            rowTitle.setPrefHeight(rowHeightUnits);  // Ensure uniform height
-            rowTitle.setMinWidth(ROW_AND_COLUMN_SIZE);
+            rowTitle.setMinHeight(0);   // Match the cell height
+            rowTitle.setMaxHeight(rowHeightUnitsValue);   // Keep the label's size consistent
+            rowTitle.setPrefHeight(rowHeightUnitsValue);  // Ensure uniform height
+            rowTitle.setPrefWidth(ROW_AND_COLUMN_SIZE);
             // Make row clickable to select
             final int finalRow = row;  // Use 'final' for the lambda
             rowTitle.setOnMouseClicked(e -> selectRow(finalRow));
-
+            rowTitles.put(row, rowTitle);
             centerGrid.add(rowTitle, 0, row);
             GridPane.setHalignment(rowTitle, HPos.RIGHT);
             GridPane.setValignment(rowTitle, VPos.CENTER);
@@ -110,18 +128,21 @@ public class CenterController {
     }
 
     private void initializeColumnsTitle() {
+        double columnWidthUnitsValue = columnWidthUnits.getValue();
+
         for (int col = 1; col <= numOfColumns; col++) {
-            Label columnTitle = new Label(getColumnLetter(col));
+            String columnLetter = getColumnLetter(col);
+            Label columnTitle = new Label(columnLetter);
             columnTitle.getStyleClass().add("column-title");
-            columnTitle.setMinWidth(columnWidthUnits);   // Match the cell width
-            columnTitle.setMaxWidth(columnWidthUnits);   // Keep the label's size consistent
-            columnTitle.setPrefWidth(columnWidthUnits);  // Ensure uniform width
-            columnTitle.setMinHeight(ROW_AND_COLUMN_SIZE);
+            columnTitle.setMinWidth(0);   // Match the cell width
+            columnTitle.setMaxWidth(columnWidthUnitsValue);   // Keep the label's size consistent
+            columnTitle.setPrefWidth(columnWidthUnitsValue);  // Ensure uniform width
+            columnTitle.setPrefHeight(ROW_AND_COLUMN_SIZE);
 
             // Make column clickable to select
             final int finalCol = col;  // Use 'final' for the lambda
             columnTitle.setOnMouseClicked(e -> selectColumn(finalCol));
-
+            columnTitles.put(columnLetter, columnTitle);
             centerGrid.add(columnTitle, col, 0);
             GridPane.setHalignment(columnTitle, HPos.CENTER);
             GridPane.setValignment(columnTitle, VPos.CENTER);
@@ -167,24 +188,33 @@ public class CenterController {
         return String.valueOf((char) ('A' + columnNumber - 1));
     }
 
-    private void setColumnsConstraints() {
-        for (int col = 0; col <= numOfColumns; col++) {
-            ColumnConstraints colConstraints = new ColumnConstraints();
-            colConstraints.setMinWidth(columnWidthUnits);
-            colConstraints.setMaxWidth(columnWidthUnits);
-            colConstraints.setPrefWidth(columnWidthUnits);
+    public void setColumnsConstraints() {
+        double columnWidthUnitsValue = columnWidthUnits.getValue();
+
+        ColumnConstraints colConstraints = new ColumnConstraints();
+        colConstraints.setMinWidth(0);
+        colConstraints.setMaxWidth(columnWidthUnitsValue);
+        colConstraints.setPrefWidth(columnWidthUnitsValue);
+
+        for (int col = 0; col < numOfColumns + 1; col++) {
             centerGrid.getColumnConstraints().add(colConstraints);
         }
+        centerGrid.getColumnConstraints().set(0, new ColumnConstraints(ROW_AND_COLUMN_SIZE));
     }
-    //TODO needs a little figuring out, maybe the for-loop is redundant.
+
     private void setRowsConstrains() {
-        for (int row = 0; row <= numOfRows; row++) {
-            RowConstraints rowConstraints = new RowConstraints();
-            rowConstraints.setMinHeight(rowHeightUnits);
-            rowConstraints.setMaxHeight(rowHeightUnits);
-            rowConstraints.setPrefHeight(rowHeightUnits);
+        double rowHeightUnitsValue = rowHeightUnits.getValue();
+
+        RowConstraints rowConstraints = new RowConstraints();
+        rowConstraints.setMinHeight(0);
+        rowConstraints.setMaxHeight(rowHeightUnitsValue);
+        rowConstraints.setPrefHeight(rowHeightUnitsValue);
+
+        for (int row = 0; row < numOfRows + 1; row++) {
             centerGrid.getRowConstraints().add(rowConstraints);
         }
+
+        centerGrid.getRowConstraints().set(0, new RowConstraints(ROW_AND_COLUMN_SIZE));
     }
 
     public void updateCells(List<CellDTO> cellDTOS) {
@@ -195,5 +225,27 @@ public class CenterController {
                 cellController.setDataFromDTO(coordinate, cellDTO);
             }
         }
+    }
+
+    public void updateColumnWidth(int columnIndex, double newWidth) {
+        ColumnConstraints columnConstraints = new ColumnConstraints();
+        columnConstraints.setMinWidth(newWidth);
+        columnConstraints.setMaxWidth(newWidth);
+        columnConstraints.setPrefWidth(newWidth);
+
+        // Update the specific column
+        centerGrid.getColumnConstraints().set(columnIndex, columnConstraints);
+        columnTitles.get(getColumnLetter(columnIndex)).setPrefWidth(newWidth);
+    }
+
+    public void updateRowHeight(int rowIndex, double newHeight) {
+        RowConstraints rowConstraints = new RowConstraints();
+        rowConstraints.setMinHeight(newHeight);
+        rowConstraints.setMaxHeight(newHeight);
+        rowConstraints.setPrefHeight(newHeight);
+
+        // Update the specific row
+        centerGrid.getRowConstraints().set(rowIndex, rowConstraints);
+        rowTitles.get(rowIndex).setPrefHeight(newHeight);
     }
 }

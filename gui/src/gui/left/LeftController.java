@@ -29,6 +29,7 @@ public class LeftController {
     @FXML private HBox alignTogglesHBox;
     @FXML private ColorPicker backgroundColorPicker;
     @FXML private ColorPicker textColorPicker;
+    @FXML private Button resetStylingButton;
 
     private AppController mainController;
     private Stage primaryStage;
@@ -66,6 +67,11 @@ public class LeftController {
         textColorPicker.setOnAction(event -> {
             Color selectedColor = textColorPicker.getValue();
             mainController.updateCellTextColor(toHexString(selectedColor));
+        });
+
+        resetStylingButton.setOnAction(event -> {
+           mainController.updateCellBackgroundColor(null);
+           mainController.updateCellTextColor(null);
         });
     }
 

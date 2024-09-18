@@ -101,12 +101,16 @@ public class SingleCellController extends CellModel {
     public void updateBackgroundColor(String newColor) {
         if (newColor != null) {
             cellPane.setStyle("-fx-background-color: " + newColor);
+        } else {
+            cellPane.setStyle(null);
         }
     }
 
     public void updateTextColor(String newColor) {
         if (newColor != null) {
             valueLabel.setStyle("-fx-text-fill: " + newColor);
+        } else {
+            valueLabel.setStyle(null);
         }
     }
 }

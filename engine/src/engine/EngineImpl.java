@@ -129,22 +129,15 @@ public class EngineImpl implements Engine {
     @Override
     public void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor) {
         validateLoadedSheet();
-        Sheet currentVersion = versionManager.getCurrentVersionSheet().copySheet();
+        Sheet currentVersion = versionManager.getCurrentVersionSheet();
         currentVersion.updateCellBackgroundColor(cellToUpdateCoordinate, backgroundColor);
-        if (!currentVersion.getCell(cellToUpdateCoordinate).getStyle().equals(backgroundColor)) {
-            versionManager.addNewVersion(currentVersion);
-        }
     }
 
     @Override
     public void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor) {
         validateLoadedSheet();
-        Sheet currentVersion = versionManager.getCurrentVersionSheet().copySheet(); //TODO check if color is counted as update.
+        Sheet currentVersion = versionManager.getCurrentVersionSheet();
         currentVersion.updateCellTextColor(cellToUpdateCoordinate, textColor);
-
-        if (!currentVersion.getCell(cellToUpdateCoordinate).getStyle().equals(textColor)) {
-            versionManager.addNewVersion(currentVersion);
-        }
     }
 
     @Override

@@ -70,7 +70,7 @@ public class HeaderController {
         versionSelectorComboBox.disableProperty().bind(isFileLoaded.not());
 
         versionSelectorComboBox.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
+            if (!newValue.matches("\\d*")) { //TODO maybe disable the edit for the combobox
                 versionSelectorComboBox.getEditor().setText(newValue.replaceAll("\\D", ""));
             }
         });

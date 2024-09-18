@@ -41,7 +41,7 @@ public class HeaderController {
     private Stage primaryStage;
 
     public HeaderController() {
-        filePath = new SimpleStringProperty();
+        filePath = new SimpleStringProperty("File Path");
         isFileLoaded = new SimpleBooleanProperty(false);
         versionNumberList = FXCollections.observableArrayList();
     }

@@ -14,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -28,8 +29,6 @@ public class LeftController {
     @FXML private HBox alignTogglesHBox;
     @FXML private ColorPicker backgroundColorPicker;
     @FXML private ColorPicker textColorPicker;
-
-
 
     private AppController mainController;
     private Stage primaryStage;
@@ -57,6 +56,16 @@ public class LeftController {
             if (newToggle != null) {
                 newToggle.setSelected(true);
             }
+        });
+
+        backgroundColorPicker.setOnAction(event -> {
+            Color selectedColor = backgroundColorPicker.getValue();
+            mainController.updateCellBackgroundColor(toHexString(selectedColor));
+        });
+
+        textColorPicker.setOnAction(event -> {
+            Color selectedColor = textColorPicker.getValue();
+            mainController.updateCellTextColor(toHexString(selectedColor));
         });
     }
 
@@ -141,5 +150,14 @@ public class LeftController {
         } else {
             rightAlignToggle.setSelected(true);
         }
+    }
+
+
+
+    private String toHexString(Color color) {
+        return String.format("#%02X%02X%02X",
+                (int) (color.getRed() * 255),
+                (int) (color.getGreen() * 255),
+                (int) (color.getBlue() * 255));
     }
 }

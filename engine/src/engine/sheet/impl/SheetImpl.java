@@ -96,6 +96,18 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     @Override
+    public void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor) {
+        Cell cell = addNewCellIfEmptyCell(cellToUpdateCoordinate);
+        cell.setBackgroundColor(backgroundColor);
+    }
+
+    @Override
+    public void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor) {
+        Cell cell = addNewCellIfEmptyCell(cellToUpdateCoordinate);
+        cell.setTextColor(textColor);
+    }
+
+    @Override
     public void init(STLSheet sheetToInitFrom) {
         setName(sheetToInitFrom.getName());
         setNumberOfRows(sheetToInitFrom.getSTLLayout().getRows());

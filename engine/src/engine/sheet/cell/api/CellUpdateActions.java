@@ -6,4 +6,6 @@ public interface CellUpdateActions {
     void setOriginalValue(String value);
     void setEffectiveValue(EffectiveValue value);
     void setLastModifiedVersion(int value);
+    void setBackgroundColor(String backgroundColor);
+    void setTextColor(String textColor);
 }

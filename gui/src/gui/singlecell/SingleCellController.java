@@ -11,12 +11,15 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 
 public class SingleCellController extends CellModel {
     private AppController mainController;
 
-    @FXML private AnchorPane cellPane;
-    @FXML private Label valueLabel;
+    @FXML
+    private AnchorPane cellPane;
+    @FXML
+    private Label valueLabel;
 
     public SingleCellController() {
         super();
@@ -54,10 +57,12 @@ public class SingleCellController extends CellModel {
     public void setDataFromDTO(Coordinate coordinate, CellDTO cell) {
         setCoordinate(coordinate);
 
-        if(cell != null) {
+        if (cell != null) {
             setEffectiveValue(formatEffectiveValue(cell.effectiveValue()));
             setOriginalValue(cell.originalValue());
             setLastModifiedVersion(String.valueOf(cell.lastModifiedVersion()));
+            updateBackgroundColor(cell.cellStyle().getBackgroundColor());
+            updateTextColor(cell.cellStyle().getTextColor());
         } else {
             setEffectiveValue("");
             setOriginalValue("");
@@ -72,17 +77,17 @@ public class SingleCellController extends CellModel {
     private String formatEffectiveValue(EffectiveValue effectiveValue) {
         String formattedObject = effectiveValue.getValue().toString();
 
-        if(CellType.NUMERIC == effectiveValue.getCellType()) {
+        if (CellType.NUMERIC == effectiveValue.getCellType()) {
             double doubleValue = (Double) effectiveValue.getValue();
 
-            if(doubleValue % 1 == 0) {
+            if (doubleValue % 1 == 0) {
                 long longValue = (long) doubleValue;
 
                 formattedObject = String.format("%,d", longValue);
             } else {
                 formattedObject = String.format("%,.2f", doubleValue);
             }
-        } else if(CellType.BOOLEAN == effectiveValue.getCellType()) {
+        } else if (CellType.BOOLEAN == effectiveValue.getCellType()) {
             boolean booleanValue = (Boolean) effectiveValue.getValue();
 
             formattedObject = Boolean.toString(booleanValue).toUpperCase();
@@ -91,5 +96,17 @@ public class SingleCellController extends CellModel {
         }
 
         return formattedObject;
+    }
+
+    public void updateBackgroundColor(String newColor) {
+        if (newColor != null) {
+            cellPane.setStyle("-fx-background-color: " + newColor);
+        }
+    }
+
+    public void updateTextColor(String newColor) {
+        if (newColor != null) {
+            valueLabel.setStyle("-fx-text-fill: " + newColor);
+        }
     }
 }

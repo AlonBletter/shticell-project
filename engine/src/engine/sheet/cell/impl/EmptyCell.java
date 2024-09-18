@@ -1,5 +1,6 @@
 package engine.sheet.cell.impl;
 
+import engine.sheet.cell.api.CellStyle;
 import engine.sheet.cell.api.CellType;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.effectivevalue.EffectiveValue;
@@ -32,6 +33,11 @@ public enum EmptyCell implements Cell, Serializable {
     }
 
     @Override
+    public CellStyle getStyle() {
+        return null;
+    }
+
+    @Override
     public void setOriginalValue(String value) {
         throw new UnsupportedOperationException("Cannot modify an empty cell.");
     }
@@ -45,6 +51,17 @@ public enum EmptyCell implements Cell, Serializable {
     public void setLastModifiedVersion(int value) {
         throw new UnsupportedOperationException("Cannot modify an empty cell.");
     }
+
+    @Override
+    public void setBackgroundColor(String backgroundColor) {
+        throw new UnsupportedOperationException("Cannot modify an empty cell.");
+    }
+
+    @Override
+    public void setTextColor(String textColor) {
+        throw new UnsupportedOperationException("Cannot modify an empty cell.");
+    }
+
 
     @Override
     public String toString() {

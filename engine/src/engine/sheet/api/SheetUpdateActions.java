@@ -15,4 +15,7 @@ public interface SheetUpdateActions {
     void setRowHeightUnits(int rowHeightUnits);
     void setColumnWidthUnits(int columnWidthUnits);
     void init(STLSheet sheetToInitFrom);
+
+    void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor);
+    void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor);
 }

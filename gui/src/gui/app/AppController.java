@@ -187,7 +187,6 @@ public class AppController {
     public void displaySheetByVersion(int version) {
         try {
             SheetDTO sheetVersion = engine.getSheetByVersion(version);
-
             CenterController centerController = new CenterController();
             centerController.initializeGrid(sheetVersion);
 
@@ -253,5 +252,19 @@ public class AppController {
 
     public void alignColumnCells(Pos pos) {
         centerComponentController.alignColumnCells(selectedCell.getCoordinate().getColumn(), pos);
+    }
+
+    public void updateCellBackgroundColor(String newColor) {
+        Coordinate currentCellCoordinate = selectedCell.getCoordinate();
+
+        engine.updateCellBackgroundColor(currentCellCoordinate, newColor);
+        centerComponentController.updateCellBackgroundColor(currentCellCoordinate, newColor);
+    }
+
+    public void updateCellTextColor(String newColor) {
+        Coordinate currentCellCoordinate = selectedCell.getCoordinate();
+
+        engine.updateCellTextColor(currentCellCoordinate, newColor);
+        centerComponentController.updateCellTextColor(currentCellCoordinate, newColor);
     }
 }

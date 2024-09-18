@@ -11,6 +11,8 @@ public interface Engine {
     SheetDTO getSpreadsheet();
     CellDTO getCell(Coordinate cellToGetCoordinate);
     void updateCell(Coordinate cellToUpdateCoordinate, String newCellOriginalValue);
+    void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor);
+    void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor);
     int getCurrentVersionNumber();
     SheetDTO getSheetByVersion(int requestedVersionNumber);
     void writeSystemDataToFile(String filePath) throws IOException;

@@ -1,5 +1,6 @@
 package engine.sheet.cell.impl;
 
+import engine.sheet.cell.api.CellStyle;
 import engine.sheet.cell.api.CellType;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.effectivevalue.EffectiveValue;
@@ -13,19 +14,14 @@ public class CellImpl implements Cell, Serializable {
     private String originalValue;
     private EffectiveValue effectiveValue;
     private int lastModifiedVersion;
-
-    public CellImpl(Coordinate coordinate, String originalValue, EffectiveValue effectiveValue, int lastModifiedVersion) {
-        this.coordinate = coordinate;
-        this.originalValue = originalValue;
-        this.effectiveValue = effectiveValue;
-        this.lastModifiedVersion = lastModifiedVersion;
-    }
+    private CellStyle cellStyle;
 
     public CellImpl(Coordinate coordinate) {
         this.coordinate = coordinate;
         this.originalValue = "";
         this.effectiveValue = new EffectiveValueImpl(CellType.TEXT, "");
         this.lastModifiedVersion = 1;
+        this.cellStyle = new CellStyleImpl();
     }
 
     @Override
@@ -60,6 +56,21 @@ public class CellImpl implements Cell, Serializable {
     @Override
     public Coordinate getCoordinate() {
         return coordinate;
+    }
+
+    @Override
+    public CellStyle getStyle() {
+        return new CellStyleImpl(cellStyle.getBackgroundColor(), cellStyle.getTextColor());
+    }
+
+    @Override
+    public void setBackgroundColor(String backgroundColor) {
+        cellStyle.setBackgroundColor(backgroundColor);
+    }
+
+    @Override
+    public void setTextColor(String textColor) {
+        cellStyle.setTextColor(textColor);
     }
 
     @Override

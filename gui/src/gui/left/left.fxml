@@ -13,16 +13,21 @@
 <?import javafx.scene.paint.Color?>
 
 
-<VBox alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="459.0" prefWidth="193.0" spacing="20.0" stylesheets="@left.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.left.LeftController">
+<VBox alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="553.0" prefWidth="193.0" spacing="20.0" stylesheets="@left.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.left.LeftController">
    <padding>
       <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
    </padding>
    <children>
       <VBox alignment="CENTER" minHeight="0.0" minWidth="0.0" prefHeight="328.0" prefWidth="150.0" spacing="10.0">
          <children>
-            <Label text="Cell Styling" />
-            <Button fx:id="columnWidthButton" mnemonicParsing="false" onAction="#columnWidthButtonAction" prefWidth="150.0" text="Column Width" />
-            <Button fx:id="rowHeightButton" mnemonicParsing="false" onAction="#rowHeightButtonAction" prefHeight="25.0" prefWidth="150.0" text="Row Height" />
+            <Label prefHeight="25.0" prefWidth="150.0" text="Cell Styling" />
+            <VBox prefHeight="60.0" prefWidth="150.0" spacing="3.0">
+               <children>
+                  <Label text="Cell Dimensions" />
+                  <Button fx:id="columnWidthButton" alignment="TOP_LEFT" mnemonicParsing="false" onAction="#columnWidthButtonAction" prefWidth="150.0" text="Column Width" />
+                  <Button fx:id="rowHeightButton" alignment="TOP_LEFT" mnemonicParsing="false" onAction="#rowHeightButtonAction" prefHeight="25.0" prefWidth="150.0" text="Row Height" />
+               </children>
+            </VBox>
             <VBox>
                <children>
                   <Label text="Column Alignment" />
@@ -37,7 +42,7 @@
                               </ImageView>
                            </graphic>
                           </ToggleButton>
-                          <ToggleButton fx:id="centerAlignToggle" onAction="#centerAlignToggleAction" prefWidth="50.0" selected="true">
+                          <ToggleButton fx:id="centerAlignToggle" onAction="#centerAlignToggleAction" prefWidth="50.0">
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="25.0">
                                  <image>

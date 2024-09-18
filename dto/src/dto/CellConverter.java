@@ -2,6 +2,7 @@ package dto;
 
 import engine.sheet.cell.api.Cell;
 import engine.sheet.cell.impl.CellImpl;
+import engine.sheet.cell.impl.CellStyleImpl;
 import engine.sheet.coordinate.Coordinate;
 
 public class CellConverter {
@@ -11,7 +12,8 @@ public class CellConverter {
                 cell.getCoordinate(),
                 cell.getOriginalValue(),
                 cell.getEffectiveValue(),
-                cell.getLastModifiedVersion()
+                cell.getLastModifiedVersion(),
+                cell.getStyle()
         );
     }
 }

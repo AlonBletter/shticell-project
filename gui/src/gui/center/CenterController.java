@@ -21,6 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.util.*;
@@ -71,26 +72,44 @@ public class CenterController {
 
         for (int row = 1; row <= numOfRows; row++) {
             for (int col = 1; col <= numOfColumns; col++) {
-                try {
-                    FXMLLoader loader = new FXMLLoader();
-                    loader.setLocation(ShticellResourcesConstants.CELL_FXML_URL);
-                    Node singleCell = loader.load();
-                    SingleCellController cellController = loader.getController();
-
-                    Coordinate coordinate = CoordinateFactory.createCoordinate(row, col);
-                    CellDTO cell = sheet.activeCells().get(coordinate);
-                    cellController.setDataFromDTO(coordinate, cell);
-                    cellController.setMainController(mainController);
-                    gridCells.put(coordinate, cellController);
-                    centerGrid.add(singleCell, col, row);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                Coordinate coordinate = CoordinateFactory.createCoordinate(row, col);
+                CellDTO cell = sheet.activeCells().get(coordinate);
+                addSingleCell(coordinate, cell);
             }
         }
 
         centerGrid.getStylesheets().add(getClass().getResource("/gui/center/center.css").toExternalForm());
         gridCells.get(CoordinateFactory.createCoordinate(1, 1)).onCellClickUpdate(null);
+    }
+
+    private void addSingleCell(Coordinate coordinate, CellDTO cell) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(ShticellResourcesConstants.CELL_FXML_URL);
+            Node singleCell = loader.load();
+            SingleCellController cellController = loader.getController();
+
+            cellController.setDataFromDTO(coordinate, cell);
+            cellController.setMainController(mainController);
+            gridCells.put(coordinate, cellController);
+            centerGrid.add(singleCell, coordinate.getColumn(), coordinate.getRow());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateCellBackgroundColor(Coordinate coordinate, String newColor) {
+        SingleCellController cellController = gridCells.get(coordinate);
+        if (cellController != null) {
+            cellController.updateBackgroundColor(newColor);
+        }
+    }
+
+    public void updateCellTextColor(Coordinate coordinate, String newColor) {
+        SingleCellController cellController = gridCells.get(coordinate);
+        if (cellController != null) {
+            cellController.updateTextColor(newColor);
+        }
     }
 
     private void gridPaneReset() {

@@ -1,6 +1,6 @@
 .gridPane {
     /* Soft, light background with subtle depth */
-    -fx-background-color: #e0e0e0; /* Light gray */
+    -fx-background-color: #ffffff; /* Light gray */
 
     /* Adding subtle shadows for a neumorphic effect */
     -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 8, 0.5, 0, 1);
@@ -9,6 +9,67 @@
     -fx-border-color: #d0d0d0; /* Light gray */
     -fx-border-width: 1px;
 }
+
+.file-path-label {
+    -fx-background-color: rgba(0, 0, 0, 0.2);
+    -fx-background-radius: 10; /* Adjust radius as needed for rounded corners */
+    -fx-text-fill: rgba(0, 0, 0, 0.5); /* Black text with 50% opacity */
+    -fx-border-radius: 13px; /* Make border slightly smaller for inside effect */
+    -fx-font-weight: bold; /* Make text bold */
+}
+
+.combo-box {
+    /* Background gradient */
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #67EE75, #11B622);
+
+    /* Border gradient */
+    -fx-border-color: linear-gradient(from 0% 100% to 0% 0%, #11B622, #67EE75);
+    -fx-border-width: 2px;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+
+    /* Text and font styling */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    /* Add a slight shadow */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 3, 0, 0, 1);
+}
+
+/* Style for the arrow button (dropdown button) */
+.combo-box .arrow-button {
+    -fx-background-color: transparent; /* Remove the background */
+    -fx-border-width: 0; /* Remove border */
+    -fx-border-color: white; /* Add a white border to create separation */
+    -fx-padding: 0 8 0 8;
+}
+
+/* Add a small white line between the arrow and the editor */
+.combo-box .arrow-button .arrow {
+    -fx-border-color: white; /* Line color */
+    -fx-background-color: white;
+}
+
+/* Style for the editable text field within the ComboBox */
+.combo-box:editable .text-field {
+    -fx-background-color: white; /* White background for the editor */
+    -fx-border-color: transparent; /* Remove border from text field */
+    -fx-text-fill: black; /* Text color for visibility */
+    -fx-font-weight: bold; /* Font weight */
+    -fx-background-radius: 10px; /* Rounded corners for the editor */
+}
+
+/* Hover state */
+.combo-box:hover {
+    /* Slightly lighter background for hover state */
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #76F485, #22C232);
+
+    /* Slightly lighter border gradient */
+    -fx-border-color: linear-gradient(from 0% 100% to 0% 0%, #22C232, #76F485);
+
+    /* Increase the shadow for a more noticeable hover effect */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 4, 0, 0, 1.5);
+}
+
 
 .button {
     /* Background gradient: from #67EE75 (0%) to #11B622 (100%) */

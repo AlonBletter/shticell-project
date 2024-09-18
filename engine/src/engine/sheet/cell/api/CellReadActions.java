@@ -8,4 +8,5 @@ public interface CellReadActions {
     EffectiveValue getEffectiveValue();
     int getLastModifiedVersion();
     Coordinate getCoordinate();
+    CellStyle getStyle();
 }

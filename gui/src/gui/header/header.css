@@ -12,10 +12,20 @@
 
 .file-path-label {
     -fx-background-color: rgba(0, 0, 0, 0.2);
-    -fx-background-radius: 10; /* Adjust radius as needed for rounded corners */
+    -fx-background-radius: 20; /* Adjust radius as needed for rounded corners */
     -fx-text-fill: rgba(0, 0, 0, 0.5); /* Black text with 50% opacity */
     -fx-border-radius: 13px; /* Make border slightly smaller for inside effect */
     -fx-font-weight: bold; /* Make text bold */
+}
+
+.text-field {
+    -fx-background-color: white;
+    -fx-background-radius: 20; /* Adjust radius as needed for rounded corners */
+    -fx-text-fill: rgba(0, 0, 0, 0.8); /* Black text with 50% opacity */
+    -fx-border-radius: 13px; /* Make border slightly smaller for inside effect */
+    -fx-font-weight: bold; /* Make text bold */
+    -fx-border-color: black;
+    -fx-border-width: 1;
 }
 
 .combo-box {

@@ -8,6 +8,7 @@ import engine.sheet.cell.api.Cell;
 import engine.sheet.effectivevalue.EffectiveValueImpl;
 
 import java.io.Serializable;
+import java.util.List;
 
 public enum EmptyCell implements Cell, Serializable {
     INSTANCE;
@@ -38,6 +39,16 @@ public enum EmptyCell implements Cell, Serializable {
     }
 
     @Override
+    public List<Coordinate> getDependsOn() {
+        return List.of();
+    }
+
+    @Override
+    public List<Coordinate> getInfluenceOn() {
+        return List.of();
+    }
+
+    @Override
     public void setOriginalValue(String value) {
         throw new UnsupportedOperationException("Cannot modify an empty cell.");
     }
@@ -60,6 +71,16 @@ public enum EmptyCell implements Cell, Serializable {
     @Override
     public void setTextColor(String textColor) {
         throw new UnsupportedOperationException("Cannot modify an empty cell.");
+    }
+
+    @Override
+    public void setDependsOn(List<Coordinate> dependsOn) {
+
+    }
+
+    @Override
+    public void setInfluenceOn(List<Coordinate> influenceOn) {
+
     }
 
 

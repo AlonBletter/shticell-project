@@ -14,7 +14,7 @@ public interface SheetReadActions {
     int getColumnWidthUnits();
     int getNumberOfRows();
     int getNumberOfColumns();
-    Map<Coordinate, List<Coordinate>> getCellDependents();
-    Map<Coordinate, List<Coordinate>> getCellReferences();
+    Map<Coordinate, List<Coordinate>> getCellInfluenceOn();
+    Map<Coordinate, List<Coordinate>> getCellDependsOn();
     int getVersionNumber();
 }

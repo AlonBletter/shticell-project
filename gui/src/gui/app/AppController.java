@@ -168,11 +168,13 @@ public class AppController {
 
     public void updateCell(Coordinate cellToUpdateCoordinate, String newCellValue) {
         try {
+            int oldVersion = engine.getCurrentVersionNumber();
             engine.updateCell(cellToUpdateCoordinate, newCellValue);
-            List<CellDTO> lastModifiedCells = engine.getSpreadsheet().lastModifiedCells();
-            centerComponentController.updateCells(lastModifiedCells);
+            //List<CellDTO> lastModifiedCells = engine.getSpreadsheet().lastModifiedCells();
+            //centerComponentController.updateCells(lastModifiedCells);
 
-            if(!lastModifiedCells.isEmpty()) {
+            if(oldVersion != engine.getCurrentVersionNumber()) {
+                centerComponentController.updateCells(engine.getSpreadsheet());
                 headerComponentController.refreshComboBoxVersion();
             }
         } catch (Exception e) {

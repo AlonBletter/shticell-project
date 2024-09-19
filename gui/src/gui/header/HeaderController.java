@@ -67,6 +67,7 @@ public class HeaderController {
 
     private void initializeVersionSelectorComboBox() {
         versionSelectorComboBox.setItems(versionNumberList);
+        versionNumberList.addFirst("");
         versionSelectorComboBox.disableProperty().bind(isFileLoaded.not());
 
         versionSelectorComboBox.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
@@ -104,13 +105,14 @@ public class HeaderController {
 
     // TODO change this maybe?
     public void enableButtonsAfterLoad() {
-        //isFileLoaded.set(true);
         versionSelectorComboBox.getItems().clear();
         refreshComboBoxVersion();
     }
 
     public void refreshComboBoxVersion() { //TODO find a better way...
-        versionNumberList.add(String.valueOf(mainController.getSheetCurrentVersion()));
+        if (mainController.getSheetCurrentVersion() != 1) {
+            versionNumberList.add(String.valueOf(mainController.getSheetCurrentVersion() - 1));
+        }
     }
 
     public void setPrimaryStage(Stage primaryStage) {

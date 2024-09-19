@@ -24,12 +24,12 @@
     -fx-padding: 5px; /* Padding to match the SingleCell styling */
 }
 
-/* Value Label Styling */
-.single-cell .value-label {
-    -fx-font-size: 14px; /* Larger font size for better readability */
-    -fx-text-fill: #333333; /* Dark text color for contrast */
-    -fx-font-weight: bold; /* Bold font for emphasis */
-}
+/*!* Value Label Styling *!*/
+/*.single-cell .value-label {*/
+/*    -fx-font-size: 14px; !* Larger font size for better readability *!*/
+/*    -fx-text-fill: #333333; !* Dark text color for contrast *!*/
+/*    -fx-font-weight: bold; !* Bold font for emphasis *!*/
+/*}*/
 
 
 
@@ -47,4 +47,18 @@
     -fx-border-color: #0056a0; /* Darker blue border */
     -fx-border-width: 3px; /* Thicker border */
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0.5, 0, 0); /* Strong shadow */
+}
+
+.depends-on-cell {
+    -fx-effect: dropshadow(gaussian, rgb(0, 208, 255), 2, 0.5, 0, 0);
+    -fx-border-style: dotted;
+    -fx-border-width: 3px;
+    -fx-border-color: rgb(0, 208, 255);
+}
+
+.influence-on-cell {
+    -fx-effect: dropshadow(gaussian, rgb(40, 246, 18), 2, 0.5, 0, 0);
+    -fx-border-style: dotted;
+    -fx-border-width: 3px;
+    -fx-border-color: rgb(40, 246, 18);
 }

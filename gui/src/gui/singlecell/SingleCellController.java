@@ -5,6 +5,7 @@ import engine.sheet.cell.api.CellType;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.effectivevalue.EffectiveValue;
 import gui.app.AppController;
+import gui.center.CenterController;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -14,12 +15,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 
 public class SingleCellController extends CellModel {
-    private AppController mainController;
+    @FXML private AnchorPane cellPane;
+    @FXML private Label valueLabel;
 
-    @FXML
-    private AnchorPane cellPane;
-    @FXML
-    private Label valueLabel;
+    private AppController mainController;
+    private CenterController centerController;
 
     public SingleCellController() {
         super();
@@ -37,11 +37,15 @@ public class SingleCellController extends CellModel {
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
     }
+    public void setCenterController(CenterController centerController) {
+        this.centerController = centerController;
+    }
 
     @FXML
     public void onCellClickUpdate(MouseEvent event) {
         if (mainController != null) {
             cellPane.getStyleClass().add("selected-cell");
+            centerController.updateDependenciesAndInfluences(dependsOn, influenceOn);
             mainController.setSelectedCell(this);
         }
     }
@@ -63,6 +67,8 @@ public class SingleCellController extends CellModel {
             setLastModifiedVersion(String.valueOf(cell.lastModifiedVersion()));
             updateBackgroundColor(cell.cellStyle().getBackgroundColor());
             updateTextColor(cell.cellStyle().getTextColor());
+            setDependsOn(cell.dependsOn());
+            setInfluenceOn(cell.influenceOn());
         } else {
             setEffectiveValue("");
             setOriginalValue("");

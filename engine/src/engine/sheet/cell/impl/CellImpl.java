@@ -8,12 +8,17 @@ import engine.sheet.cell.api.Cell;
 import engine.sheet.effectivevalue.EffectiveValueImpl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class CellImpl implements Cell, Serializable {
     private final Coordinate coordinate;
     private String originalValue;
     private EffectiveValue effectiveValue;
     private int lastModifiedVersion;
+    private List<Coordinate> dependsOn;
+    private List<Coordinate> influenceOn;
     private CellStyle cellStyle;
 
     public CellImpl(Coordinate coordinate) {
@@ -22,6 +27,24 @@ public class CellImpl implements Cell, Serializable {
         this.effectiveValue = new EffectiveValueImpl(CellType.TEXT, "");
         this.lastModifiedVersion = 1;
         this.cellStyle = new CellStyleImpl();
+        this.dependsOn = new LinkedList<>();
+        this.influenceOn = new LinkedList<>();
+    }
+
+    public List<Coordinate> getDependsOn() {
+        return new LinkedList<>(dependsOn);
+    }
+
+    public void setDependsOn(List<Coordinate> dependsOn) {
+        this.dependsOn = dependsOn;
+    }
+
+    public List<Coordinate> getInfluenceOn() {
+        return new LinkedList<>(influenceOn);
+    }
+
+    public void setInfluenceOn(List<Coordinate> influenceOn) {
+        this.influenceOn = influenceOn;
     }
 
     @Override

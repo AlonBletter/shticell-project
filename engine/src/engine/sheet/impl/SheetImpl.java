@@ -24,15 +24,15 @@ public class SheetImpl implements Sheet, Serializable {
     private int rowHeightUnits;
     private int columnWidthUnits;
     private Map<Coordinate, Cell> activeCells;
-    private Map<Coordinate, List<Coordinate>> cellDependents;
-    private Map<Coordinate, List<Coordinate>> cellReferences;
+    private Map<Coordinate, List<Coordinate>> cellInfluenceOn;
+    private Map<Coordinate, List<Coordinate>> cellDependsOn;
     private List<Cell> lastModifiedCells;
     private int versionNumber;
 
     public SheetImpl() {
         activeCells = new HashMap<>();
-        cellDependents = new HashMap<>();
-        cellReferences = new HashMap<>();
+        cellInfluenceOn = new HashMap<>();
+        cellDependsOn = new HashMap<>();
         lastModifiedCells = new LinkedList<>();
         versionNumber = 1;
     }
@@ -138,7 +138,7 @@ public class SheetImpl implements Sheet, Serializable {
             }
         }
 
-        cellDependents = dependencyGraph;
+        cellInfluenceOn = dependencyGraph;
         updateReferenceGraph();
         versionNumber++;
     }
@@ -155,6 +155,7 @@ public class SheetImpl implements Sheet, Serializable {
         }
     }
 
+    // MASHPIA AL
     Map<Coordinate, List<Coordinate>> createDependencyGraph() {
         Map<Coordinate, List<Coordinate>> dependencyGraph = new HashMap<>();
 
@@ -169,7 +170,7 @@ public class SheetImpl implements Sheet, Serializable {
                 // Adding an inactive cell to the dependency graph
                 if(!dependencyGraph.containsKey(coordinate)) {
                     dependencyGraph.put(coordinate, new LinkedList<>());
-                }
+                } //TODO isn't this copying the list? we already got it ...
 
                 // Get the list of cells that reference this coordinate
                 List<Coordinate> referencesList = dependencyGraph.get(coordinate);
@@ -177,26 +178,44 @@ public class SheetImpl implements Sheet, Serializable {
                 // Add the current cell coordinate to the list of references
                 referencesList.add(entry.getKey());
             }
+
+            entry.getValue().setDependsOn(currentCellReferences); //TODO test
         }
 
         return dependencyGraph;
     }
 
+    // MUSHPA ME
     // This is the transposed graph of the dependency graph
     private void updateReferenceGraph() {
         Map<Coordinate, List<Coordinate>> referenceGraph = new HashMap<>();
 
-        for (Map.Entry<Coordinate, List<Coordinate>> entry : cellDependents.entrySet()) {
+        for (Map.Entry<Coordinate, List<Coordinate>> entry : cellInfluenceOn.entrySet()) {
             Coordinate dependent = entry.getKey();
             List<Coordinate> references = entry.getValue();
 
             for (Coordinate reference : references) {
                 referenceGraph.computeIfAbsent(reference, k -> new LinkedList<>()).add(dependent);
+
             }
         }
 
-        cellReferences = referenceGraph;
+        cellDependsOn = referenceGraph;
+        updateCellsInfluenceOn();
     }
+
+    private void updateCellsInfluenceOn() {
+        for(Map.Entry<Coordinate, Cell> entry : activeCells.entrySet()) {
+            List<Coordinate> influenceOnCoordinate = cellInfluenceOn.get(entry.getKey());
+
+            if (influenceOnCoordinate != null) {
+                entry.getValue().setInfluenceOn(influenceOnCoordinate);
+            } else {
+                entry.getValue().setInfluenceOn(new LinkedList<>());
+            }
+        }
+    }
+
 
     // Using Topological Sort to get the right order
     private List<Coordinate> getEffectiveValueCalculationOrder(Map<Coordinate, List<Coordinate>> dependencyGraph) {
@@ -308,13 +327,13 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     @Override
-    public Map<Coordinate, List<Coordinate>> getCellDependents() {
-        return cellDependents;
+    public Map<Coordinate, List<Coordinate>> getCellInfluenceOn() {
+        return cellInfluenceOn;
     }
 
     @Override
-    public Map<Coordinate, List<Coordinate>> getCellReferences() {
-        return cellReferences;
+    public Map<Coordinate, List<Coordinate>> getCellDependsOn() {
+        return cellDependsOn;
     }
 
     @Override

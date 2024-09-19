@@ -5,6 +5,10 @@ import engine.sheet.cell.impl.CellImpl;
 import engine.sheet.cell.impl.CellStyleImpl;
 import engine.sheet.coordinate.Coordinate;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 public class CellConverter {
 
     public static CellDTO convertToDTO(Cell cell) {
@@ -13,6 +17,8 @@ public class CellConverter {
                 cell.getOriginalValue(),
                 cell.getEffectiveValue(),
                 cell.getLastModifiedVersion(),
+                cell.getDependsOn(),
+                cell.getInfluenceOn(),
                 cell.getStyle()
         );
     }

@@ -40,6 +40,8 @@ public class CenterController {
     private int numOfColumns;
     private Map<Integer, Double> columnWidthUnits;
     private Map<Integer, Double> rowHeightUnits;
+    private List<SingleCellController> currentDependsOn; //TODO probably not good, change if time
+    private List<SingleCellController> currentInfluenceOn;
 
     public CenterController() {
         this.gridCells = FXCollections.observableMap(new HashMap<>());
@@ -48,6 +50,8 @@ public class CenterController {
         rowTitles = new HashMap<>();
         columnWidthUnits = new HashMap<>();
         rowHeightUnits = new HashMap<>();
+        currentDependsOn = new LinkedList<>();
+        currentInfluenceOn = new LinkedList<>();
     }
 
     public void setMainController(AppController mainController) {
@@ -91,6 +95,7 @@ public class CenterController {
 
             cellController.setDataFromDTO(coordinate, cell);
             cellController.setMainController(mainController);
+            cellController.setCenterController(this);
             gridCells.put(coordinate, cellController);
             centerGrid.add(singleCell, coordinate.getColumn(), coordinate.getRow());
         } catch (IOException e) {
@@ -191,6 +196,30 @@ public class CenterController {
         selectedCells.clear();
     }
 
+    public void updateDependenciesAndInfluences(List<Coordinate> dependencies, List<Coordinate> influences) {
+        for(SingleCellController cellController : currentDependsOn) {
+            cellController.getCellNode().getStyleClass().remove("depends-on-cell");
+        }
+        currentDependsOn.clear();
+
+        for(SingleCellController cellController : currentInfluenceOn) {
+            cellController.getCellNode().getStyleClass().remove("influence-on-cell");
+        }
+        currentInfluenceOn.clear();
+
+        for(Coordinate coordinate : dependencies) {
+            SingleCellController currentCell = gridCells.get(coordinate);
+            currentCell.getCellNode().getStyleClass().add("depends-on-cell");
+            currentDependsOn.add(currentCell);
+        }
+
+        for(Coordinate coordinate : influences) {
+            SingleCellController currentCell = gridCells.get(coordinate);
+            currentCell.getCellNode().getStyleClass().add("influence-on-cell");
+            currentInfluenceOn.add(currentCell);
+        }
+    }
+
     private String getColumnLetter(int columnNumber) {
         return String.valueOf((char) ('A' + columnNumber - 1));
     }
@@ -236,6 +265,18 @@ public class CenterController {
                 Coordinate coordinate = cellDTO.coordinate();
                 SingleCellController cellController = gridCells.get(coordinate);
                 cellController.setDataFromDTO(coordinate, cellDTO);
+            }
+        }
+    } // The problem with the influence cells mark of b2 \ c2 in 1-insurance is that we receive only the modified cells,
+    // hence when updating d2 we don't get b2 and c2 for the setDataFromDTO... only D2 was modified...
+    //TODO temporary solution
+    public void updateCells(SheetDTO sheetDTO) {
+        for(int row = 1; row <= numOfRows; row++) {
+            for(int col = 1; col <= numOfColumns; col++) {
+                Coordinate coordinate = CoordinateFactory.createCoordinate(row, col);
+                SingleCellController cellController = gridCells.get(coordinate);
+                cellController.setDataFromDTO(coordinate, sheetDTO.activeCells().get(coordinate));
+                updateDependenciesAndInfluences(cellController.getDependsOn(), cellController.getInfluenceOn());
             }
         }
     }

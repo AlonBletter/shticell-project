@@ -321,6 +321,7 @@ public class CenterController {
     }
 
     public void markRange(List<Coordinate> cellsInRange) {
+        clearSelection();
         for(Coordinate coordinate : cellsInRange) {
             SingleCellController cellController = gridCells.get(coordinate);
             cellController.getCellNode().getStyleClass().add("range-mark");

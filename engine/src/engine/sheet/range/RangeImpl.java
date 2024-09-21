@@ -47,4 +47,8 @@ public class RangeImpl implements Range, Serializable {
     public List<Coordinate> getCellsInRange() {
         return new LinkedList<>(cellsInRange);
     }
+
+    public String getName() {
+        return name;
+    }
 }

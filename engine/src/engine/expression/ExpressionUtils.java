@@ -7,7 +7,6 @@ import engine.expression.type.Numeric;
 import engine.expression.type.Text;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
-import engine.sheet.range.Range;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

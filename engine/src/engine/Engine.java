@@ -3,6 +3,7 @@ package engine;
 import dto.CellDTO;
 import dto.SheetDTO;
 import engine.sheet.coordinate.Coordinate;
+import engine.sheet.range.Range;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,4 +22,5 @@ public interface Engine {
     void addRange(String rangeName, String rangeCoordinates);
     void deleteRange(String rangeNameToDelete);
     List<Coordinate> getRange(String rangeNameToView);
+    List<Range> getRanges();
 }

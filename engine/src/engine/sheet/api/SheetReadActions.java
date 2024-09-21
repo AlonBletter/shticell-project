@@ -3,6 +3,7 @@ package engine.sheet.api;
 import engine.sheet.cell.api.Cell;
 import engine.sheet.cell.api.CellReadActions;
 import engine.sheet.coordinate.Coordinate;
+import engine.sheet.range.Range;
 
 import java.util.List;
 import java.util.Map;
@@ -18,4 +19,5 @@ public interface SheetReadActions {
     Map<Coordinate, List<Coordinate>> getCellDependsOn();
     int getVersionNumber();
     List<Coordinate> getRange(String rangeNameToView);
+    List<Range> getRanges();
 }

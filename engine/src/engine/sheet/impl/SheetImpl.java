@@ -2,9 +2,7 @@ package engine.sheet.impl;
 
 import engine.exception.InvalidCellBoundsException;
 import engine.expression.ExpressionUtils;
-import engine.generated.STLCell;
-import engine.generated.STLCells;
-import engine.generated.STLSheet;
+import engine.generated.*;
 import engine.sheet.effectivevalue.EffectiveValue;
 import engine.sheet.api.Sheet;
 import engine.sheet.cell.api.Cell;
@@ -16,6 +14,7 @@ import engine.sheet.coordinate.CoordinateFactory;
 import engine.sheet.range.Range;
 import engine.sheet.range.RangeImpl;
 
+import java.awt.font.LineMetrics;
 import java.io.*;
 import java.util.*;
 
@@ -29,8 +28,7 @@ public class SheetImpl implements Sheet, Serializable {
     private Map<Coordinate, List<Coordinate>> cellInfluenceOn;
     private Map<Coordinate, List<Coordinate>> cellDependsOn;
     private final List<Cell> lastModifiedCells;
-    private Map<String, Range> ranges;
-    private List<String> activeRanges;
+    private final Map<String, Range> ranges;
     private int versionNumber;
 
     public SheetImpl() {
@@ -86,11 +84,15 @@ public class SheetImpl implements Sheet, Serializable {
         List<Coordinate> startEnd = ExpressionUtils.parseRange(rangeCoordinates);
         Coordinate startOfRange = startEnd.get(0);
         Coordinate endOfRange = startEnd.get(1);
+        addRangeHelper(rangeName, startOfRange, endOfRange);
+    }
+
+    private void addRangeHelper(String rangeName, Coordinate startOfRange, Coordinate endOfRange) {
         validateCoordinateInbound(startOfRange);
         validateCoordinateInbound(endOfRange);
 
         if(ranges.containsKey(rangeName)) {
-            throw new IllegalArgumentException("Range with the name " + rangeName + " already exists.");
+            throw new IllegalArgumentException("Range with the name [" + rangeName + "] already exists.");
         } else {
             ranges.put(rangeName, new RangeImpl(rangeName, startOfRange, endOfRange));
         }
@@ -128,21 +130,34 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     @Override
+    public List<Range> getRanges() {
+        return new ArrayList<>(ranges.values());
+    }
+
+    @Override
     public void init(STLSheet sheetToInitFrom) {
         setName(sheetToInitFrom.getName());
         setNumberOfRows(sheetToInitFrom.getSTLLayout().getRows());
         setNumberOfColumns(sheetToInitFrom.getSTLLayout().getColumns());
         setRowHeightUnits(sheetToInitFrom.getSTLLayout().getSTLSize().getRowsHeightUnits());
         setColumnWidthUnits(sheetToInitFrom.getSTLLayout().getSTLSize().getColumnWidthUnits());
-        //TODO add loading ranges
+
         STLCells cellsFromFile = sheetToInitFrom.getSTLCells();
         List<STLCell> cellsList = cellsFromFile.getSTLCell();
+        List<STLRange> rangesList = sheetToInitFrom.getSTLRanges().getSTLRange();
 
         for (STLCell stlCell : cellsList) {
             Coordinate cellCoordinate = CoordinateFactory.createCoordinate(stlCell.getRow(), stlCell.getColumn());
             Cell cell = addNewCellIfEmptyCell(cellCoordinate);
             cell.setOriginalValue(stlCell.getSTLOriginalValue());
             activeCells.put(cellCoordinate, cell);
+        }
+
+        for (STLRange stlRange : rangesList) {
+            STLBoundaries boundaries = stlRange.getSTLBoundaries();
+            Coordinate from = CoordinateFactory.createCoordinate(boundaries.getFrom());
+            Coordinate to = CoordinateFactory.createCoordinate(boundaries.getTo());
+            addRangeHelper(stlRange.getName(), from, to);
         }
 
         updateSheetEffectiveValues();

@@ -1,5 +1,6 @@
 package gui.left;
 
+import engine.sheet.range.Range;
 import gui.app.AppController;
 import gui.common.ShticellResourcesConstants;
 import gui.left.dimensiondialog.DimensionDialogController;
@@ -21,6 +22,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.List;
 
 public class LeftController {
     @FXML private Button columnWidthButton;
@@ -214,7 +216,11 @@ public class LeftController {
         }
     }
 
-
+    public void loadRanges(List<Range> ranges) {
+        for(Range range : ranges) {
+            rangesListView.getItems().add(range.getName());
+        }
+    }
 
     private String toHexString(Color color) {
         return String.format("#%02X%02X%02X",

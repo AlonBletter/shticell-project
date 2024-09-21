@@ -121,13 +121,13 @@ public class AppController {
             Parent root = loader.load();
             LoadingDialogController loadingDialogController = loader.getController();
 
-            Consumer<Void> onSuccess = getLoadFileConsumerSuccess(filePath);
+            Stage loadingDialogStage = new Stage();
+            Consumer<Void> onSuccess = getLoadFileConsumerSuccess(filePath, loadingDialogStage);
             Consumer<Exception> onFailure = getLoadFileConsumerFailure();
             currentRunningTask = new LoadFileTask(filePath, onSuccess, onFailure);
             loadingDialogController.bindTaskToUIComponents(currentRunningTask, null);
             loadingDialogController.setLoadingFileTitleLabel(filePath);
 
-            Stage loadingDialogStage = new Stage();
             loadingDialogStage.initModality(Modality.APPLICATION_MODAL);
             loadingDialogStage.setTitle("Loading file");
             loadingDialogStage.setResizable(false);
@@ -148,18 +148,20 @@ public class AppController {
         };
     }
 
-    private Consumer<Void> getLoadFileConsumerSuccess(String filePath) {
+    private Consumer<Void> getLoadFileConsumerSuccess(String filePath, Stage dialogStage) {
         return (v) -> {
             try {
                 engine.loadSystemSettingsFromFile(filePath);
                 centerComponentController.initializeGrid(engine.getSpreadsheet());
                 borderPane.setCenter(centerComponentController.getCenterGrid());
                 headerComponentController.enableButtonsAfterLoad(); // TODO not enables anymore, only refresh combo box
+                leftComponentController.loadRanges(engine.getRanges());
                 isFileLoaded.set(true);
             } catch (InvalidCellBoundsException e) {
                 handleInvalidCellBoundException(e);
-            } catch (Exception e) { //TODO think about closing both windows when error occurs.
+            } catch (Exception e) {
                 showErrorAlert("File Loading Error", "An error occurred while processing the loaded file.", e.getMessage());
+                dialogStage.close();
             } finally {
                 currentRunningTask.cancel();
             }

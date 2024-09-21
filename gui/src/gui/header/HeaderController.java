@@ -133,6 +133,7 @@ public class HeaderController {
         String absolutePath = selectedFile.getAbsolutePath();
         filePath.set(absolutePath);
         mainController.loadFile(absolutePath);
+        //TODO loading even when
     }
 
     @FXML

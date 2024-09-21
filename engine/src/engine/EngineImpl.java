@@ -10,6 +10,7 @@ import engine.sheet.api.Sheet;
 import engine.sheet.cell.api.Cell;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.impl.SheetImpl;
+import engine.sheet.range.Range;
 import engine.verisonmanager.VersionManager;
 import engine.verisonmanager.VersionManagerImpl;
 import jakarta.xml.bind.JAXBContext;
@@ -100,6 +101,12 @@ public class EngineImpl implements Engine {
     public List<Coordinate> getRange(String rangeNameToView) {
         Sheet currentVersion = versionManager.getCurrentVersionSheet();
         return currentVersion.getRange(rangeNameToView);
+    }
+
+    @Override
+    public List<Range> getRanges() {
+        Sheet currentVersion = versionManager.getCurrentVersionSheet();
+        return currentVersion.getRanges();
     }
 
     @Override

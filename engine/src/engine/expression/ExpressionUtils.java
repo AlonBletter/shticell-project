@@ -7,6 +7,7 @@ import engine.expression.type.Numeric;
 import engine.expression.type.Text;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
+import engine.sheet.range.Range;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -16,9 +17,9 @@ import java.util.regex.Pattern;
 
 public class ExpressionUtils {
     private static class Node {
+
         String value;
         List<Node> children;
-
         Node(String value, List<Node> children) {
             this.value = value;
             this.children = children;
@@ -31,8 +32,8 @@ public class ExpressionUtils {
                     ", children=" + children +
                     '}';
         }
-    }
 
+    }
     public static Expression buildExpressionFromString(String inputToParse) {
         Node tokenized = tokenizeExpression(inputToParse.trim());
 
@@ -121,18 +122,50 @@ public class ExpressionUtils {
 
     public static List<Coordinate> extractReferences(String input) {
         List<Coordinate> coordinates = new ArrayList<>();
-
-        // Use regex to match the pattern {REF,Coordinate}, case-insensitively
         String regex = "\\{REF,([A-Z]+\\d+)\\}";
-        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE); // Enable case-insensitive matching for the entire pattern
+        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(input);
 
-        // Find all matches and add them to the list
         while (matcher.find()) {
-            Coordinate coordinate = CoordinateFactory.createCoordinate(matcher.group(1).toUpperCase()); // Convert to uppercase before creating the coordinate
-            coordinates.add(coordinate); // group(1) gets the coordinate part (e.g., A4, a5)
+            Coordinate coordinate = CoordinateFactory.createCoordinate(matcher.group(1).toUpperCase());
+            coordinates.add(coordinate);
         }
 
         return coordinates;
+    }
+
+    public static List<Coordinate> parseRange(String range) {
+        List<Coordinate> coordinates = new ArrayList<>();
+        String[] corners = range.split("\\.\\.");
+
+        if (corners.length != 2) {
+            throw new IllegalArgumentException("Invalid range format. Expected <coordinate of top left cell>..<coordinate of bottom right cell>");
+        }
+
+        Coordinate start;
+        Coordinate end;
+        try {
+            start = CoordinateFactory.createCoordinate(corners[0]);
+            end = CoordinateFactory.createCoordinate(corners[1]);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid range format. Expected <coordinate of top left cell>..<coordinate of bottom right cell>");
+        }
+
+        coordinates.addFirst(start);
+        coordinates.addLast(end);
+
+        return coordinates;
+    }
+
+    public static String extractRange(String cellOriginalValue) {
+        String functionPattern = "(?i)\\{(sum|average),\\s*([^}]+)\\}";
+        Pattern pattern = Pattern.compile(functionPattern);
+        Matcher matcher = pattern.matcher(cellOriginalValue);
+
+        if (matcher.find()) {
+            return matcher.group(2);
+        }
+
+        return null;
     }
 }

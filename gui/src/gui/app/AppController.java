@@ -172,9 +172,9 @@ public class AppController {
             engine.updateCell(cellToUpdateCoordinate, newCellValue);
             //List<CellDTO> lastModifiedCells = engine.getSpreadsheet().lastModifiedCells();
             //centerComponentController.updateCells(lastModifiedCells);
+            centerComponentController.updateCells(engine.getSpreadsheet());
 
             if(oldVersion != engine.getCurrentVersionNumber()) {
-                centerComponentController.updateCells(engine.getSpreadsheet());
                 headerComponentController.refreshComboBoxVersion();
             }
         } catch (Exception e) {
@@ -268,5 +268,31 @@ public class AppController {
 
         engine.updateCellTextColor(currentCellCoordinate, newColor);
         centerComponentController.updateCellTextColor(currentCellCoordinate, newColor);
+    }
+
+    public boolean addRange(String rangeName, String rangeCoordinates) {
+        try {
+            engine.addRange(rangeName, rangeCoordinates);
+            return true;
+        } catch (Exception e) {
+            showErrorAlert("Invalid Range Addition", "An error occurred while adding the range.", e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean deleteRange(String rangeNameToDelete) {
+        try {
+            engine.deleteRange(rangeNameToDelete);
+            return true;
+        } catch (Exception e) {
+            showErrorAlert("Invalid Range Deletion", "An error occurred while deleting the range.", e.getMessage());
+            return false;
+        }
+    }
+
+
+    public void viewRange(String rangeNameToView) {
+        List<Coordinate> cellsInRange = engine.getRange(rangeNameToView);
+        centerComponentController.markRange(cellsInRange);
     }
 }

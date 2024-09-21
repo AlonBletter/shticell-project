@@ -18,4 +18,6 @@ public interface SheetUpdateActions {
 
     void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor);
     void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor);
+    void addRange(String rangeName, String rangeCoordinates);
+    void deleteRange(String rangeNameToDelete);
 }

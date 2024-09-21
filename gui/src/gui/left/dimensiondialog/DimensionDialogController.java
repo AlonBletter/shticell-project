@@ -2,10 +2,7 @@ package gui.left.dimensiondialog;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 
@@ -25,6 +22,18 @@ public class DimensionDialogController {
         }
 
         result = Double.parseDouble(value);
+
+        if(result <= 0) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Invalid Value");
+            alert.setHeaderText("An error occurred while changing dimension value");
+            alert.setContentText("Dimension must be a positive number");
+
+            alert.showAndWait();
+            valueTextField.requestFocus();
+            return;
+        }
+
         Stage stage = (Stage) applyButton.getScene().getWindow();
         stage.close();
     }

@@ -3,6 +3,8 @@ package gui.left;
 import gui.app.AppController;
 import gui.common.ShticellResourcesConstants;
 import gui.left.dimensiondialog.DimensionDialogController;
+import gui.left.rangedialog.RangeDialogController;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -30,6 +32,10 @@ public class LeftController {
     @FXML private ColorPicker backgroundColorPicker;
     @FXML private ColorPicker textColorPicker;
     @FXML private Button resetStylingButton;
+    @FXML private ListView<String> rangesListView;
+    @FXML private Button addRangeButton;
+    @FXML private Button deleteRangeButton;
+    @FXML private Button viewRangeButton;
 
     private AppController mainController;
     private Stage primaryStage;
@@ -73,7 +79,53 @@ public class LeftController {
            mainController.updateCellBackgroundColor(null);
            mainController.updateCellTextColor(null);
         });
+
+        deleteRangeButton.disableProperty().bind(rangesListView.getSelectionModel().selectedItemProperty().isNull());
+        viewRangeButton.disableProperty().bind(rangesListView.getSelectionModel().selectedItemProperty().isNull());
     }
+
+    @FXML
+    void addRangeButtonAction(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(ShticellResourcesConstants.RANGE_DIALOG_URL);
+            Parent root = loader.load();
+
+            RangeDialogController dialogController = loader.getController();
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Add Range");
+            dialogStage.setResizable(false);
+            dialogStage.setScene(new Scene(root));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            dialogController.setDialogStage(dialogStage);
+            dialogController.setMainController(mainController);
+            dialogStage.showAndWait();
+
+            if (dialogController.isConfirmed()) {
+                rangesListView.getItems().add(dialogController.getRangeName());
+            }
+            dialogStage.close();
+
+        } catch (IOException e) {
+            throw new RuntimeException("IO Exception occurred...");
+        }
+    }
+
+    @FXML
+    void deleteRangeButtonAction(ActionEvent event) {
+        boolean deleted = mainController.deleteRange(rangesListView.getSelectionModel().getSelectedItem());
+
+        if (deleted) {
+            rangesListView.getItems().remove(rangesListView.getSelectionModel().getSelectedItem());
+        }
+    }
+
+    @FXML
+    void viewRangeButtonAction(ActionEvent event) {
+        mainController.viewRange(rangesListView.getSelectionModel().getSelectedItem());
+    }
+
 
     @FXML
     void centerAlignToggleAction(ActionEvent event) {
@@ -120,8 +172,6 @@ public class LeftController {
 
             Double result = dialogController.getResult();
             if (result != null) {
-                System.out.println("User entered " + dimensionType + ": " + result);
-
                 if (dimensionType.equals("Column Width")) {
                     mainController.updateColumnWidth(result);
                 } else if (dimensionType.equals("Row Height")) {
@@ -131,17 +181,23 @@ public class LeftController {
                 dialogStage.close();
             }
         } catch (IOException e) {
-                e.printStackTrace(); // Handle the exception as appropriate for your application
+            throw new RuntimeException("IO Exception occurred...");
         }
     }
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
-        columnWidthButton.disableProperty().bind(mainController.isFileLoadedProperty().not());
-        rowHeightButton.disableProperty().bind(mainController.isFileLoadedProperty().not());
-        leftAlignToggle.disableProperty().bind(mainController.isFileLoadedProperty().not());
-        centerAlignToggle.disableProperty().bind(mainController.isFileLoadedProperty().not());
-        rightAlignToggle.disableProperty().bind(mainController.isFileLoadedProperty().not());
+        SimpleBooleanProperty mainIsFileLoadedProperty = mainController.isFileLoadedProperty();
+        columnWidthButton.disableProperty().bind(mainIsFileLoadedProperty.not());
+        rowHeightButton.disableProperty().bind(mainIsFileLoadedProperty.not());
+        leftAlignToggle.disableProperty().bind(mainIsFileLoadedProperty.not());
+        centerAlignToggle.disableProperty().bind(mainIsFileLoadedProperty.not());
+        rightAlignToggle.disableProperty().bind(mainIsFileLoadedProperty.not());
+        backgroundColorPicker.disableProperty().bind(mainIsFileLoadedProperty.not());
+        textColorPicker.disableProperty().bind(mainIsFileLoadedProperty.not());
+        resetStylingButton.disableProperty().bind(mainIsFileLoadedProperty.not());
+        rangesListView.disableProperty().bind(mainIsFileLoadedProperty.not());
+        addRangeButton.disableProperty().bind(mainIsFileLoadedProperty.not());
     }
 
     public void setPrimaryStage(Stage primaryStage) {

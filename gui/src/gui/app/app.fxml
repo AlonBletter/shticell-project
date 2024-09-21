@@ -4,9 +4,9 @@
 <?import javafx.scene.layout.BorderPane?>
 
 
-<ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.app.AppController">
+<ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="930.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.app.AppController">
    <content>
-      <BorderPane fx:id="borderPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="650.0" minWidth="920.0" prefHeight="671.0" prefWidth="920.0">
+      <BorderPane fx:id="borderPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="700.0" minWidth="920.0" prefHeight="700.0" prefWidth="920.0">
           <top>
               <fx:include fx:id="headerComponent" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" source="../header/header.fxml" />
           </top>

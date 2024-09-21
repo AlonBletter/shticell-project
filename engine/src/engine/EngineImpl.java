@@ -69,6 +69,40 @@ public class EngineImpl implements Engine {
     }
 
     @Override
+    public void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor) {
+        validateLoadedSheet();
+        Sheet currentVersion = versionManager.getCurrentVersionSheet();
+        currentVersion.updateCellBackgroundColor(cellToUpdateCoordinate, backgroundColor);
+    }
+
+    @Override
+    public void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor) {
+        validateLoadedSheet();
+        Sheet currentVersion = versionManager.getCurrentVersionSheet();
+        currentVersion.updateCellTextColor(cellToUpdateCoordinate, textColor);
+    }
+
+    @Override
+    public void addRange(String rangeName, String rangeCoordinates) {
+        validateLoadedSheet();
+        Sheet currentVersion = versionManager.getCurrentVersionSheet();
+        currentVersion.addRange(rangeName, rangeCoordinates);
+    }
+
+    @Override
+    public void deleteRange(String rangeNameToDelete) {
+        validateLoadedSheet();
+        Sheet currentVersion = versionManager.getCurrentVersionSheet();
+        currentVersion.deleteRange(rangeNameToDelete);
+    }
+
+    @Override
+    public List<Coordinate> getRange(String rangeNameToView) {
+        Sheet currentVersion = versionManager.getCurrentVersionSheet();
+        return currentVersion.getRange(rangeNameToView);
+    }
+
+    @Override
     public void loadSystemSettingsFromFile(String filePath) {
         try {
             validateXMLFile(filePath);
@@ -125,20 +159,6 @@ public class EngineImpl implements Engine {
         Sheet sheet = new SheetImpl();
         sheet.init(sheetFromFile);
         return sheet;
-    }
-
-    @Override
-    public void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor) {
-        validateLoadedSheet();
-        Sheet currentVersion = versionManager.getCurrentVersionSheet();
-        currentVersion.updateCellBackgroundColor(cellToUpdateCoordinate, backgroundColor);
-    }
-
-    @Override
-    public void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor) {
-        validateLoadedSheet();
-        Sheet currentVersion = versionManager.getCurrentVersionSheet();
-        currentVersion.updateCellTextColor(cellToUpdateCoordinate, textColor);
     }
 
     @Override

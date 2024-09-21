@@ -118,6 +118,16 @@ public enum Operation {
 
             return new Ref(parameters.getFirst());
         }
+    },
+    SUM {
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateNumberOfParameters(Sum.class, parameters);
+
+            CellType expressionCellType = parameters.getFirst().getFunctionResultType();
+
+            return new Sum(parameters.getFirst());
+        }
     };
 
     public abstract Expression createExpression(List<Expression> parameters);

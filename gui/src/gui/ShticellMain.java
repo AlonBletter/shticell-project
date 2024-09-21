@@ -25,7 +25,7 @@ public class ShticellMain extends Application {
         AppController appController = fxmlLoader.getController();
         appController.setPrimaryStage(stage);
 
-        Scene scene = new Scene(root, 1050, 600);
+        Scene scene = new Scene(root, 1050, 800);
         stage.setScene(scene);
         stage.show();
     }

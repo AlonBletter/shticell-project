@@ -34,6 +34,7 @@ public class CenterController {
     private GridPane centerGrid;
     private ObservableMap<Coordinate, SingleCellController> gridCells;
     private List<SingleCellController> selectedCells;
+    private List<SingleCellController> selectedRange;
     private Map<String, Label> columnTitles;
     private Map<Integer, Label> rowTitles;
     private int numOfRows;
@@ -46,6 +47,7 @@ public class CenterController {
     public CenterController() {
         this.gridCells = FXCollections.observableMap(new HashMap<>());
         selectedCells = new LinkedList<>();
+        selectedRange = new LinkedList<>();
         columnTitles = new HashMap<>();
         rowTitles = new HashMap<>();
         columnWidthUnits = new HashMap<>();
@@ -192,8 +194,12 @@ public class CenterController {
         for (SingleCellController cellController : selectedCells) {
             cellController.getCellNode().getStyleClass().removeAll("selected-row", "selected-column");
         }
-
         selectedCells.clear();
+
+        for(SingleCellController cellController : selectedRange) {
+            cellController.getCellNode().getStyleClass().removeAll("range-mark");
+        }
+        selectedRange.clear();
     }
 
     public void updateDependenciesAndInfluences(List<Coordinate> dependencies, List<Coordinate> influences) {
@@ -310,6 +316,14 @@ public class CenterController {
             Coordinate coordinate = CoordinateFactory.createCoordinate(row, colIndex);
             SingleCellController cellController = gridCells.get(coordinate);
             cellController.setAlignment(pos);
+        }
+    }
+
+    public void markRange(List<Coordinate> cellsInRange) {
+        for(Coordinate coordinate : cellsInRange) {
+            SingleCellController cellController = gridCells.get(coordinate);
+            cellController.getCellNode().getStyleClass().add("range-mark");
+            selectedRange.add(cellController);
         }
     }
 }

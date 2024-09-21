@@ -13,6 +13,8 @@ import engine.sheet.cell.impl.CellImpl;
 import engine.sheet.cell.impl.EmptyCell;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
+import engine.sheet.range.Range;
+import engine.sheet.range.RangeImpl;
 
 import java.io.*;
 import java.util.*;
@@ -23,10 +25,12 @@ public class SheetImpl implements Sheet, Serializable {
     private int numberOfColumns;
     private int rowHeightUnits;
     private int columnWidthUnits;
-    private Map<Coordinate, Cell> activeCells;
+    private final Map<Coordinate, Cell> activeCells;
     private Map<Coordinate, List<Coordinate>> cellInfluenceOn;
     private Map<Coordinate, List<Coordinate>> cellDependsOn;
-    private List<Cell> lastModifiedCells;
+    private final List<Cell> lastModifiedCells;
+    private Map<String, Range> ranges;
+    private List<String> activeRanges;
     private int versionNumber;
 
     public SheetImpl() {
@@ -34,28 +38,8 @@ public class SheetImpl implements Sheet, Serializable {
         cellInfluenceOn = new HashMap<>();
         cellDependsOn = new HashMap<>();
         lastModifiedCells = new LinkedList<>();
+        ranges = new HashMap<>();
         versionNumber = 1;
-    }
-
-    public SheetImpl copySheet() {
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(this);
-            oos.close();
-
-            ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
-            return (SheetImpl) ois.readObject();
-        } catch (Exception e) {
-            throw new RuntimeException("Unknown error occurred");
-        }
-    }
-
-    public void validateCoordinateInbound(Coordinate coordinate) {
-        if(coordinate.getRow() > numberOfRows || coordinate.getRow() < 1 ||
-                coordinate.getColumn() > numberOfColumns || coordinate.getColumn() < 1) {
-            throw new InvalidCellBoundsException(coordinate, numberOfRows, numberOfColumns);
-        }
     }
 
     @Override
@@ -73,15 +57,16 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
      private Cell addNewCellIfEmptyCell(Coordinate coordinate) {
-         CellReadActions cellReadActions = getCell(coordinate);
+        validateCoordinateInbound(coordinate);
+//         CellReadActions cellReadActions = getCell(coordinate);
+//
+//         if (cellReadActions instanceof EmptyCell) {
+//             Cell newCell = new CellImpl(coordinate);
+//             activeCells.put(coordinate, newCell);
+//             return newCell;
+//         }//TODO FIX THIS CASTING
 
-         if (cellReadActions instanceof EmptyCell) {
-             Cell newCell = new CellImpl(coordinate);
-             activeCells.put(coordinate, newCell);
-             return newCell;
-         }//TODO FIX THIS CASTING
-
-         return (Cell) cellReadActions;
+         return activeCells.computeIfAbsent(coordinate, CellImpl::new);
      }
 
     @Override
@@ -91,20 +76,55 @@ public class SheetImpl implements Sheet, Serializable {
         lastModifiedCells.clear();
         cellToUpdate.setOriginalValue(newOriginalValue);
         updateSheetEffectiveValues();
+        versionNumber++;
         //TODO consider return true for indication for the engine so it will know if to add to version manager or not.
         // if so, do it with lastModifiedCells == 0
     }
 
     @Override
-    public void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor) {
-        Cell cell = addNewCellIfEmptyCell(cellToUpdateCoordinate);
-        cell.setBackgroundColor(backgroundColor);
+    public void addRange(String rangeName, String rangeCoordinates) {
+        List<Coordinate> startEnd = ExpressionUtils.parseRange(rangeCoordinates);
+        Coordinate startOfRange = startEnd.get(0);
+        Coordinate endOfRange = startEnd.get(1);
+        validateCoordinateInbound(startOfRange);
+        validateCoordinateInbound(endOfRange);
+
+        if(ranges.containsKey(rangeName)) {
+            throw new IllegalArgumentException("Range with the name " + rangeName + " already exists.");
+        } else {
+            ranges.put(rangeName, new RangeImpl(rangeName, startOfRange, endOfRange));
+        }
     }
 
     @Override
-    public void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor) {
-        Cell cell = addNewCellIfEmptyCell(cellToUpdateCoordinate);
-        cell.setTextColor(textColor);
+    public void deleteRange(String rangeNameToDelete) {
+        if(!ranges.containsKey(rangeNameToDelete)) {
+            throw new IllegalArgumentException("Range with the name " + rangeNameToDelete + " does not exist.");
+        }
+
+        Range removedRange = ranges.remove(rangeNameToDelete);
+
+        try {
+            updateSheetEffectiveValues();
+        } catch (Exception e) {
+            ranges.put(rangeNameToDelete, removedRange);
+            throw new IllegalArgumentException("Range [" + rangeNameToDelete + "] cannot be deleted because it's being used.");
+        }
+    }
+
+    @Override
+    public List<Coordinate> getRange(String rangeNameToView) {
+        if (rangeNameToView == null) {
+            return null;
+        }
+
+        Range range = ranges.get(rangeNameToView);
+
+        if (range == null) {
+            throw new IllegalArgumentException("Range with the name [" + rangeNameToView + "] does not exist.");
+        }
+
+        return range.getCellsInRange();
     }
 
     @Override
@@ -114,7 +134,7 @@ public class SheetImpl implements Sheet, Serializable {
         setNumberOfColumns(sheetToInitFrom.getSTLLayout().getColumns());
         setRowHeightUnits(sheetToInitFrom.getSTLLayout().getSTLSize().getRowsHeightUnits());
         setColumnWidthUnits(sheetToInitFrom.getSTLLayout().getSTLSize().getColumnWidthUnits());
-
+        //TODO add loading ranges
         STLCells cellsFromFile = sheetToInitFrom.getSTLCells();
         List<STLCell> cellsList = cellsFromFile.getSTLCell();
 
@@ -126,6 +146,7 @@ public class SheetImpl implements Sheet, Serializable {
         }
 
         updateSheetEffectiveValues();
+        versionNumber++;
     }
 
     private void updateSheetEffectiveValues() {
@@ -140,7 +161,6 @@ public class SheetImpl implements Sheet, Serializable {
 
         cellInfluenceOn = dependencyGraph;
         updateReferenceGraph();
-        versionNumber++;
     }
 
     private void updateCellEffectiveValue(Cell cellToUpdate) {
@@ -164,7 +184,7 @@ public class SheetImpl implements Sheet, Serializable {
                 dependencyGraph.put(entry.getKey(), new LinkedList<>());
             }
 
-            List<Coordinate> currentCellReferences = ExpressionUtils.extractReferences(entry.getValue().getOriginalValue());
+            List<Coordinate> currentCellReferences = getCurrentCellReferences(entry.getValue().getOriginalValue());
 
             for (Coordinate coordinate : currentCellReferences) {
                 // Adding an inactive cell to the dependency graph
@@ -185,8 +205,27 @@ public class SheetImpl implements Sheet, Serializable {
         return dependencyGraph;
     }
 
+    private List<Coordinate> getCurrentCellReferences(String cellOriginalValue) {
+        String rangeName = ExpressionUtils.extractRange(cellOriginalValue);
+        List<Coordinate> allCoordinates = new LinkedList<>();
+
+        if (rangeName != null) {
+            List<Coordinate> currentCellRangeCoordinates = getRange(rangeName);
+            allCoordinates.addAll(currentCellRangeCoordinates);
+        }
+
+        List<Coordinate> currentCellReferences = ExpressionUtils.extractReferences(cellOriginalValue);
+
+        if (!currentCellReferences.isEmpty()) {
+            allCoordinates.addAll(currentCellReferences);
+        }
+
+        return allCoordinates;
+    }
+
     // MUSHPA ME
     // This is the transposed graph of the dependency graph
+
     private void updateReferenceGraph() {
         Map<Coordinate, List<Coordinate>> referenceGraph = new HashMap<>();
 
@@ -203,7 +242,6 @@ public class SheetImpl implements Sheet, Serializable {
         cellDependsOn = referenceGraph;
         updateCellsInfluenceOn();
     }
-
     private void updateCellsInfluenceOn() {
         for(Map.Entry<Coordinate, Cell> entry : activeCells.entrySet()) {
             List<Coordinate> influenceOnCoordinate = cellInfluenceOn.get(entry.getKey());
@@ -218,6 +256,7 @@ public class SheetImpl implements Sheet, Serializable {
 
 
     // Using Topological Sort to get the right order
+
     private List<Coordinate> getEffectiveValueCalculationOrder(Map<Coordinate, List<Coordinate>> dependencyGraph) {
         List<Coordinate> sortedList = new ArrayList<>();
         Map<Coordinate, Integer> inDegree = new HashMap<>();
@@ -263,6 +302,24 @@ public class SheetImpl implements Sheet, Serializable {
         return sortedList;
     }
 
+    @Override
+    public void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor) {
+        Cell cell = addNewCellIfEmptyCell(cellToUpdateCoordinate);
+        cell.setBackgroundColor(backgroundColor);
+    }
+
+    @Override
+    public void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor) {
+        Cell cell = addNewCellIfEmptyCell(cellToUpdateCoordinate);
+        cell.setTextColor(textColor);
+    }
+
+    private void validateCoordinateInbound(Coordinate coordinate) {
+        if(coordinate.getRow() > numberOfRows || coordinate.getRow() < 1 ||
+                coordinate.getColumn() > numberOfColumns || coordinate.getColumn() < 1) {
+            throw new InvalidCellBoundsException(coordinate, numberOfRows, numberOfColumns);
+        }
+    }
     @Override
     public void setName(String name) {
         this.name = name;
@@ -344,5 +401,19 @@ public class SheetImpl implements Sheet, Serializable {
     @Override
     public List<Cell> getLastModifiedCells() {
         return lastModifiedCells;
+    }
+
+    public SheetImpl copySheet() {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(this);
+            oos.close();
+
+            ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()));
+            return (SheetImpl) ois.readObject();
+        } catch (Exception e) {
+            throw new RuntimeException("Unknown error occurred while copying sheet");
+        }
     }
 }

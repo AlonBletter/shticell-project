@@ -121,9 +121,10 @@ public class CenterController {
 
     private void gridPaneReset() {
         centerGrid = new GridPane();
+        centerGrid.setGridLinesVisible(true);
         centerGrid.getChildren().clear();
-        centerGrid.setHgap(1);
-        centerGrid.setVgap(1);
+//        centerGrid.setHgap(1);
+//        centerGrid.setVgap(1);
     }
 
     private void initializeRowsTitle(double rowHeightUnitsValue) {

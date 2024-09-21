@@ -254,9 +254,7 @@ public class SheetImpl implements Sheet, Serializable {
         }
     }
 
-
     // Using Topological Sort to get the right order
-
     private List<Coordinate> getEffectiveValueCalculationOrder(Map<Coordinate, List<Coordinate>> dependencyGraph) {
         List<Coordinate> sortedList = new ArrayList<>();
         Map<Coordinate, Integer> inDegree = new HashMap<>();

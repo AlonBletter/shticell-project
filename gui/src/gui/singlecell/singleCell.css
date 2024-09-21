@@ -4,7 +4,7 @@
     -fx-border-color: #e0e0e0; /* Light gray border for subtle distinction */
     -fx-border-width: 1px; /* Border width */
     -fx-border-radius: 4px; /* Rounded corners for a softer appearance */
-    -fx-padding: 8px; /* Slightly increased padding for better spacing */
+    /*-fx-padding: 8px; !* Slightly increased padding for better spacing *!*/
     -fx-alignment: center; /* Center alignment */
     -fx-cursor: hand; /* Pointer cursor for interactivity */
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 1); /* Subtle shadow for depth */
@@ -21,7 +21,7 @@
     -fx-border-color: #e0e0e0; /* Light gray border for consistency */
     -fx-border-width: 1px; /* Border width for consistency */
     -fx-border-radius: 4px; /* Rounded corners for consistency */
-    -fx-padding: 5px; /* Padding to match the SingleCell styling */
+    /*-fx-padding: 5px; !* Padding to match the SingleCell styling *!*/
 }
 
 /*!* Value Label Styling *!*/

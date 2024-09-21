@@ -3,7 +3,6 @@ package engine.expression.impl.math;
 import engine.expression.api.Expression;
 import engine.expression.type.UnaryExpression;
 import engine.sheet.api.SheetReadActions;
-import engine.sheet.cell.api.Cell;
 import engine.sheet.cell.api.CellReadActions;
 import engine.sheet.cell.api.CellType;
 import engine.sheet.coordinate.Coordinate;
@@ -12,8 +11,8 @@ import engine.sheet.effectivevalue.EffectiveValueImpl;
 
 import java.util.List;
 
-public class Sum extends UnaryExpression {
-    public Sum(Expression expression) {
+public class Average extends UnaryExpression {
+    public Average(Expression expression) {
         super(expression);
     }
 
@@ -28,18 +27,23 @@ public class Sum extends UnaryExpression {
         }
 
         double result = 0;
+        int numberCounter = 0;
         for(Coordinate coordinate : cellsInRange) {
             CellReadActions cell = sheet.getCell(coordinate);
             EffectiveValue cellEffectiveValue = cell.getEffectiveValue();
 
             if(cellEffectiveValue.getCellType() != CellType.NUMERIC) {
-                result = 0;
                 continue;
             }
+            numberCounter++;
             result += cellEffectiveValue.extractValueWithExpectation(Double.class);
         }
 
-        return new EffectiveValueImpl(CellType.NUMERIC, result);
+        if (numberCounter == 0) {
+            throw new IllegalArgumentException("The cells in range [" + rangeName + "] doesn't contain any numbers.");
+        }
+
+        return new EffectiveValueImpl(CellType.NUMERIC, result/numberCounter);
     }
 
     @Override

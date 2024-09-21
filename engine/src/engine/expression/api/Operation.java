@@ -1,11 +1,13 @@
 package engine.expression.api;
 
+import engine.expression.impl.logic.*;
 import engine.expression.impl.math.*;
 import engine.expression.impl.string.Concat;
 import engine.expression.impl.string.Sub;
 import engine.expression.impl.system.Ref;
 import engine.sheet.cell.api.CellType;
 
+import javax.naming.NoPermissionException;
 import java.lang.reflect.Constructor;
 import java.util.List;
 
@@ -14,10 +16,6 @@ public enum Operation {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateNumberOfParameters(Divide.class, parameters);
-
-            CellType leftCellType = parameters.get(0).getFunctionResultType();
-            CellType rightCellType = parameters.get(1).getFunctionResultType();
-
             return new Divide(parameters.get(0), parameters.get(1));
         }
     },
@@ -25,10 +23,6 @@ public enum Operation {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateNumberOfParameters(Minus.class, parameters);
-
-            CellType leftCellType = parameters.get(0).getFunctionResultType();
-            CellType rightCellType = parameters.get(1).getFunctionResultType();
-
             return new Minus(parameters.get(0), parameters.get(1));
         }
     },
@@ -36,10 +30,6 @@ public enum Operation {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateNumberOfParameters(Mod.class, parameters);
-
-            CellType leftCellType = parameters.get(0).getFunctionResultType();
-            CellType rightCellType = parameters.get(1).getFunctionResultType();
-
             return new Mod(parameters.get(0), parameters.get(1));
         }
     },
@@ -47,10 +37,6 @@ public enum Operation {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateNumberOfParameters(Plus.class, parameters);
-
-            CellType leftCellType = parameters.get(0).getFunctionResultType();
-            CellType rightCellType = parameters.get(1).getFunctionResultType();
-
             return new Plus(parameters.get(0), parameters.get(1));
         }
     },
@@ -58,10 +44,6 @@ public enum Operation {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateNumberOfParameters(Pow.class, parameters);
-
-            CellType leftCellType = parameters.get(0).getFunctionResultType();
-            CellType rightCellType = parameters.get(1).getFunctionResultType();
-
             return new Pow(parameters.get(0), parameters.get(1));
         }
     },
@@ -69,9 +51,6 @@ public enum Operation {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateNumberOfParameters(Abs.class, parameters);
-
-            CellType expressionCellType = parameters.getFirst().getFunctionResultType();
-
             return new Abs(parameters.getFirst());
         }
     },
@@ -79,10 +58,6 @@ public enum Operation {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateNumberOfParameters(Times.class, parameters);
-
-            CellType leftCellType = parameters.get(0).getFunctionResultType();
-            CellType rightCellType = parameters.get(1).getFunctionResultType();
-
             return new Times(parameters.get(0), parameters.get(1));
         }
     },
@@ -90,10 +65,6 @@ public enum Operation {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateNumberOfParameters(Concat.class, parameters);
-
-            CellType leftCellType = parameters.get(0).getFunctionResultType();
-            CellType rightCellType = parameters.get(1).getFunctionResultType();
-
             return new Concat(parameters.get(0), parameters.get(1));
         }
     },
@@ -101,11 +72,6 @@ public enum Operation {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateNumberOfParameters(Sub.class, parameters);
-
-            CellType expressionType1 = parameters.get(0).getFunctionResultType();
-            CellType expressionType2 = parameters.get(1).getFunctionResultType();
-            CellType expressionType3 = parameters.get(2).getFunctionResultType();
-
             return new Sub(parameters.get(0), parameters.get(1), parameters.get(2));
         }
     },
@@ -113,9 +79,6 @@ public enum Operation {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateNumberOfParameters(Ref.class, parameters);
-
-            CellType expressionCellType = parameters.getFirst().getFunctionResultType();
-
             return new Ref(parameters.getFirst());
         }
     },
@@ -123,10 +86,70 @@ public enum Operation {
         @Override
         public Expression createExpression(List<Expression> parameters) {
             validateNumberOfParameters(Sum.class, parameters);
-
-            CellType expressionCellType = parameters.getFirst().getFunctionResultType();
-
             return new Sum(parameters.getFirst());
+        }
+    },
+    AVERAGE {
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateNumberOfParameters(Average.class, parameters);
+            return new Average(parameters.getFirst());
+        }
+    },
+    PERCENT {
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateNumberOfParameters(Percent.class, parameters);
+            return new Percent(parameters.get(0), parameters.get(1));
+        }
+    },
+    EQUAL {
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateNumberOfParameters(Equal.class, parameters);
+            return new Equal(parameters.get(0), parameters.get(1));
+        }
+    },
+    NOT {
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateNumberOfParameters(Not.class, parameters);
+            return new Not(parameters.getFirst());
+        }
+    },
+    BIGGER {
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateNumberOfParameters(Bigger.class, parameters);
+            return new Bigger(parameters.get(0), parameters.get(1));
+        }
+    },
+    LESS {
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateNumberOfParameters(Less.class, parameters);
+            return new Less(parameters.get(0), parameters.get(1));
+        }
+    },
+    OR {
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateNumberOfParameters(Or.class, parameters);
+            return new Or(parameters.get(0), parameters.get(1));
+        }
+    },
+    AND {
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateNumberOfParameters(And.class, parameters);
+            return new And(parameters.get(0), parameters.get(1));
+        }
+    },
+    IF {
+        @Override
+        public Expression createExpression(List<Expression> parameters) {
+            validateNumberOfParameters(If.class, parameters);
+            return new If(parameters.get(0), parameters.get(1), parameters.get(2));
         }
     };
 

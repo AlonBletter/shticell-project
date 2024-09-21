@@ -141,8 +141,11 @@ public class HeaderController {
             throw new IllegalArgumentException("Please select a cell before updating value.");
         }
 
-        mainController.updateCell(selectedCellCoordinate, actionLineTextField.getText());
-        actionLineTextField.setText("");
+        boolean updated = mainController.updateCell(selectedCellCoordinate, actionLineTextField.getText());
+
+        if (updated) {
+            actionLineTextField.setText("");
+        }
     }
 
     public void updateHeaderCellData(CellModel selectedCell) {

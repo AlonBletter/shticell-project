@@ -6,6 +6,8 @@ import engine.sheet.effectivevalue.EffectiveValue;
 import engine.sheet.api.SheetReadActions;
 import engine.sheet.effectivevalue.EffectiveValueImpl;
 
+import java.util.Objects;
+
 public class BooleanWrapper implements Expression {
     private final Boolean aBoolean;
 
@@ -26,5 +28,18 @@ public class BooleanWrapper implements Expression {
     @Override
     public CellType getFunctionResultType() {
         return CellType.BOOLEAN;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BooleanWrapper that = (BooleanWrapper) o;
+        return Objects.equals(aBoolean, that.aBoolean);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(aBoolean);
     }
 }

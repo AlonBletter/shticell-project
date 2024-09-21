@@ -31,6 +31,11 @@ public class RangeImpl implements Range, Serializable {
         int endRow = end.getRow();
         int endCol = end.getColumn();
 
+        if (endRow < startRow || endCol < startCol) {
+            throw new IllegalArgumentException("Invalid range: The bottom-right coordinate [" + end + "]" +
+                    " cannot be above or to the left of the top-left coordinate [" + start + "].");
+        }
+
         for (int row = startRow; row <= endRow; row++) {
             for (int col = startCol; col <= endCol; col++) {
                 Coordinate cellCoordinate = CoordinateFactory.createCoordinate(row, col);

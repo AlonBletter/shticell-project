@@ -6,6 +6,8 @@ import engine.sheet.effectivevalue.EffectiveValue;
 import engine.sheet.api.SheetReadActions;
 import engine.sheet.effectivevalue.EffectiveValueImpl;
 
+import java.util.Objects;
+
 public class Text implements Expression {
     private final String text;
 
@@ -26,5 +28,18 @@ public class Text implements Expression {
     @Override
     public CellType getFunctionResultType() {
         return CellType.TEXT;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Text text1 = (Text) o;
+        return Objects.equals(text, text1.text);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(text);
     }
 }

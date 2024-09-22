@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -30,7 +31,11 @@ public class SortDialogController {
 
     @FXML
     void initialize() {
-
+        rangeCoordinatesTextField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                sortButton.fire();
+            }
+        });
     }
 
     public void addColumnPicker() {
@@ -69,11 +74,7 @@ public class SortDialogController {
             selectedColumns.add(selectedColumn);
         }
 
-        boolean sorted = mainController.sortRange(rangeToSort, selectedColumns);
-
-        if(sorted) {
-            dialogStage.close();
-        }
+        mainController.sortRange(rangeToSort, selectedColumns);
     }
 
     public void setDialogStage(Stage dialogStage) {

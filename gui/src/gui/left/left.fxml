@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
 
 <VBox alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="200.0" spacing="20.0" styleClass="general-vbox" stylesheets="@left.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.left.LeftController">
    <padding>
@@ -20,7 +21,11 @@
    <children>
       <VBox minHeight="350.0" minWidth="150.0" prefHeight="350.0" prefWidth="150.0" spacing="10.0">
          <children>
-            <Label prefHeight="25.0" prefWidth="150.0" text="Cell Styling" />
+            <Label alignment="CENTER" prefHeight="25.0" prefWidth="150.0" text="Cell Styling">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
             <VBox prefHeight="60.0" prefWidth="150.0" spacing="3.0">
                <children>
                   <Label prefWidth="85.0" text="Cell Dimensions" />

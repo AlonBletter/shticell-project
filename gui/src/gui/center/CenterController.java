@@ -20,6 +20,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 
@@ -70,7 +71,7 @@ public class CenterController {
         double rowHeightUnits = sheet.rowHeightUnits();
         double columnWidthUnits = sheet.columnWidthUnits();
 
-        gridPaneReset();
+        gridPaneReset(rowHeightUnits, columnWidthUnits);
         setRowsConstrains(rowHeightUnits);
         setColumnsConstraints(columnWidthUnits);
         initializeRowsTitle(rowHeightUnits);
@@ -119,24 +120,23 @@ public class CenterController {
         }
     }
 
-    private void gridPaneReset() {
+    private void gridPaneReset(double rowHeightUnits, double columnWidthUnits) {
         centerGrid = new GridPane();
         centerGrid.setGridLinesVisible(true);
         centerGrid.getChildren().clear();
-//        centerGrid.setHgap(1);
-//        centerGrid.setVgap(1);
+        centerGrid.setMinWidth(columnWidthUnits*(numOfColumns + 1));
+        centerGrid.setMinHeight(rowHeightUnits*(numOfRows + 1));
     }
 
     private void initializeRowsTitle(double rowHeightUnitsValue) {
         for (int row = 1; row <= numOfRows; row++) {
             Label rowTitle = new Label(String.valueOf(row));
             rowTitle.getStyleClass().add("row-title");
-            rowTitle.setMinHeight(0);   // Match the cell height
-            rowTitle.setMaxHeight(rowHeightUnitsValue);   // Keep the label's size consistent
-            rowTitle.setPrefHeight(rowHeightUnitsValue);  // Ensure uniform height
+            rowTitle.setMinHeight(0);
+            rowTitle.setMaxHeight(rowHeightUnitsValue);
+            rowTitle.setPrefHeight(rowHeightUnitsValue);
             rowTitle.setPrefWidth(ROW_AND_COLUMN_SIZE);
-            // Make row clickable to select
-            final int finalRow = row;  // Use 'final' for the lambda
+            final int finalRow = row;
             rowTitle.setOnMouseClicked(e -> selectRow(finalRow));
             rowTitles.put(row, rowTitle);
             centerGrid.add(rowTitle, 0, row);

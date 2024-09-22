@@ -150,9 +150,14 @@ public class AppController {
     private Consumer<Void> getLoadFileConsumerSuccess(String filePath, Stage dialogStage) {
         return (v) -> {
             try {
+                ScrollPane centerScrollPane = new ScrollPane();
+
                 engine.loadSystemSettingsFromFile(filePath);
                 centerComponentController.initializeGrid(engine.getSpreadsheet());
-                borderPane.setCenter(centerComponentController.getCenterGrid());
+
+                centerScrollPane.setContent(centerComponentController.getCenterGrid());
+                borderPane.setCenter(centerScrollPane);
+
                 headerComponentController.enableButtonsAfterLoad(); // TODO not enables anymore, only refresh combo box
                 leftComponentController.loadRanges(engine.getRanges());
                 isFileLoaded.set(true);
@@ -191,10 +196,9 @@ public class AppController {
     }
 
     public void displaySheetByVersion(int version) {
-        SheetDTO sheetVersion = engine.getSheetByVersion(version);
-        String titleToDisplay = "Sheet Version: " + version;
-
         try {
+            SheetDTO sheetVersion = engine.getSheetByVersion(version);
+            String titleToDisplay = "Sheet Version: " + version;
             displaySheet(sheetVersion, titleToDisplay);
         } catch (Exception e) {
             showErrorAlert("Invalid Version", "An error occurred while displaying the sheet.", e.getMessage());
@@ -205,11 +209,12 @@ public class AppController {
         CenterController centerController = new CenterController();
         centerController.initializeGrid(sheetToDisplay);
 
+        ScrollPane displayScrollPane = new ScrollPane();
+        displayScrollPane.setContent(centerController.getCenterGrid());
         Stage sheetStage = new Stage();
         sheetStage.setTitle(title);
         sheetStage.initModality(Modality.APPLICATION_MODAL);
-        GridPane gridPane = centerController.getCenterGrid();
-        Scene scene = new Scene(gridPane);
+        Scene scene = new Scene(displayScrollPane);
 
         sheetStage.setScene(scene);
         sheetStage.showAndWait();

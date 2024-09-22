@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="374.0" prefWidth="470.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/22" fx:controller="gui.left.sortdialog.SortDialogController">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="374.0" prefWidth="470.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.left.sortdialog.SortDialogController">
   <columnConstraints>
     <ColumnConstraints hgrow="NEVER" maxWidth="295.0" minWidth="110.0" prefWidth="115.0" />
     <ColumnConstraints hgrow="ALWAYS" maxWidth="485.0" minWidth="10.0" prefWidth="323.0" />
@@ -24,7 +24,7 @@
   </rowConstraints>
    <children>
       <Label text="Range Coordinates:" />
-      <TextField fx:id="rangeCoordinatesTextField" maxWidth="1.7976931348623157E308" promptText="&lt;Top Left&gt;..&lt;Bottom Right&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" />
+      <TextField fx:id="rangeCoordinatesTextField" maxWidth="1.7976931348623157E308" promptText="&lt;Top Left&gt;..&lt;Bottom Right&gt;" text="&lt;Top Left&gt;..&lt;Bottom Right&gt;" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" />
       <VBox GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
          <children>
             <Label text="Columns To Sort By:" underline="true" />

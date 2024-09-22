@@ -3,6 +3,7 @@ package gui.left.dimensiondialog;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 
@@ -81,5 +82,11 @@ public class DimensionDialogController {
             }
             return null;
         }));
+
+        valueTextField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                applyButton.fire();
+            }
+        });
     }
 }

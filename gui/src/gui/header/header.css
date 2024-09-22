@@ -3,7 +3,7 @@
     -fx-background-color: #ffffff; /* Light gray */
 
     /* Adding subtle shadows for a neumorphic effect */
-    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 8, 0.5, 0, 1);
+    /*-fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.2), 8, 0.5, 0, 1);*/
 
     /* Optional: Light border to enhance neumorphic effect */
     -fx-border-color: #d0d0d0; /* Light gray */

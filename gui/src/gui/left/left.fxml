@@ -13,19 +13,19 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 
-<VBox alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="193.0" spacing="20.0" stylesheets="@left.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.left.LeftController">
+<VBox alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="200.0" spacing="20.0" styleClass="general-vbox" stylesheets="@left.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.left.LeftController">
    <padding>
       <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
    </padding>
    <children>
-      <VBox minHeight="0.0" minWidth="150.0" prefHeight="360.0" prefWidth="150.0" spacing="10.0">
+      <VBox minHeight="350.0" minWidth="150.0" prefHeight="350.0" prefWidth="150.0" spacing="10.0">
          <children>
             <Label prefHeight="25.0" prefWidth="150.0" text="Cell Styling" />
             <VBox prefHeight="60.0" prefWidth="150.0" spacing="3.0">
                <children>
-                  <Label text="Cell Dimensions" />
-                  <Button fx:id="columnWidthButton" alignment="TOP_LEFT" minHeight="25.0" minWidth="150.0" mnemonicParsing="false" onAction="#columnWidthButtonAction" prefWidth="150.0" text="Column Width" />
-                  <Button fx:id="rowHeightButton" alignment="TOP_LEFT" minHeight="25.0" minWidth="150.0" mnemonicParsing="false" onAction="#rowHeightButtonAction" prefHeight="25.0" prefWidth="150.0" text="Row Height" />
+                  <Label prefWidth="85.0" text="Cell Dimensions" />
+                  <Button fx:id="columnWidthButton" alignment="TOP_LEFT" minHeight="29.0" minWidth="150.0" mnemonicParsing="false" onAction="#columnWidthButtonAction" prefWidth="150.0" text="Column Width" />
+                  <Button fx:id="rowHeightButton" alignment="TOP_LEFT" minHeight="29.0" minWidth="150.0" mnemonicParsing="false" onAction="#rowHeightButtonAction" prefHeight="25.0" prefWidth="150.0" text="Row Height" />
                </children>
             </VBox>
             <VBox>
@@ -67,7 +67,7 @@
             <VBox>
                <children>
                   <Label text="Background Color" />
-                  <ColorPicker fx:id="backgroundColorPicker" minHeight="25.0" minWidth="150.0" prefHeight="25.0" prefWidth="150.0">
+                  <ColorPicker fx:id="backgroundColorPicker" minHeight="29.0" minWidth="150.0" prefHeight="29.0" prefWidth="150.0">
                      <value>
                         <Color />
                      </value>
@@ -77,14 +77,14 @@
             <VBox prefWidth="150.0">
                <children>
                   <Label text="Text Color" />
-                  <ColorPicker fx:id="textColorPicker" minHeight="25.0" minWidth="150.0" prefHeight="25.0" prefWidth="150.0">
+                  <ColorPicker fx:id="textColorPicker" minHeight="29.0" minWidth="150.0" prefHeight="29.0" prefWidth="150.0">
                      <value>
                         <Color />
                      </value>
                   </ColorPicker>
                </children>
             </VBox>
-            <Button fx:id="resetStylingButton" alignment="TOP_LEFT" minHeight="25.0" minWidth="150.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="Reset Styling">
+            <Button fx:id="resetStylingButton" alignment="TOP_LEFT" minHeight="29.0" minWidth="150.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="150.0" text="Reset Styling">
                <VBox.margin>
                   <Insets top="10.0" />
                </VBox.margin>
@@ -92,16 +92,28 @@
          </children>
       </VBox>
       <Separator prefWidth="150.0" />
-      <VBox prefHeight="200.0" prefWidth="150.0">
+      <VBox>
+         <children>
+            <Label text="Filter &amp; Sort" />
+            <HBox>
+               <children>
+                  <Button fx:id="filterButton" alignment="TOP_LEFT" minHeight="29.0" minWidth="75.0" mnemonicParsing="false" onAction="#filterButtonAction" prefHeight="25.0" prefWidth="75.0" text="Filter" />
+                  <Button fx:id="sortButton" alignment="TOP_LEFT" minHeight="29.0" minWidth="75.0" mnemonicParsing="false" onAction="#sortButtonAction" prefHeight="25.0" prefWidth="75.0" text="Sort" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <Separator prefWidth="150.0" />
+      <VBox maxHeight="1.7976931348623157E308" prefHeight="209.0" prefWidth="150.0" VBox.vgrow="ALWAYS">
          <children>
             <Label text="Ranges" />
-            <VBox>
+            <VBox maxHeight="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                <children>
-                  <ListView fx:id="rangesListView" prefHeight="120.0" prefWidth="150.0" />
+                  <ListView fx:id="rangesListView" maxHeight="1.7976931348623157E308" prefHeight="120.0" prefWidth="150.0" VBox.vgrow="ALWAYS" />
                   <HBox>
                      <children>
                         <Button fx:id="addRangeButton" mnemonicParsing="false" onAction="#addRangeButtonAction" prefHeight="25.0" prefWidth="50.0" text="Add" />
-                        <Button fx:id="deleteRangeButton" mnemonicParsing="false" onAction="#deleteRangeButtonAction" prefHeight="25.0" prefWidth="51.0" text="Delete" />
+                        <Button fx:id="deleteRangeButton" mnemonicParsing="false" onAction="#deleteRangeButtonAction" prefHeight="25.0" prefWidth="51.0" text="Del." />
                         <Button fx:id="viewRangeButton" mnemonicParsing="false" onAction="#viewRangeButtonAction" prefHeight="25.0" prefWidth="50.0" text="View" />
                      </children>
                   </HBox>
@@ -109,12 +121,5 @@
             </VBox>
          </children>
       </VBox>
-      <Separator prefWidth="150.0" />
-      <HBox>
-         <children>
-            <Button fx:id="sortButton" alignment="TOP_LEFT" minHeight="25.0" minWidth="75.0" mnemonicParsing="false" onAction="#sortButtonAction" prefHeight="25.0" prefWidth="75.0" text="Sort" />
-            <Button fx:id="filterButton" alignment="TOP_LEFT" minHeight="25.0" minWidth="75.0" mnemonicParsing="false" onAction="#filterButtonAction" prefHeight="25.0" prefWidth="75.0" text="Filter" />
-         </children>
-      </HBox>
    </children>
 </VBox>

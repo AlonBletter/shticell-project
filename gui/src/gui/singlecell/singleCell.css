@@ -1,13 +1,11 @@
-/* SingleCell Styling */
 .single-cell {
     -fx-background-color: #ffffff; /* White background for clean look */
     -fx-border-color: #e0e0e0; /* Light gray border for subtle distinction */
-    -fx-border-width: 1px; /* Border width */
-    -fx-border-radius: 4px; /* Rounded corners for a softer appearance */
-    /*-fx-padding: 8px; !* Slightly increased padding for better spacing *!*/
+    /*-fx-border-width: 1px; !* Border width *!*/
+    /*-fx-border-radius: 4px; !* Rounded corners for a softer appearance *!*/
     -fx-alignment: center; /* Center alignment */
     -fx-cursor: hand; /* Pointer cursor for interactivity */
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 1); /* Subtle shadow for depth */
+    /*-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0, 0, 1);*/
 }
 
 .single-cell:hover {
@@ -15,37 +13,25 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 6, 0, 0, 2); /* Enhanced shadow effect on hover */
 }
 
-/* AnchorPane inside SingleCell */
 .single-cell .anchor-pane {
     -fx-background-color: #ffffff; /* White background for consistency */
-    -fx-border-color: #e0e0e0; /* Light gray border for consistency */
-    -fx-border-width: 1px; /* Border width for consistency */
-    -fx-border-radius: 4px; /* Rounded corners for consistency */
-    /*-fx-padding: 5px; !* Padding to match the SingleCell styling *!*/
+    /*-fx-border-color: #e0e0e0; !* Light gray border for consistency *!*/
+    /*-fx-border-width: 1px; !* Border width for consistency *!*/
+    /*-fx-border-radius: 4px; !* Rounded corners for consistency *!*/
 }
 
-/*!* Value Label Styling *!*/
-/*.single-cell .value-label {*/
-/*    -fx-font-size: 14px; !* Larger font size for better readability *!*/
-/*    -fx-text-fill: #333333; !* Dark text color for contrast *!*/
-/*    -fx-font-weight: bold; !* Bold font for emphasis *!*/
-/*}*/
-
-
-
-/* Selected Cell Styles */
 .selected-cell {
-    -fx-background-color: #b3e0ff; /* Light blue background */
-    -fx-border-color: #0056a0; /* Darker blue border for visibility */
-    -fx-border-width: 3px; /* Thicker border to highlight selection */
+    -fx-background-color: #b8ffb3; /* Light blue background */
+    -fx-border-color: #11B622; /* Darker blue border for visibility */
+    -fx-border-width: 2px; /* Thicker border to highlight selection */
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0.5, 0, 0); /* Strong shadow for emphasis */
 }
 
 /* Selected Row and Column Styles */
 .selected-row, .selected-column {
-    -fx-background-color: #b3e0ff; /* Light blue background */
-    -fx-border-color: #0056a0; /* Darker blue border */
-    -fx-border-width: 3px; /* Thicker border */
+    -fx-background-color: #b8ffb3; /* Light blue background */
+    -fx-border-color: #11B622; /* Darker blue border for visibility */
+    -fx-border-width: 2px; /* Thicker border */
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0.5, 0, 0); /* Strong shadow */
 }
 

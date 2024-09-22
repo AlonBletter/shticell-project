@@ -3,30 +3,7 @@
     -fx-border-color: #d0d0d0; /* Light gray border */
     -fx-border-width: 1px; /* Border around the grid */
     -fx-padding: 0; /* No extra padding */
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0.5, 0, 0); /* Subtle shadow around grid */
-}
-
-/* General Cell Styling */
-.cell {
-    -fx-background-color: #ffffff; /* White background */
-    -fx-border-color: #e0e0e0; /* Light gray border for cells */
-    -fx-border-width: 1px; /* Border width */
-    -fx-padding: 6px; /* Padding inside cells */
-    -fx-alignment: center; /* Centered content */
-    -fx-font-size: 14px; /* Larger font size for readability */
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0.5, 0, 0); /* Light shadow for depth */
-}
-
-.cell:hover {
-    -fx-background-color: #f9f9f9; /* Very light gray on hover */
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0.5, 0, 0); /* Subtle shadow on hover */
-}
-
-/* Selected Cell Styling */
-.cell.selected {
-    -fx-background-color: #b3e0ff; /* Light blue for selected cells */
-    -fx-border-color: #0056a0; /* Darker blue border */
-    -fx-border-width: 2px; /* Border width */
+    /*-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 2, 0.5, 0, 0); !* Subtle shadow around grid *!*/
 }
 
 /* Title Row and Column Styling */
@@ -49,7 +26,6 @@
     -fx-border-width: 1px;
     -fx-text-fill: #2c2c2c; /* Darker text color for better readability */
     -fx-cursor: hand;
-    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.2), 4, 0.5, 0, 0); /* Soft shadow for depth */
 }
 
 .row-title:hover, .column-title:hover {

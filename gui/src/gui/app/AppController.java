@@ -1,13 +1,12 @@
 package gui.app;
 
-import dto.CellDTO;
 import dto.SheetDTO;
 import engine.Engine;
 import engine.EngineImpl;
 import engine.exception.InvalidCellBoundsException;
 import engine.sheet.coordinate.Coordinate;
-import gui.common.ShticellResourcesConstants;
 import gui.center.CenterController;
+import gui.common.ShticellResourcesConstants;
 import gui.header.HeaderController;
 import gui.left.LeftController;
 import gui.singlecell.SingleCellController;
@@ -40,7 +39,7 @@ public class AppController {
     @FXML private BorderPane borderPane;
     @FXML private ScrollPane scrollPane;
 
-    private Engine engine;
+    private final Engine engine;
     private CenterController centerComponentController;
     private Stage primaryStage;
     private Task<Boolean> currentRunningTask;
@@ -159,6 +158,7 @@ public class AppController {
                 isFileLoaded.set(true);
             } catch (InvalidCellBoundsException e) {
                 handleInvalidCellBoundException(e);
+                dialogStage.close();
             } catch (Exception e) {
                 showErrorAlert("File Loading Error", "An error occurred while processing the loaded file.", e.getMessage());
                 dialogStage.close();
@@ -191,22 +191,28 @@ public class AppController {
     }
 
     public void displaySheetByVersion(int version) {
+        SheetDTO sheetVersion = engine.getSheetByVersion(version);
+        String titleToDisplay = "Sheet Version: " + version;
+
         try {
-            SheetDTO sheetVersion = engine.getSheetByVersion(version);
-            CenterController centerController = new CenterController();
-            centerController.initializeGrid(sheetVersion);
-
-            Stage sheetStage = new Stage();
-            sheetStage.setTitle("Sheet Version: " + version);
-            sheetStage.initModality(Modality.APPLICATION_MODAL);
-            GridPane gridPane = centerController.getCenterGrid();
-            Scene scene = new Scene(gridPane);
-
-            sheetStage.setScene(scene);
-            sheetStage.showAndWait();
+            displaySheet(sheetVersion, titleToDisplay);
         } catch (Exception e) {
             showErrorAlert("Invalid Version", "An error occurred while displaying the sheet.", e.getMessage());
         }
+    }
+
+    private void displaySheet(SheetDTO sheetToDisplay, String title) {
+        CenterController centerController = new CenterController();
+        centerController.initializeGrid(sheetToDisplay);
+
+        Stage sheetStage = new Stage();
+        sheetStage.setTitle(title);
+        sheetStage.initModality(Modality.APPLICATION_MODAL);
+        GridPane gridPane = centerController.getCenterGrid();
+        Scene scene = new Scene(gridPane);
+
+        sheetStage.setScene(scene);
+        sheetStage.showAndWait();
     }
 
     private void showErrorAlert(String title, String headerText, String contentText) {
@@ -228,8 +234,8 @@ public class AppController {
         String message = e.getMessage() != null ? e.getMessage() : "";
 
         showErrorAlert("Invalid cells bounds", "An error occurred while processing the loaded file..",
-                message + "Expected column between A-" + sheetColumnRange + " and row between 1-" + sheetNumOfRows + "\n" +
-                "But received column [" + cellColumnChar + "] and row [" + coordinate.getRow() + "]");
+                message + "\n" + "Expected column between A-" + sheetColumnRange + " and row between 1-" + sheetNumOfRows + "\n" +
+                "But received column [" + cellColumnChar + "] and row [" + coordinate.getRow() + "].");
     }
 
     public void updateColumnWidth(Double result) {
@@ -294,9 +300,25 @@ public class AppController {
         }
     }
 
-
     public void viewRange(String rangeNameToView) {
         List<Coordinate> cellsInRange = engine.getRange(rangeNameToView);
         centerComponentController.markRange(cellsInRange);
+    }
+
+    public boolean sortRange(String rangeCoordinatesToSort, List<String> columnsToSortBy) {
+        SheetDTO sortedSheet;
+        try {
+            sortedSheet = engine.getSortedSheet(rangeCoordinatesToSort, columnsToSortBy);
+        } catch (Exception e) {
+            showErrorAlert("Invalid Sort Request", "An error occurred while sorting the range.", e.getMessage());
+            return false;
+        }
+
+        displaySheet(sortedSheet, "Sorted Sheet");
+        return true;
+    }
+
+    public int getNumberOfColumns() { //TODO change!
+        return engine.getSpreadsheet().numOfColumns();
     }
 }

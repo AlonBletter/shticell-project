@@ -13,8 +13,8 @@ import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
 import engine.sheet.range.Range;
 import engine.sheet.range.RangeImpl;
+import engine.sheet.sort.sortablerow.SortableRow;
 
-import java.awt.font.LineMetrics;
 import java.io.*;
 import java.util.*;
 
@@ -88,8 +88,13 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     private void addRangeHelper(String rangeName, Coordinate startOfRange, Coordinate endOfRange) {
-        validateCoordinateInbound(startOfRange);
-        validateCoordinateInbound(endOfRange);
+        try {
+            validateCoordinateInbound(startOfRange);
+            validateCoordinateInbound(endOfRange);
+        } catch (InvalidCellBoundsException e) {
+            throw new InvalidCellBoundsException(e.getActualCoordinate(), e.getSheetNumOfRows(), e.getSheetNumOfColumns(),
+                    "Range [" + rangeName + "] coordinates are invalid.");
+        }
 
         if(ranges.containsKey(rangeName)) {
             throw new IllegalArgumentException("Range with the name [" + rangeName + "] already exists.");
@@ -313,6 +318,167 @@ public class SheetImpl implements Sheet, Serializable {
         }
 
         return sortedList;
+    }
+
+    @Override
+    public void sort(String rangeToSortBy, List<String> columnsToSortBy) {
+        List<Coordinate> rangeStartEnd = ExpressionUtils.parseRange(rangeToSortBy);
+        Coordinate start = rangeStartEnd.get(0);
+        Coordinate end = rangeStartEnd.get(1);
+        validateRangeCoordinates(start, end);
+        validateColumnsUnique(columnsToSortBy);
+        validateColumnsInRange(columnsToSortBy, rangeStartEnd);
+
+        List<Integer> columnIndicesToSort = getColumnIndicesToSort(columnsToSortBy, start, end);
+        List<SortableRow> sortableRows = getSortableRows(start, end, columnIndicesToSort);
+        sortableRows.sort(getSortableRowComparator(columnsToSortBy));
+        updateRowsAfterSorting(sortableRows, start);
+    }
+
+    private void validateRangeCoordinates(Coordinate start, Coordinate end) {
+        validateCoordinateInbound(start);
+        validateCoordinateInbound(end);
+
+        int startRow = start.getRow();
+        int startCol = start.getColumn();
+        int endRow = end.getRow();
+        int endCol = end.getColumn();
+
+        if (endRow < startRow || endCol < startCol) {
+            throw new IllegalArgumentException("Invalid range: The bottom-right coordinate [" + end + "]" +
+                    " cannot be above or to the left of the top-left coordinate [" + start + "].");
+        }
+    }
+
+    private List<Integer> getColumnIndicesToSort(List<String> columnsToSortBy, Coordinate start, Coordinate end) {
+        List<Integer> columnIndicesToSort = new ArrayList<>();
+        for (String column : columnsToSortBy) {
+            int colIndex = parseColumn(column);
+            if (colIndex < start.getColumn() || colIndex > end.getColumn()) {
+                throw new IllegalArgumentException("Column [" + column + "] is out of the range.");
+            }
+            columnIndicesToSort.add(colIndex);
+        }
+        return columnIndicesToSort;
+    }
+
+    private List<SortableRow> getSortableRows(Coordinate start, Coordinate end, List<Integer> columnIndicesToSort) {
+        List<SortableRow> sortableRows = new ArrayList<>();
+        for (int row = start.getRow(); row <= end.getRow(); row++) {
+            Map<Integer, Double> valuesToSort = new HashMap<>();
+            List<Cell> cellsInRow = new ArrayList<>();
+
+            for (int col = start.getColumn(); col <= end.getColumn(); col++) {
+                Coordinate cellCoordinate = CoordinateFactory.createCoordinate(row, col);
+                Cell cell = activeCells.get(cellCoordinate);
+                if (columnIndicesToSort.contains(col)) {
+                    Double value = cell.getEffectiveValue().extractValueWithExpectation(Double.class);
+                    if (cell != null && value != null) {
+                        valuesToSort.put(col, value);
+                    } else {
+                        valuesToSort.put(col, null);
+                    }
+                }
+
+                cellsInRow.add(cell);
+            }
+
+            sortableRows.add(new SortableRow(row, valuesToSort, cellsInRow));
+        }
+        return sortableRows;
+    }
+
+    private void updateRowsAfterSorting(List<SortableRow> sortableRows, Coordinate start) {
+        for (int row = 0; row < sortableRows.size(); row++) {
+            SortableRow sortedRow = sortableRows.get(row);
+            List<Cell> sortedCells = sortedRow.getCellsInRow();
+            int columnIndex = start.getColumn();
+
+            for (Cell cell : sortedCells) {
+                Coordinate coordinate = CoordinateFactory.createCoordinate(start.getRow() + row, columnIndex);
+                activeCells.put(coordinate, cell);
+                columnIndex++;
+            }
+        }
+    }
+
+    private Comparator<SortableRow> getSortableRowComparator(List<String> columnsToSortBy) {
+        return (row1, row2) -> {
+            // Compare based on the specified columns in order
+            for (String column : columnsToSortBy) {
+                int colIndex = parseColumn(column);
+                Double value1 = row1.getValueFromColumn(colIndex);
+                Double value2 = row2.getValueFromColumn(colIndex);
+
+                if (value1 == null && value2 != null) return 1;
+                if (value1 != null && value2 == null) return -1;
+
+                if (value1 != null && value2 != null) {
+                    int comparison = value1.compareTo(value2);
+                    if (comparison != 0) {
+                        return comparison; // Return the comparison if values are different
+                    }
+                }
+            }
+
+            // If all columns have equal values, maintain the original row order (stable sort)
+            return Integer.compare(row1.getOriginalRow(), row2.getOriginalRow());
+        };
+    }
+
+    private int parseColumn(String column) {
+        return Character.toUpperCase(column.charAt(0)) - 'A' + 1;
+    }
+
+    private void validateColumnsUnique(List<String> columns) {
+        HashSet<String> uniqueColumns = new HashSet<>(columns);
+        if (uniqueColumns.size() != columns.size()) {
+            throw new IllegalArgumentException("A column cannot appear more than once");
+        }
+    }
+
+    private void validateColumnsInRange(List<String> columnsToSortBy, List<Coordinate> rangeStartEnd) {
+        Coordinate start = rangeStartEnd.get(0);
+        Coordinate end = rangeStartEnd.get(1);
+
+        int startColumn = start.getColumn();
+        int endColumn = end.getColumn();
+
+        for (String column : columnsToSortBy) {
+            int columnIndex = column.toUpperCase().charAt(0) - 'A' + 1; // Convert A, B, C... to 1, 2, 3...
+
+            if (columnIndex < startColumn || columnIndex > endColumn) {
+                throw new IllegalArgumentException("Column [" + column + "] is out of range.");
+            }
+        }
+    }
+
+    private List<Integer> validateColumnsToSort(String fromColumn, String toColumn) {
+        int fromIndex = parseSingleLetterColumn(fromColumn);
+        int toIndex = parseSingleLetterColumn(toColumn);
+
+        if (fromIndex > toIndex) {
+            throw new IllegalArgumentException("'From' column must be before or equal to the 'To' column.");
+        }
+
+        if (fromIndex > numberOfColumns || toIndex > numberOfColumns) {
+            throw new IllegalArgumentException("Columns are out of bounds. Valid range is A to " + (char) ('A' + numberOfColumns - 1) + ".");
+        }
+
+        List<Integer> indices = new LinkedList<>();
+        indices.add(fromIndex);
+        indices.add(toIndex);
+
+        return indices;
+    }
+
+    private int parseSingleLetterColumn(String column) { //TODO is always letter
+        if (column.length() != 1 || !Character.isLetter(column.charAt(0))) {
+            throw new IllegalArgumentException("Invalid column: " + column);
+        }
+
+        char normalizedColumn = Character.toUpperCase(column.charAt(0));
+        return normalizedColumn - 'A' + 1;
     }
 
     @Override

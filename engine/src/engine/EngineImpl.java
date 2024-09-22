@@ -110,6 +110,13 @@ public class EngineImpl implements Engine {
     }
 
     @Override
+    public SheetDTO getSortedSheet(String rangeToSortBy, List<String> columnsToSortBy) {
+        Sheet copyCurrentVersionSheet = versionManager.getCurrentVersionSheet().copySheet();
+        copyCurrentVersionSheet.sort(rangeToSortBy, columnsToSortBy);
+        return SheetConverter.convertToDTO(copyCurrentVersionSheet);
+    }
+
+    @Override
     public void loadSystemSettingsFromFile(String filePath) {
         try {
             validateXMLFile(filePath);
@@ -118,7 +125,8 @@ public class EngineImpl implements Engine {
             Sheet loadedSheet = convertXMLSheetToMySheetObject(sheetFromFile);
             versionManager.addNewVersion(loadedSheet);
         } catch (InvalidCellBoundsException e) {
-            throw new InvalidCellBoundsException(e.getActualCoordinate(), e.getSheetNumOfRows(), e.getSheetNumOfColumns(), "Error while loading file: ");
+            String message = e.getMessage() != null ? e.getMessage() : "";
+            throw new InvalidCellBoundsException(e.getActualCoordinate(), e.getSheetNumOfRows(), e.getSheetNumOfColumns(), "Error while loading file: " + message);
         } catch (IllegalArgumentException | ClassCastException e) {
             throw new IllegalArgumentException("Error while loading file: " + e.getMessage());
         }

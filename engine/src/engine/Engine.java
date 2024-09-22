@@ -23,4 +23,5 @@ public interface Engine {
     void deleteRange(String rangeNameToDelete);
     List<Coordinate> getRange(String rangeNameToView);
     List<Range> getRanges();
+    SheetDTO getSortedSheet(String rangeToSortBy, List<String> columnsToSortBy);
 }

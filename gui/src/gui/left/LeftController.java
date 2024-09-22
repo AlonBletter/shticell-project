@@ -5,10 +5,9 @@ import gui.app.AppController;
 import gui.common.ShticellResourcesConstants;
 import gui.left.dimensiondialog.DimensionDialogController;
 import gui.left.rangedialog.RangeDialogController;
+import gui.left.sortdialog.SortDialogController;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -38,6 +37,9 @@ public class LeftController {
     @FXML private Button addRangeButton;
     @FXML private Button deleteRangeButton;
     @FXML private Button viewRangeButton;
+    @FXML private Button sortButton;
+    @FXML private Button filterButton;
+
 
     private AppController mainController;
     private Stage primaryStage;
@@ -187,6 +189,35 @@ public class LeftController {
         }
     }
 
+
+    @FXML
+    void filterButtonAction(ActionEvent event) {
+
+    }
+
+    @FXML
+    void sortButtonAction(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(ShticellResourcesConstants.SORT_DIALOG_URL);
+            Parent root = loader.load();
+
+            SortDialogController sortDialogController = loader.getController();
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Sort");
+            dialogStage.setResizable(false);
+            dialogStage.setScene(new Scene(root));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            sortDialogController.setDialogStage(dialogStage);
+            sortDialogController.setMainController(mainController);
+            sortDialogController.addColumnPicker();
+            dialogStage.showAndWait();
+        } catch (IOException e) {
+            throw new RuntimeException("IO Exception occurred...");
+        }
+    }
+
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
         SimpleBooleanProperty mainIsFileLoadedProperty = mainController.isFileLoadedProperty();
@@ -200,6 +231,8 @@ public class LeftController {
         resetStylingButton.disableProperty().bind(mainIsFileLoadedProperty.not());
         rangesListView.disableProperty().bind(mainIsFileLoadedProperty.not());
         addRangeButton.disableProperty().bind(mainIsFileLoadedProperty.not());
+        sortButton.disableProperty().bind(mainIsFileLoadedProperty.not());
+        filterButton.disableProperty().bind(mainIsFileLoadedProperty.not());
     }
 
     public void setPrimaryStage(Stage primaryStage) {

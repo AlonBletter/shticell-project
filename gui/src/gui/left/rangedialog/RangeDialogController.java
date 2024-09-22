@@ -64,7 +64,7 @@ public class RangeDialogController {
     }
 
     @FXML
-    void CancelButtonAction(ActionEvent event) {
+    void cancelButtonAction(ActionEvent event) {
         dialogStage.close();
     }
 

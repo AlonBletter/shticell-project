@@ -105,6 +105,7 @@ public class HeaderController {
 
     // TODO change this maybe?
     public void enableButtonsAfterLoad() {
+
         versionSelectorComboBox.getItems().clear();
         refreshComboBoxVersion();
     }
@@ -133,7 +134,7 @@ public class HeaderController {
         String absolutePath = selectedFile.getAbsolutePath();
         filePath.set(absolutePath);
         mainController.loadFile(absolutePath);
-        //TODO loading even when
+        //TODO loading path name is changed even when error
     }
 
     @FXML

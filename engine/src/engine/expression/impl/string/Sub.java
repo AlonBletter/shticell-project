@@ -27,9 +27,8 @@ public class Sub extends TrinaryExpression {
         }
 
         if (arg2 % 1 != 0 || arg3 % 1 != 0) {
-            throw new IllegalArgumentException("Invalid arguments to " + this.getClass().getSimpleName().toUpperCase() +
-                    " function! Indices must be whole numbers. Received Arg2=<" + arg2 + ">, Arg3=<" + arg3 + ">");
-        } //TODO undefined also?
+            return new EffectiveValueImpl(CellType.ERROR, "!UNDEFINED!");
+        }
 
         int startIndex = arg2.intValue();
         int endIndex = arg3.intValue();

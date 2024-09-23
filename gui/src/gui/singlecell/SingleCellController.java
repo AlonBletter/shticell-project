@@ -44,9 +44,9 @@ public class SingleCellController extends CellModel {
     @FXML
     public void onCellClickUpdate(MouseEvent event) {
         if (mainController != null) {
-            cellPane.getStyleClass().add("selected-cell");
             centerController.updateDependenciesAndInfluences(dependsOn, influenceOn);
             mainController.setSelectedCell(this);
+            cellPane.getStyleClass().add("selected-cell");
         }
     }
 

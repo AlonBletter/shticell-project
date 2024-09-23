@@ -45,9 +45,13 @@
     -fx-text-fill: white;
 }
 
-.label {
-    -fx-font-family: 'Poppins', sans-serif;
-}
+/*.left-label {*/
+/*    -fx-font-family: Tahoma;*/
+/*}*/
+
+/*.cell-style-label {*/
+/*    -fx-font-family: Tahoma;*/
+/*}*/
 
 .toggle-button {
     -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #67EE75, #11B622);

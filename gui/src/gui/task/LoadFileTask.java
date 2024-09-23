@@ -7,12 +7,14 @@ import javafx.concurrent.Task;
 import java.util.function.Consumer;
 
 public class LoadFileTask extends Task<Boolean> {
+    private Engine engine;
     private String filePathToLoad;
     private Consumer<Void> onSuccess;
     private Consumer<Exception> onFailure;
     private static final int SLEEP_TIME = 200; // TODO dont forget to change before submitting
 
-    public LoadFileTask(String filePathToLoad, Consumer<Void> onSuccess, Consumer<Exception> onFailure) {
+    public LoadFileTask(Engine engine, String filePathToLoad, Consumer<Void> onSuccess, Consumer<Exception> onFailure) {
+        this.engine = engine;
         this.filePathToLoad = filePathToLoad;
         this.onSuccess = onSuccess;
         this.onFailure = onFailure;
@@ -32,7 +34,7 @@ public class LoadFileTask extends Task<Boolean> {
             updateMessage("Loading the sheet...");
             updateProgress(0.5, 1);
             Thread.sleep(SLEEP_TIME);
-
+            engine.loadSystemSettingsFromFile(filePathToLoad);
             updateMessage("Restoring cells information...");
             updateProgress(0.8, 1);
             Thread.sleep(SLEEP_TIME);
@@ -44,6 +46,7 @@ public class LoadFileTask extends Task<Boolean> {
             updateProgress(1, 1);
         } catch (Exception e) {
             updateMessage("Failed to load file.");
+
             Platform.runLater(
                     () -> onFailure.accept(e)
             );

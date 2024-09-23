@@ -50,9 +50,9 @@ public class EngineImpl implements Engine {
         validateLoadedSheet();
         Sheet copyOfCurrentVersion = versionManager.getCurrentVersionSheet().copySheet();
 
-        copyOfCurrentVersion.updateCell(cellToUpdateCoordinate, newCellOriginalValue);
+        boolean updated = copyOfCurrentVersion.updateCell(cellToUpdateCoordinate, newCellOriginalValue);
 
-        if (!copyOfCurrentVersion.getLastModifiedCells().isEmpty()) {
+        if (updated) {
             versionManager.addNewVersion(copyOfCurrentVersion);
         }
     }
@@ -100,7 +100,7 @@ public class EngineImpl implements Engine {
     @Override
     public List<Coordinate> getRange(String rangeNameToView) {
         Sheet currentVersion = versionManager.getCurrentVersionSheet();
-        return currentVersion.getRange(rangeNameToView);
+        return currentVersion.getRangeCellsCoordinates(rangeNameToView);
     }
 
     @Override
@@ -114,6 +114,12 @@ public class EngineImpl implements Engine {
         Sheet copyCurrentVersionSheet = versionManager.getCurrentVersionSheet().copySheet();
         copyCurrentVersionSheet.sort(rangeToSortBy, columnsToSortBy);
         return SheetConverter.convertToDTO(copyCurrentVersionSheet);
+    }
+
+    @Override
+    public List<String> getColumnUniqueValue(String columnLetter) {
+        Sheet currentVersion = versionManager.getCurrentVersionSheet();
+        return currentVersion.getColumnUniqueValues(columnLetter);
     }
 
     @Override

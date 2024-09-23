@@ -46,7 +46,7 @@ public class AppController {
     private SingleCellController selectedCell;
     private List<SingleCellController> selectedRow;
     private List<SingleCellController> selectedColumn;
-    private SimpleBooleanProperty isFileLoaded;
+    private final SimpleBooleanProperty isFileLoaded;
 
     public AppController() {
         engine = new EngineImpl();
@@ -70,7 +70,7 @@ public class AppController {
     public void setSelectedCell(SingleCellController selectedCell) {
         clearSelections();
         this.selectedCell = selectedCell;
-        updateHeaderOnCellClick(); //TODO CHANGE TO UPDATE UI?
+        updateHeaderOnCellClick();
         leftComponentController.updateView(selectedCell.getAlignment());
     }
 
@@ -122,8 +122,8 @@ public class AppController {
 
             Stage loadingDialogStage = new Stage();
             Consumer<Void> onSuccess = getLoadFileConsumerSuccess(filePath, loadingDialogStage);
-            Consumer<Exception> onFailure = getLoadFileConsumerFailure();
-            currentRunningTask = new LoadFileTask(filePath, onSuccess, onFailure);
+            Consumer<Exception> onFailure = getLoadFileConsumerFailure(loadingDialogStage);
+            currentRunningTask = new LoadFileTask(engine, filePath, onSuccess, onFailure);
             loadingDialogController.bindTaskToUIComponents(currentRunningTask, null);
             loadingDialogController.setLoadingFileTitleLabel(filePath);
 
@@ -135,14 +135,18 @@ public class AppController {
 
             new Thread(currentRunningTask).start();
         } catch (IOException e) {
-            showErrorAlert("File Loading Error", "An error occurred while opening the file dialog.", e.getMessage());
+            showErrorAlert("File Loading Error", "An error occurred while opening the file dialog", e.getMessage());
         }
     }
-    //TODO is this good?
 
-    private Consumer<Exception> getLoadFileConsumerFailure() {
+    private Consumer<Exception> getLoadFileConsumerFailure(Stage dialogStage) {
         return (exception) -> {
-            showErrorAlert("File Loading Error", "An error occurred while loading the file.", exception.getMessage());
+            if (exception instanceof InvalidCellBoundsException) {
+                handleInvalidCellBoundException((InvalidCellBoundsException) exception);
+            } else {
+                showErrorAlert("File Loading Error", "An error occurred while loading the file", exception.getMessage());
+            }
+            dialogStage.close();
             currentRunningTask.cancel();
         };
     }
@@ -151,19 +155,12 @@ public class AppController {
         return (v) -> {
             try {
                 ScrollPane centerScrollPane = new ScrollPane();
-
-                engine.loadSystemSettingsFromFile(filePath);
                 centerComponentController.initializeGrid(engine.getSpreadsheet());
-
                 centerScrollPane.setContent(centerComponentController.getCenterGrid());
                 borderPane.setCenter(centerScrollPane);
-
-                headerComponentController.enableButtonsAfterLoad(); // TODO not enables anymore, only refresh combo box
+                headerComponentController.initializeHeaderAfterLoad(filePath);
                 leftComponentController.loadRanges(engine.getRanges());
                 isFileLoaded.set(true);
-            } catch (InvalidCellBoundsException e) {
-                handleInvalidCellBoundException(e);
-                dialogStage.close();
             } catch (Exception e) {
                 showErrorAlert("File Loading Error", "An error occurred while processing the loaded file.", e.getMessage());
                 dialogStage.close();
@@ -189,10 +186,6 @@ public class AppController {
             showErrorAlert("Updating Cell Error", "An error occurred while updating the cell.", e.getMessage());
             return false;
         }
-    }
-
-    public int getSheetCurrentVersion() {
-        return engine.getCurrentVersionNumber();
     }
 
     public void displaySheetByVersion(int version) {
@@ -298,6 +291,7 @@ public class AppController {
     public boolean deleteRange(String rangeNameToDelete) {
         try {
             engine.deleteRange(rangeNameToDelete);
+            centerComponentController.unmarkRange();
             return true;
         } catch (Exception e) {
             showErrorAlert("Invalid Range Deletion", "An error occurred while deleting the range.", e.getMessage());
@@ -310,20 +304,28 @@ public class AppController {
         centerComponentController.markRange(cellsInRange);
     }
 
-    public boolean sortRange(String rangeCoordinatesToSort, List<String> columnsToSortBy) {
+    public void sortRange(String rangeCoordinatesToSort, List<String> columnsToSortBy) {
         SheetDTO sortedSheet;
         try {
             sortedSheet = engine.getSortedSheet(rangeCoordinatesToSort, columnsToSortBy);
         } catch (Exception e) {
             showErrorAlert("Invalid Sort Request", "An error occurred while sorting the range.", e.getMessage());
-            return false;
+            return;
         }
 
         displaySheet(sortedSheet, "Sorted Sheet");
-        return true;
     }
 
-    public int getNumberOfColumns() { //TODO change!
+    public int getNumberOfColumns() {
+        //TODO add method in engine api that gets the number of column (consider not mandatory)
         return engine.getSpreadsheet().numOfColumns();
+    }
+
+    public int getSheetCurrentVersion() {
+        return engine.getCurrentVersionNumber();
+    }
+
+    public List<String> getColumnUniqueValues(String columnLetter) {
+        return engine.getColumnUniqueValue(columnLetter);
     }
 }

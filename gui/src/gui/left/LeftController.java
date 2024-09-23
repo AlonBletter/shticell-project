@@ -4,10 +4,10 @@ import engine.sheet.range.Range;
 import gui.app.AppController;
 import gui.common.ShticellResourcesConstants;
 import gui.left.dimensiondialog.DimensionDialogController;
+import gui.left.filterdialog.FilterDialogController;
 import gui.left.rangedialog.RangeDialogController;
 import gui.left.sortdialog.SortDialogController;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -43,13 +43,9 @@ public class LeftController {
 
     private AppController mainController;
     private Stage primaryStage;
-    private SimpleDoubleProperty currentColumnWidthUnits;
-    private SimpleDoubleProperty currentRowHeightUnits;
     private ToggleGroup alignmentToggleGroup;
 
     public LeftController() {
-        currentColumnWidthUnits = new SimpleDoubleProperty();
-        currentRowHeightUnits = new SimpleDoubleProperty();
         alignmentToggleGroup = new ToggleGroup();
     }
 
@@ -192,7 +188,25 @@ public class LeftController {
 
     @FXML
     void filterButtonAction(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(ShticellResourcesConstants.FILTER_DIALOG_URL);
+            Parent root = loader.load();
 
+            FilterDialogController dialogController = loader.getController();
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Filter");
+            dialogStage.setResizable(false);
+            dialogStage.setScene(new Scene(root));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            dialogController.setDialogStage(dialogStage);
+            dialogController.setMainController(mainController);
+            dialogController.addColumnPicker();
+            dialogStage.showAndWait();
+        } catch (IOException e) {
+            throw new RuntimeException("IO Exception occurred...");
+        }
     }
 
     @FXML
@@ -250,6 +264,8 @@ public class LeftController {
     }
 
     public void loadRanges(List<Range> ranges) {
+        rangesListView.getItems().clear();
+
         for(Range range : ranges) {
             rangesListView.getItems().add(range.getName());
         }

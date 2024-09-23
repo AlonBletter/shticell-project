@@ -1,13 +1,11 @@
 package gui.left.sortdialog.columnpicker;
 
 import gui.left.sortdialog.SortDialogController;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
 
 public class ColumnPickerController {
     @FXML private Button addColumnButton;

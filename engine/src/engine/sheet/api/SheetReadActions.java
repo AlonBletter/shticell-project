@@ -18,6 +18,7 @@ public interface SheetReadActions {
     Map<Coordinate, List<Coordinate>> getCellInfluenceOn();
     Map<Coordinate, List<Coordinate>> getCellDependsOn();
     int getVersionNumber();
-    List<Coordinate> getRange(String rangeNameToView);
+    List<Coordinate> getRangeCellsCoordinates(String rangeNameToView);
     List<Range> getRanges();
+    List<String> getColumnUniqueValues(String columnLetter);
 }

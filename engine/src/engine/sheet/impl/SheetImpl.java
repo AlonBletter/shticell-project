@@ -29,6 +29,7 @@ public class SheetImpl implements Sheet, Serializable {
     private Map<Coordinate, List<Coordinate>> cellDependsOn;
     private final List<Cell> lastModifiedCells;
     private final Map<String, Range> ranges;
+    private final Map<String, Set<Coordinate>> activeRanges;
     private int versionNumber;
 
     public SheetImpl() {
@@ -37,6 +38,7 @@ public class SheetImpl implements Sheet, Serializable {
         cellDependsOn = new HashMap<>();
         lastModifiedCells = new LinkedList<>();
         ranges = new HashMap<>();
+        activeRanges = new HashMap<>();
         versionNumber = 1;
     }
 
@@ -56,27 +58,20 @@ public class SheetImpl implements Sheet, Serializable {
 
      private Cell addNewCellIfEmptyCell(Coordinate coordinate) {
         validateCoordinateInbound(coordinate);
-//         CellReadActions cellReadActions = getCell(coordinate);
-//
-//         if (cellReadActions instanceof EmptyCell) {
-//             Cell newCell = new CellImpl(coordinate);
-//             activeCells.put(coordinate, newCell);
-//             return newCell;
-//         }//TODO FIX THIS CASTING
 
          return activeCells.computeIfAbsent(coordinate, CellImpl::new);
      }
 
     @Override
-    public void updateCell(Coordinate coordinate, String newOriginalValue) {
+    public boolean updateCell(Coordinate coordinate, String newOriginalValue) {
         Cell cellToUpdate = addNewCellIfEmptyCell(coordinate);
 
         lastModifiedCells.clear();
         cellToUpdate.setOriginalValue(newOriginalValue);
         updateSheetEffectiveValues();
         versionNumber++;
-        //TODO consider return true for indication for the engine so it will know if to add to version manager or not.
-        // if so, do it with lastModifiedCells == 0
+
+        return !lastModifiedCells.isEmpty();
     }
 
     @Override
@@ -106,25 +101,20 @@ public class SheetImpl implements Sheet, Serializable {
     @Override
     public void deleteRange(String rangeNameToDelete) {
         if(!ranges.containsKey(rangeNameToDelete)) {
-            throw new IllegalArgumentException("Range with the name " + rangeNameToDelete + " does not exist.");
+            throw new IllegalArgumentException("Range with the name [" + rangeNameToDelete + "] does not exist.");
         }
 
-        Range removedRange = ranges.remove(rangeNameToDelete);
-
-        try {
-            updateSheetEffectiveValues();
-        } catch (Exception e) {
-            ranges.put(rangeNameToDelete, removedRange);
-            throw new IllegalArgumentException("Range [" + rangeNameToDelete + "] cannot be deleted because it's being used.");
+        if(activeRanges.containsKey(rangeNameToDelete)) {
+            throw new IllegalArgumentException("Range [" + rangeNameToDelete + "] cannot be deleted " +
+                    "because it's being used by " + activeRanges.get(rangeNameToDelete));
         }
+
+        ranges.remove(rangeNameToDelete);
+        updateSheetEffectiveValues();
     }
 
     @Override
-    public List<Coordinate> getRange(String rangeNameToView) {
-        if (rangeNameToView == null) {
-            return null;
-        }
-
+    public List<Coordinate> getRangeCellsCoordinates(String rangeNameToView) {
         Range range = ranges.get(rangeNameToView);
 
         if (range == null) {
@@ -140,6 +130,34 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     @Override
+    public List<String> getColumnUniqueValues(String columnLetter) {
+        int parsedColumn = parseSingleLetterColumn(columnLetter);
+        Set<String> uniqueValues = new HashSet<>();
+
+        if(parsedColumn < 0 || parsedColumn > numberOfColumns) {
+            throw new IllegalArgumentException("Invalid column letter: [" + columnLetter + "].\n" +
+                    "Expected a column between A - " + convertIntegerColumnToLetter(numberOfColumns));
+        }
+
+        for(int row = 1; row <= numberOfRows; row++) {
+            Coordinate coordinate = CoordinateFactory.createCoordinate(row, parsedColumn);
+            // Best practice here is to return effective values, consider changing in the next app version.
+            String effectiveValue = addNewCellIfEmptyCell(coordinate).getEffectiveValue().getValue().toString();
+            String value = !effectiveValue.isEmpty() ? effectiveValue : "(Empty Cell/s)";
+            uniqueValues.add(value);
+        }
+
+        List<String> sortedUniqueValues = new ArrayList<>(uniqueValues);
+        Collections.sort(sortedUniqueValues);
+
+        if (sortedUniqueValues.remove("(Empty Cell/s)")) {
+            sortedUniqueValues.add("(Empty Cell/s)");
+        }
+
+        return sortedUniqueValues;
+    }
+
+    @Override
     public void init(STLSheet sheetToInitFrom) {
         setName(sheetToInitFrom.getName());
         setNumberOfRows(sheetToInitFrom.getSTLLayout().getRows());
@@ -149,7 +167,18 @@ public class SheetImpl implements Sheet, Serializable {
 
         STLCells cellsFromFile = sheetToInitFrom.getSTLCells();
         List<STLCell> cellsList = cellsFromFile.getSTLCell();
-        List<STLRange> rangesList = sheetToInitFrom.getSTLRanges().getSTLRange();
+        STLRanges stlRanges = sheetToInitFrom.getSTLRanges();
+
+        if(stlRanges != null) {
+            List<STLRange> rangesList = stlRanges.getSTLRange();
+
+            for (STLRange stlRange : rangesList) {
+                STLBoundaries boundaries = stlRange.getSTLBoundaries();
+                Coordinate from = CoordinateFactory.createCoordinate(boundaries.getFrom());
+                Coordinate to = CoordinateFactory.createCoordinate(boundaries.getTo());
+                addRangeHelper(stlRange.getName(), from, to);
+            }
+        }
 
         for (STLCell stlCell : cellsList) {
             Coordinate cellCoordinate = CoordinateFactory.createCoordinate(stlCell.getRow(), stlCell.getColumn());
@@ -158,18 +187,12 @@ public class SheetImpl implements Sheet, Serializable {
             activeCells.put(cellCoordinate, cell);
         }
 
-        for (STLRange stlRange : rangesList) {
-            STLBoundaries boundaries = stlRange.getSTLBoundaries();
-            Coordinate from = CoordinateFactory.createCoordinate(boundaries.getFrom());
-            Coordinate to = CoordinateFactory.createCoordinate(boundaries.getTo());
-            addRangeHelper(stlRange.getName(), from, to);
-        }
-
         updateSheetEffectiveValues();
         versionNumber++;
     }
 
     private void updateSheetEffectiveValues() {
+        activeRanges.clear();
         Map<Coordinate, List<Coordinate>> dependencyGraph = createDependencyGraph();
         List<Coordinate> effectiveValueCalculationOrder = getEffectiveValueCalculationOrder(dependencyGraph);
 
@@ -204,13 +227,13 @@ public class SheetImpl implements Sheet, Serializable {
                 dependencyGraph.put(entry.getKey(), new LinkedList<>());
             }
 
-            List<Coordinate> currentCellReferences = getCurrentCellReferences(entry.getValue().getOriginalValue());
+            Set<Coordinate> currentCellReferences = getCurrentCellDependencies(entry.getValue().getOriginalValue(), entry.getKey());
 
             for (Coordinate coordinate : currentCellReferences) {
                 // Adding an inactive cell to the dependency graph
                 if(!dependencyGraph.containsKey(coordinate)) {
                     dependencyGraph.put(coordinate, new LinkedList<>());
-                } //TODO isn't this copying the list? we already got it ...
+                }
 
                 // Get the list of cells that reference this coordinate
                 List<Coordinate> referencesList = dependencyGraph.get(coordinate);
@@ -218,20 +241,23 @@ public class SheetImpl implements Sheet, Serializable {
                 // Add the current cell coordinate to the list of references
                 referencesList.add(entry.getKey());
             }
-
-            entry.getValue().setDependsOn(currentCellReferences); //TODO test
+            //TODO maybe change to set inside the cells
+            entry.getValue().setDependsOn(new LinkedList<>(currentCellReferences));
         }
 
         return dependencyGraph;
     }
 
-    private List<Coordinate> getCurrentCellReferences(String cellOriginalValue) {
-        String rangeName = ExpressionUtils.extractRange(cellOriginalValue);
-        List<Coordinate> allCoordinates = new LinkedList<>();
+    private Set<Coordinate> getCurrentCellDependencies(String cellOriginalValue, Coordinate currentCell) {
+        List<String> extractRanges = ExpressionUtils.extractRanges(cellOriginalValue);
+        Set<Coordinate> allCoordinates = new HashSet<>();
 
-        if (rangeName != null) {
-            List<Coordinate> currentCellRangeCoordinates = getRange(rangeName);
-            allCoordinates.addAll(currentCellRangeCoordinates);
+        for (String rangeName : extractRanges) {
+            if (rangeName != null) {
+                List<Coordinate> currentCellRangeCoordinates = getRangeCellsCoordinates(rangeName);
+                allCoordinates.addAll(currentCellRangeCoordinates);
+                activeRanges.computeIfAbsent(rangeName, k -> new HashSet<>()).add(currentCell);
+            }
         }
 
         List<Coordinate> currentCellReferences = ExpressionUtils.extractReferences(cellOriginalValue);
@@ -245,7 +271,6 @@ public class SheetImpl implements Sheet, Serializable {
 
     // MUSHPA ME
     // This is the transposed graph of the dependency graph
-
     private void updateReferenceGraph() {
         Map<Coordinate, List<Coordinate>> referenceGraph = new HashMap<>();
 
@@ -262,6 +287,7 @@ public class SheetImpl implements Sheet, Serializable {
         cellDependsOn = referenceGraph;
         updateCellsInfluenceOn();
     }
+
     private void updateCellsInfluenceOn() {
         for(Map.Entry<Coordinate, Cell> entry : activeCells.entrySet()) {
             List<Coordinate> influenceOnCoordinate = cellInfluenceOn.get(entry.getKey());
@@ -326,10 +352,8 @@ public class SheetImpl implements Sheet, Serializable {
         Coordinate start = rangeStartEnd.get(0);
         Coordinate end = rangeStartEnd.get(1);
         validateRangeCoordinates(start, end);
-        validateColumnsUnique(columnsToSortBy);
-        validateColumnsInRange(columnsToSortBy, rangeStartEnd);
+        List<Integer> columnIndicesToSort = getValidatedUniqueColumnIndices(columnsToSortBy, start, end);
 
-        List<Integer> columnIndicesToSort = getColumnIndicesToSort(columnsToSortBy, start, end);
         List<SortableRow> sortableRows = getSortableRows(start, end, columnIndicesToSort);
         sortableRows.sort(getSortableRowComparator(columnsToSortBy));
         updateRowsAfterSorting(sortableRows, start);
@@ -350,15 +374,33 @@ public class SheetImpl implements Sheet, Serializable {
         }
     }
 
-    private List<Integer> getColumnIndicesToSort(List<String> columnsToSortBy, Coordinate start, Coordinate end) {
-        List<Integer> columnIndicesToSort = new ArrayList<>();
+    private List<Integer> getValidatedUniqueColumnIndices(List<String> columnsToSortBy, Coordinate start, Coordinate end) {
+        Set<String> uniqueColumns = new HashSet<>();
         for (String column : columnsToSortBy) {
-            int colIndex = parseColumn(column);
-            if (colIndex < start.getColumn() || colIndex > end.getColumn()) {
-                throw new IllegalArgumentException("Column [" + column + "] is out of the range.");
+            if (!uniqueColumns.add(column)) {
+                throw new IllegalArgumentException("Column [" + column + "] appears more than once.");
             }
-            columnIndicesToSort.add(colIndex);
         }
+
+        List<Integer> columnIndicesToSort = new ArrayList<>();
+        int startColumn = start.getColumn();
+        int endColumn = end.getColumn();
+
+        for (String column : columnsToSortBy) {
+            int columnIndex = parseSingleLetterColumn(column);
+
+            if (columnIndex < startColumn || columnIndex > endColumn) {
+                String startColumnLetter = convertIntegerColumnToLetter(startColumn);
+                String endColumnLetter = convertIntegerColumnToLetter(endColumn);
+
+                throw new IllegalArgumentException("Invalid column selection.\n" +
+                        "Got column [" + column + "] \n" +
+                        "Expected a column between [" + startColumnLetter + "] and [" + endColumnLetter + "].");
+            }
+
+            columnIndicesToSort.add(columnIndex);
+        }
+
         return columnIndicesToSort;
     }
 
@@ -370,14 +412,10 @@ public class SheetImpl implements Sheet, Serializable {
 
             for (int col = start.getColumn(); col <= end.getColumn(); col++) {
                 Coordinate cellCoordinate = CoordinateFactory.createCoordinate(row, col);
-                Cell cell = activeCells.get(cellCoordinate);
+                Cell cell = addNewCellIfEmptyCell(cellCoordinate);
                 if (columnIndicesToSort.contains(col)) {
                     Double value = cell.getEffectiveValue().extractValueWithExpectation(Double.class);
-                    if (cell != null && value != null) {
-                        valuesToSort.put(col, value);
-                    } else {
-                        valuesToSort.put(col, null);
-                    }
+                    valuesToSort.put(col, value);
                 }
 
                 cellsInRow.add(cell);
@@ -404,9 +442,8 @@ public class SheetImpl implements Sheet, Serializable {
 
     private Comparator<SortableRow> getSortableRowComparator(List<String> columnsToSortBy) {
         return (row1, row2) -> {
-            // Compare based on the specified columns in order
             for (String column : columnsToSortBy) {
-                int colIndex = parseColumn(column);
+                int colIndex = parseSingleLetterColumn(column);
                 Double value1 = row1.getValueFromColumn(colIndex);
                 Double value2 = row2.getValueFromColumn(colIndex);
 
@@ -416,63 +453,16 @@ public class SheetImpl implements Sheet, Serializable {
                 if (value1 != null && value2 != null) {
                     int comparison = value1.compareTo(value2);
                     if (comparison != 0) {
-                        return comparison; // Return the comparison if values are different
+                        return comparison;
                     }
                 }
             }
 
-            // If all columns have equal values, maintain the original row order (stable sort)
             return Integer.compare(row1.getOriginalRow(), row2.getOriginalRow());
         };
     }
 
-    private int parseColumn(String column) {
-        return Character.toUpperCase(column.charAt(0)) - 'A' + 1;
-    }
-
-    private void validateColumnsUnique(List<String> columns) {
-        HashSet<String> uniqueColumns = new HashSet<>(columns);
-        if (uniqueColumns.size() != columns.size()) {
-            throw new IllegalArgumentException("A column cannot appear more than once");
-        }
-    }
-
-    private void validateColumnsInRange(List<String> columnsToSortBy, List<Coordinate> rangeStartEnd) {
-        Coordinate start = rangeStartEnd.get(0);
-        Coordinate end = rangeStartEnd.get(1);
-
-        int startColumn = start.getColumn();
-        int endColumn = end.getColumn();
-
-        for (String column : columnsToSortBy) {
-            int columnIndex = column.toUpperCase().charAt(0) - 'A' + 1; // Convert A, B, C... to 1, 2, 3...
-
-            if (columnIndex < startColumn || columnIndex > endColumn) {
-                throw new IllegalArgumentException("Column [" + column + "] is out of range.");
-            }
-        }
-    }
-
-    private List<Integer> validateColumnsToSort(String fromColumn, String toColumn) {
-        int fromIndex = parseSingleLetterColumn(fromColumn);
-        int toIndex = parseSingleLetterColumn(toColumn);
-
-        if (fromIndex > toIndex) {
-            throw new IllegalArgumentException("'From' column must be before or equal to the 'To' column.");
-        }
-
-        if (fromIndex > numberOfColumns || toIndex > numberOfColumns) {
-            throw new IllegalArgumentException("Columns are out of bounds. Valid range is A to " + (char) ('A' + numberOfColumns - 1) + ".");
-        }
-
-        List<Integer> indices = new LinkedList<>();
-        indices.add(fromIndex);
-        indices.add(toIndex);
-
-        return indices;
-    }
-
-    private int parseSingleLetterColumn(String column) { //TODO is always letter
+    private int parseSingleLetterColumn(String column) {
         if (column.length() != 1 || !Character.isLetter(column.charAt(0))) {
             throw new IllegalArgumentException("Invalid column: " + column);
         }
@@ -480,6 +470,14 @@ public class SheetImpl implements Sheet, Serializable {
         char normalizedColumn = Character.toUpperCase(column.charAt(0));
         return normalizedColumn - 'A' + 1;
     }
+
+    private String convertIntegerColumnToLetter(int column) {
+        if (column < 1 || column > 26) {
+            throw new IllegalArgumentException("Column must be between 1 and 26");
+        }
+        return String.valueOf((char) ('A' + column - 1));
+    }
+
 
     @Override
     public void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor) {

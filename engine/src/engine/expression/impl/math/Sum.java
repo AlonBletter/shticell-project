@@ -21,7 +21,7 @@ public class Sum extends UnaryExpression {
     protected EffectiveValue evaluate(SheetReadActions sheet, Expression expression) {
         EffectiveValue effectiveValue = expression.evaluate(sheet);
         String rangeName = effectiveValue.extractValueWithExpectation(String.class);
-        List<Coordinate> cellsInRange = sheet.getRange(rangeName);
+        List<Coordinate> cellsInRange = sheet.getRangeCellsCoordinates(rangeName);
 
         if (rangeName == null) {
             return new EffectiveValueImpl(CellType.ERROR, Double.NaN);

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface SheetUpdateActions {
-    void updateCell(Coordinate coordinate, String value);
+    boolean updateCell(Coordinate coordinate, String value);
     void setName(String name);
     void setNumberOfRows(int numberOfRows);
     void setNumberOfColumns(int numberOfColumns);

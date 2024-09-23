@@ -156,15 +156,17 @@ public class ExpressionUtils {
         return coordinates;
     }
 
-    public static String extractRange(String cellOriginalValue) {
+    public static List<String> extractRanges(String cellOriginalValue) {
         String functionPattern = "(?i)\\{(sum|average),\\s*([^}]+)\\}";
         Pattern pattern = Pattern.compile(functionPattern);
         Matcher matcher = pattern.matcher(cellOriginalValue);
 
-        if (matcher.find()) {
-            return matcher.group(2);
+        List<String> ranges = new ArrayList<>();
+
+        while (matcher.find()) {
+            ranges.add(matcher.group(2));
         }
 
-        return null;
+        return ranges;
     }
 }

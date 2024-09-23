@@ -4,12 +4,9 @@ import dto.CellDTO;
 import dto.SheetDTO;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
-import gui.common.ShticellResourcesConstants;
 import gui.app.AppController;
+import gui.common.ShticellResourcesConstants;
 import gui.singlecell.SingleCellController;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;
@@ -20,30 +17,29 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
-import javafx.scene.paint.Color;
 
 import java.io.IOException;
-import java.util.*;
-
-//TODO consider moving select to the app controller instead of here.
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class CenterController {
     private final static int ROW_AND_COLUMN_SIZE = 30;
     private AppController mainController;
     private GridPane centerGrid;
-    private ObservableMap<Coordinate, SingleCellController> gridCells;
-    private List<SingleCellController> selectedCells;
-    private List<SingleCellController> selectedRange;
-    private Map<String, Label> columnTitles;
-    private Map<Integer, Label> rowTitles;
+    private final ObservableMap<Coordinate, SingleCellController> gridCells;
+    private final List<SingleCellController> selectedCells;
+    private final List<SingleCellController> selectedRange;
+    private final Map<String, Label> columnTitles;
+    private final Map<Integer, Label> rowTitles;
     private int numOfRows;
     private int numOfColumns;
-    private Map<Integer, Double> columnWidthUnits;
-    private Map<Integer, Double> rowHeightUnits;
-    private List<SingleCellController> currentDependsOn; //TODO probably not good, change if time
-    private List<SingleCellController> currentInfluenceOn;
+    private final Map<Integer, Double> columnWidthUnits;
+    private final Map<Integer, Double> rowHeightUnits;
+    private final List<SingleCellController> currentDependsOn;
+    private final List<SingleCellController> currentInfluenceOn;
 
     public CenterController() {
         this.gridCells = FXCollections.observableMap(new HashMap<>());
@@ -197,10 +193,7 @@ public class CenterController {
         }
         selectedCells.clear();
 
-        for(SingleCellController cellController : selectedRange) {
-            cellController.getCellNode().getStyleClass().removeAll("range-mark");
-        }
-        selectedRange.clear();
+        unmarkRange();
     }
 
     public void updateDependenciesAndInfluences(List<Coordinate> dependencies, List<Coordinate> influences) {
@@ -275,6 +268,7 @@ public class CenterController {
             }
         }
     } // The problem with the influence cells mark of b2 \ c2 in 1-insurance is that we receive only the modified cells,
+
     // hence when updating d2 we don't get b2 and c2 for the setDataFromDTO... only D2 was modified...
     //TODO temporary solution
     public void updateCells(SheetDTO sheetDTO) {
@@ -287,14 +281,12 @@ public class CenterController {
             }
         }
     }
-
     public void updateColumnWidth(int columnIndex, double newWidth) {
         ColumnConstraints columnConstraints = new ColumnConstraints();
         columnConstraints.setMinWidth(newWidth);
         columnConstraints.setMaxWidth(newWidth);
         columnConstraints.setPrefWidth(newWidth);
 
-        // Update the specific column
         centerGrid.getColumnConstraints().set(columnIndex, columnConstraints);
         columnTitles.get(getColumnLetter(columnIndex)).setMinWidth(newWidth);
         columnWidthUnits.put(columnIndex, newWidth);
@@ -306,7 +298,6 @@ public class CenterController {
         rowConstraints.setMaxHeight(newHeight);
         rowConstraints.setPrefHeight(newHeight);
 
-        // Update the specific row
         centerGrid.getRowConstraints().set(rowIndex, rowConstraints);
         rowTitles.get(rowIndex).setMinHeight(newHeight);
         rowHeightUnits.put(rowIndex, newHeight);
@@ -327,5 +318,12 @@ public class CenterController {
             cellController.getCellNode().getStyleClass().add("range-mark");
             selectedRange.add(cellController);
         }
+    }
+
+    public void unmarkRange() {
+        for(SingleCellController cellController : selectedRange) {
+            cellController.getCellNode().getStyleClass().removeAll("range-mark");
+        }
+        selectedRange.clear();
     }
 }

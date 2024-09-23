@@ -28,7 +28,7 @@
             </Label>
             <VBox prefHeight="60.0" prefWidth="150.0" spacing="3.0">
                <children>
-                  <Label prefWidth="85.0" text="Cell Dimensions" />
+                  <Label prefWidth="85.0" styleClass="left-label" text="Cell Dimensions" />
                   <Button fx:id="columnWidthButton" alignment="TOP_LEFT" minHeight="29.0" minWidth="150.0" mnemonicParsing="false" onAction="#columnWidthButtonAction" prefWidth="150.0" text="Column Width" />
                   <Button fx:id="rowHeightButton" alignment="TOP_LEFT" minHeight="29.0" minWidth="150.0" mnemonicParsing="false" onAction="#rowHeightButtonAction" prefHeight="25.0" prefWidth="150.0" text="Row Height" />
                </children>

@@ -11,6 +11,8 @@ public class ShticellResourcesConstants {
     public static final String RANGE_DIALOG_FXML_RESOURCE_IDENTIFIER = "/gui/left/rangedialog/rangeDialog.fxml";
     public static final String SORT_DIALOG_FXML_RESOURCE_IDENTIFIER = "/gui/left/sortdialog/sortDialog.fxml";
     public static final String COLUMN_PICKER_FXML_RESOURCE_IDENTIFIER = "/gui/left/sortdialog/columnpicker/columnPicker.fxml";
+    public static final String FILTER_DIALOG_FXML_RESOURCE_IDENTIFIER = "/gui/left/filterdialog/filterDialog.fxml";
+    public static final String FILTER_COLUMN_PICKER_FXML_RESOURCE_IDENTIFIER = "/gui/left/filterdialog/filterpicker/filterColumnPicker.fxml";
 
     public static final URL CELL_FXML_URL = ShticellResourcesConstants.class.getResource(CELL_FXML_RESOURCE_IDENTIFIER);
     public static final URL LOADING_DIALOG_URL = ShticellResourcesConstants.class.getResource(LOADING_DIALOG_FXML_RESOURCE_IDENTIFIER);
@@ -18,4 +20,11 @@ public class ShticellResourcesConstants {
     public static final URL RANGE_DIALOG_URL = ShticellResourcesConstants.class.getResource(RANGE_DIALOG_FXML_RESOURCE_IDENTIFIER);
     public static final URL SORT_DIALOG_URL = ShticellResourcesConstants.class.getResource(SORT_DIALOG_FXML_RESOURCE_IDENTIFIER);
     public static final URL COLUMN_PICKER_URL = ShticellResourcesConstants.class.getResource(COLUMN_PICKER_FXML_RESOURCE_IDENTIFIER);
+    public static final URL FILTER_DIALOG_URL = ShticellResourcesConstants.class.getResource(FILTER_DIALOG_FXML_RESOURCE_IDENTIFIER);
+    public static final URL FILTER_PICKER_URL = ShticellResourcesConstants.class.getResource(FILTER_COLUMN_PICKER_FXML_RESOURCE_IDENTIFIER);
+
+
+    public static final String DEFAULT_CENTER_CSS_RESOURCE_IDENTIFIER = "/gui/center/center.css";
+    //TODO FIX
+    public static final URL DEFAULT_CENTER_CSS_URL = ShticellResourcesConstants.class.getResource(DEFAULT_CENTER_CSS_RESOURCE_IDENTIFIER);
 }

@@ -24,4 +24,5 @@ public interface Engine {
     List<Coordinate> getRange(String rangeNameToView);
     List<Range> getRanges();
     SheetDTO getSortedSheet(String rangeToSortBy, List<String> columnsToSortBy);
+    List<String> getColumnUniqueValue(String columnLetter);
 }

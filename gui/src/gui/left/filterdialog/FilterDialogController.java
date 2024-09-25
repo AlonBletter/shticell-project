@@ -3,7 +3,6 @@ package gui.left.filterdialog;
 import gui.app.AppController;
 import gui.common.ShticellResourcesConstants;
 import gui.left.filterdialog.filterpicker.FilterColumnPickerController;
-import gui.left.sortdialog.columnpicker.ColumnPickerController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,9 +13,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Filter;
+import java.util.Map;
 
 public class FilterDialogController {
     @FXML private Button cancelButton;
@@ -55,12 +55,25 @@ public class FilterDialogController {
 
     @FXML
     void cancelButtonAction(ActionEvent event) {
-
+        dialogStage.close();
     }
 
     @FXML
     void filterButtonAction(ActionEvent event) {
+        String rangeToFilter = rangeCoordinatesTextField.getText();
+        Map<String, List<String>> filterRequestValues = new HashMap<>();
 
+        for(FilterColumnPickerController controller : columnPickers) {
+            String selectedColumn = controller.getSelectedColumn();
+            List<String> selectedValues = controller.getPickedValues();
+            if (!selectedValues.isEmpty()) {
+                filterRequestValues.put(selectedColumn, selectedValues);
+            }
+        }
+
+        if (!filterRequestValues.isEmpty()) {
+            mainController.filterRange(rangeToFilter, filterRequestValues);
+        }
     }
 
     public void setDialogStage(Stage dialogStage) {

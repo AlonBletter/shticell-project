@@ -19,6 +19,7 @@ import jakarta.xml.bind.Unmarshaller;
 
 import java.io.*;
 import java.util.List;
+import java.util.Map;
 
 public class EngineImpl implements Engine {
     public static final int SHEET_MAX_COLUMNS = 20;
@@ -99,25 +100,37 @@ public class EngineImpl implements Engine {
 
     @Override
     public List<Coordinate> getRange(String rangeNameToView) {
+        validateLoadedSheet();
         Sheet currentVersion = versionManager.getCurrentVersionSheet();
         return currentVersion.getRangeCellsCoordinates(rangeNameToView);
     }
 
     @Override
     public List<Range> getRanges() {
+        validateLoadedSheet();
         Sheet currentVersion = versionManager.getCurrentVersionSheet();
         return currentVersion.getRanges();
     }
 
     @Override
     public SheetDTO getSortedSheet(String rangeToSortBy, List<String> columnsToSortBy) {
+        validateLoadedSheet();
         Sheet copyCurrentVersionSheet = versionManager.getCurrentVersionSheet().copySheet();
         copyCurrentVersionSheet.sort(rangeToSortBy, columnsToSortBy);
         return SheetConverter.convertToDTO(copyCurrentVersionSheet);
     }
 
     @Override
+    public SheetDTO getFilteredSheet(String rangeToFilter, Map<String, List<String>> filterRequestValues) {
+        validateLoadedSheet();
+        Sheet copyCurrentVersionSheet = versionManager.getCurrentVersionSheet().copySheet();
+        copyCurrentVersionSheet.filter(rangeToFilter, filterRequestValues);
+        return SheetConverter.convertToDTO(copyCurrentVersionSheet);
+    }
+
+    @Override
     public List<String> getColumnUniqueValue(String columnLetter) {
+        validateLoadedSheet();
         Sheet currentVersion = versionManager.getCurrentVersionSheet();
         return currentVersion.getColumnUniqueValues(columnLetter);
     }

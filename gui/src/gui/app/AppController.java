@@ -29,6 +29,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class AppController {
@@ -327,5 +328,17 @@ public class AppController {
 
     public List<String> getColumnUniqueValues(String columnLetter) {
         return engine.getColumnUniqueValue(columnLetter);
+    }
+
+    public void filterRange(String rangeToFilter, Map<String, List<String>> filterRequestValues) {
+        SheetDTO filteredSheet;
+        try {
+            filteredSheet = engine.getFilteredSheet(rangeToFilter, filterRequestValues);
+        } catch (Exception e) {
+            showErrorAlert("Invalid Filter Request", "An error occurred while filtering the range.", e.getMessage());
+            return;
+        }
+
+        displaySheet(filteredSheet, "Filtered Sheet");
     }
 }

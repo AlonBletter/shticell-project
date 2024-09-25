@@ -21,4 +21,5 @@ public interface SheetUpdateActions {
     void addRange(String rangeName, String rangeCoordinates);
     void deleteRange(String rangeNameToDelete);
     void sort(String rangeToSortBy, List<String> columnsToSortBy);
+    void filter(String rangeToFilter, Map<String, List<String>> filterRequestValues);
 }

@@ -187,29 +187,6 @@ public class LeftController {
 
 
     @FXML
-    void filterButtonAction(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(ShticellResourcesConstants.FILTER_DIALOG_URL);
-            Parent root = loader.load();
-
-            FilterDialogController dialogController = loader.getController();
-
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("Filter");
-            dialogStage.setResizable(false);
-            dialogStage.setScene(new Scene(root));
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(primaryStage);
-            dialogController.setDialogStage(dialogStage);
-            dialogController.setMainController(mainController);
-            dialogController.addColumnPicker();
-            dialogStage.showAndWait();
-        } catch (IOException e) {
-            throw new RuntimeException("IO Exception occurred...");
-        }
-    }
-
-    @FXML
     void sortButtonAction(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(ShticellResourcesConstants.SORT_DIALOG_URL);
@@ -226,6 +203,29 @@ public class LeftController {
             sortDialogController.setDialogStage(dialogStage);
             sortDialogController.setMainController(mainController);
             sortDialogController.addColumnPicker();
+            dialogStage.showAndWait();
+        } catch (IOException e) {
+            throw new RuntimeException("IO Exception occurred...");
+        }
+    }
+
+    @FXML
+    void filterButtonAction(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(ShticellResourcesConstants.FILTER_DIALOG_URL);
+            Parent root = loader.load();
+
+            FilterDialogController dialogController = loader.getController();
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Filter");
+            dialogStage.setResizable(false);
+            dialogStage.setScene(new Scene(root));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            dialogController.setDialogStage(dialogStage);
+            dialogController.setMainController(mainController);
+            dialogController.addColumnPicker();
             dialogStage.showAndWait();
         } catch (IOException e) {
             throw new RuntimeException("IO Exception occurred...");

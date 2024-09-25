@@ -409,8 +409,10 @@ public class SheetImpl implements Sheet, Serializable {
         for (int row = start.getRow(); row <= end.getRow(); row++) {
             Map<Integer, Double> valuesToSort = new HashMap<>();
             List<Cell> cellsInRow = new ArrayList<>();
+            int startColumn = start.getColumn();
+            int endColumn = end.getColumn();
 
-            for (int col = start.getColumn(); col <= end.getColumn(); col++) {
+            for (int col = startColumn; col <= endColumn; col++) {
                 Coordinate cellCoordinate = CoordinateFactory.createCoordinate(row, col);
                 Cell cell = addNewCellIfEmptyCell(cellCoordinate);
                 if (columnIndicesToSort.contains(col)) {
@@ -421,7 +423,7 @@ public class SheetImpl implements Sheet, Serializable {
                 cellsInRow.add(cell);
             }
 
-            sortableRows.add(new SortableRow(row, valuesToSort, cellsInRow));
+            sortableRows.add(new SortableRow(row, startColumn, endColumn, valuesToSort, cellsInRow));
         }
         return sortableRows;
     }
@@ -444,8 +446,8 @@ public class SheetImpl implements Sheet, Serializable {
         return (row1, row2) -> {
             for (String column : columnsToSortBy) {
                 int colIndex = parseSingleLetterColumn(column);
-                Double value1 = row1.getValueFromColumn(colIndex);
-                Double value2 = row2.getValueFromColumn(colIndex);
+                Double value1 = row1.getNumericValue(colIndex);
+                Double value2 = row2.getNumericValue(colIndex);
 
                 if (value1 == null && value2 != null) return 1;
                 if (value1 != null && value2 == null) return -1;
@@ -478,6 +480,68 @@ public class SheetImpl implements Sheet, Serializable {
         return String.valueOf((char) ('A' + column - 1));
     }
 
+    @Override
+    public void filter(String rangeToFilter, Map<String, List<String>> filterRequestValues) {
+        List<Coordinate> rangeStartEnd = ExpressionUtils.parseRange(rangeToFilter);
+        Coordinate start = rangeStartEnd.get(0);
+        Coordinate end = rangeStartEnd.get(1);
+        int numberOfRowsToFilter = end.getRow() - start.getRow() + 1;
+        validateRangeCoordinates(start, end);
+        List<Integer> filterColumnIndices = getValidatedUniqueColumnIndices(filterRequestValues.keySet().stream().toList(), start, end);
+        List<SortableRow> sortableRows = getSortableRows(start, end, filterColumnIndices);
+
+        List<SortableRow> filteredRows = new ArrayList<>();
+
+        for (SortableRow row : sortableRows) {
+            boolean allMatch = true;
+
+            for (Map.Entry<String, List<String>> entry : filterRequestValues.entrySet()) {
+                String column = entry.getKey();
+                List<String> filterValues = entry.getValue();
+                int columnIndex = parseSingleLetterColumn(column);
+                String effectiveValue = row.getEffectiveValueString(columnIndex);
+
+                if (!filterValues.contains(effectiveValue)) {
+                    allMatch = false;
+                    break;
+                }
+            }
+
+            if (allMatch) {
+                filteredRows.add(row);
+            }
+        }
+
+        updateFilteredRows(filteredRows, start, end, numberOfRowsToFilter);
+    }
+
+    private void updateFilteredRows(List<SortableRow> filteredRows, Coordinate start, Coordinate end, int numberOfRowsToFilter) {
+        for (int row = 0; row < numberOfRowsToFilter; row++) {
+            for (int column = start.getColumn(); column <= end.getColumn(); column++) {
+                Coordinate coordinate = CoordinateFactory.createCoordinate(start.getRow() + row, column);
+                activeCells.remove(coordinate);
+            }
+        }
+
+        for (int row = 0; row < filteredRows.size(); row++) {
+            SortableRow sortedRow = filteredRows.get(row);
+            List<Cell> sortedCells = sortedRow.getCellsInRow();
+            int columnIndex = start.getColumn();
+
+            for (Cell cell : sortedCells) {
+                Coordinate coordinate = CoordinateFactory.createCoordinate(start.getRow() + row, columnIndex);
+                activeCells.put(coordinate, cell);
+                columnIndex++;
+            }
+        }
+
+        for (int row = filteredRows.size(); row < numberOfRowsToFilter; row++) {
+            for (int column = start.getColumn(); column <= end.getColumn(); column++) {
+                Coordinate coordinate = CoordinateFactory.createCoordinate(start.getRow() + row, column);
+                activeCells.put(coordinate, addNewCellIfEmptyCell(coordinate));
+            }
+        }
+    }
 
     @Override
     public void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor) {

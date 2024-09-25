@@ -7,6 +7,7 @@ import engine.sheet.range.Range;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public interface Engine {
     void loadSystemSettingsFromFile(String filePath);
@@ -25,4 +26,5 @@ public interface Engine {
     List<Range> getRanges();
     SheetDTO getSortedSheet(String rangeToSortBy, List<String> columnsToSortBy);
     List<String> getColumnUniqueValue(String columnLetter);
+    SheetDTO getFilteredSheet(String rangeToFilter, Map<String, List<String>> filterRequestValues);
 }

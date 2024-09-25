@@ -7,12 +7,16 @@ import java.util.Map;
 
 public class SortableRow {
     private final int originalRow;
-    private final Map<Integer, Double> values;
+    private final int startColumn;
+    private final int endColumn;
+    private final Map<Integer, Double> numericValues;
     private final List<Cell> cellsInRow;
 
-    public SortableRow(int originalRow, Map<Integer, Double> values, List<Cell> cellsInRow) {
+public SortableRow(int originalRow, int startColumn, int endColumn, Map<Integer, Double> numericValues, List<Cell> cellsInRow) {
         this.originalRow = originalRow;
-        this.values = values;
+        this.startColumn = startColumn;
+        this.endColumn = endColumn;
+        this.numericValues = numericValues;
         this.cellsInRow = cellsInRow;
     }
 
@@ -20,15 +24,15 @@ public class SortableRow {
         return originalRow;
     }
 
-//    public List<Double> getValues() {
-//        return values;
-//    }
-
     public List<Cell> getCellsInRow() {
         return cellsInRow;
     }
 
-    public Double getValueFromColumn(int column) {
-        return values.get(column);
+    public Double getNumericValue(int column) {
+        return numericValues.get(column);
+    }
+
+    public String getEffectiveValueString(int column) {
+        return cellsInRow.get(column - startColumn).getEffectiveValue().getValue().toString();
     }
 }

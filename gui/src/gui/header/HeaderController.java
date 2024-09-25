@@ -3,7 +3,7 @@ package gui.header;
 import engine.sheet.coordinate.Coordinate;
 import gui.app.AppController;
 import gui.common.ShticellResourcesConstants;
-import gui.singlecell.CellModel;
+import gui.center.singlecell.CellModel;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;

@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane fx:id="dimensionDialogGridPane" vgap="5.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.left.dimensiondialog.DimensionDialogController">
+<GridPane fx:id="dimensionDialogGridPane" vgap="5.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.left.dialog.dimension.DimensionDialogController">
    <columnConstraints>
       <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="100.0" minWidth="10.0" prefWidth="100.0" />
       <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="SOMETIMES" maxWidth="100.0" minWidth="10.0" prefWidth="100.0" />

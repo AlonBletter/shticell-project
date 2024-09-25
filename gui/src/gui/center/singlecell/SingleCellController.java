@@ -1,4 +1,4 @@
-package gui.singlecell;
+package gui.center.singlecell;
 
 import dto.CellDTO;
 import engine.sheet.cell.api.CellType;
@@ -12,7 +12,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
 
 public class SingleCellController extends CellModel {
     @FXML private AnchorPane cellPane;

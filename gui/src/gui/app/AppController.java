@@ -9,7 +9,7 @@ import gui.center.CenterController;
 import gui.common.ShticellResourcesConstants;
 import gui.header.HeaderController;
 import gui.left.LeftController;
-import gui.singlecell.SingleCellController;
+import gui.center.singlecell.SingleCellController;
 import gui.task.LoadFileTask;
 import gui.task.LoadingDialogController;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -209,7 +209,6 @@ public class AppController {
         sheetStage.setTitle(title);
         sheetStage.initModality(Modality.APPLICATION_MODAL);
         Scene scene = new Scene(displayScrollPane);
-
         sheetStage.setScene(scene);
         sheetStage.showAndWait();
     }
@@ -219,7 +218,6 @@ public class AppController {
         alert.setTitle(title);
         alert.setHeaderText(headerText);
         alert.setContentText(contentText);
-
         alert.showAndWait();
     }
 
@@ -229,7 +227,6 @@ public class AppController {
         int SheetNumOfColumns = e.getSheetNumOfColumns();
         char sheetColumnRange = (char) (SheetNumOfColumns + 'A' - 1);
         char cellColumnChar = (char) (coordinate.getColumn() + 'A' - 1);
-
         String message = e.getMessage() != null ? e.getMessage() : "";
 
         showErrorAlert("Invalid cells bounds", "An error occurred while processing the loaded file..",
@@ -307,6 +304,7 @@ public class AppController {
 
     public void sortRange(String rangeCoordinatesToSort, List<String> columnsToSortBy) {
         SheetDTO sortedSheet;
+
         try {
             sortedSheet = engine.getSortedSheet(rangeCoordinatesToSort, columnsToSortBy);
         } catch (Exception e) {

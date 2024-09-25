@@ -4,14 +4,14 @@ import java.net.URL;
 
 public class ShticellResourcesConstants {
     public static final String APP_FXML_RESOURCE_IDENTIFIER = "/gui/app/app.fxml";
-    public static final String CELL_FXML_RESOURCE_IDENTIFIER = "/gui/singlecell/singlecell.fxml";
+    public static final String CELL_FXML_RESOURCE_IDENTIFIER = "/gui/center/singlecell/singlecell.fxml";
     public static final String LOADING_DIALOG_FXML_RESOURCE_IDENTIFIER = "/gui/task/loadingDialog.fxml";
-    public static final String DIMENSION_DIALOG_FXML_RESOURCE_IDENTIFIER = "/gui/left/dimensiondialog/dimensionDialog.fxml";
-    public static final String RANGE_DIALOG_FXML_RESOURCE_IDENTIFIER = "/gui/left/rangedialog/rangeDialog.fxml";
-    public static final String SORT_DIALOG_FXML_RESOURCE_IDENTIFIER = "/gui/left/sortdialog/sortDialog.fxml";
-    public static final String COLUMN_PICKER_FXML_RESOURCE_IDENTIFIER = "/gui/left/sortdialog/columnpicker/columnPicker.fxml";
-    public static final String FILTER_DIALOG_FXML_RESOURCE_IDENTIFIER = "/gui/left/filterdialog/filterDialog.fxml";
-    public static final String FILTER_COLUMN_PICKER_FXML_RESOURCE_IDENTIFIER = "/gui/left/filterdialog/filtercolumnpicker/filterColumnPicker.fxml";
+    public static final String DIMENSION_DIALOG_FXML_RESOURCE_IDENTIFIER = "/gui/left/dialog/dimension/dimensionDialog.fxml";
+    public static final String RANGE_DIALOG_FXML_RESOURCE_IDENTIFIER = "/gui/left/dialog/range/rangeDialog.fxml";
+    public static final String SORT_DIALOG_FXML_RESOURCE_IDENTIFIER = "/gui/left/dialog/sort/sortDialog.fxml";
+    public static final String COLUMN_PICKER_FXML_RESOURCE_IDENTIFIER = "/gui/left/dialog/sort/columnpicker/columnPicker.fxml";
+    public static final String FILTER_DIALOG_FXML_RESOURCE_IDENTIFIER = "/gui/left/dialog/filter/filterDialog.fxml";
+    public static final String FILTER_COLUMN_PICKER_FXML_RESOURCE_IDENTIFIER = "/gui/left/dialog/filter/filtercolumnpicker/filterColumnPicker.fxml";
 
     public static final URL CELL_FXML_URL = ShticellResourcesConstants.class.getResource(CELL_FXML_RESOURCE_IDENTIFIER);
     public static final URL LOADING_DIALOG_URL = ShticellResourcesConstants.class.getResource(LOADING_DIALOG_FXML_RESOURCE_IDENTIFIER);

@@ -1,6 +1,6 @@
-package gui.left.filterdialog.filtercolumnpicker;
+package gui.left.dialog.filter.filtercolumnpicker;
 
-import gui.left.filterdialog.FilterDialogController;
+import gui.left.dialog.filter.FilterDialogController;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;

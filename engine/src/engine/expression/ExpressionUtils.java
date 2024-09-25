@@ -8,9 +8,7 @@ import engine.expression.type.Text;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -119,8 +117,8 @@ public class ExpressionUtils {
         return parsingResult;
     }
 
-    public static List<Coordinate> extractReferences(String input) {
-        List<Coordinate> coordinates = new ArrayList<>();
+    public static Set<Coordinate> extractReferences(String input) {
+        Set<Coordinate> coordinates = new HashSet<>();
         String regex = "\\{REF,([A-Z]+\\d+)\\}";
         Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(input);
@@ -156,12 +154,12 @@ public class ExpressionUtils {
         return coordinates;
     }
 
-    public static List<String> extractRanges(String cellOriginalValue) {
+    public static Set<String> extractRanges(String cellOriginalValue) {
         String functionPattern = "(?i)\\{(sum|average),\\s*([^}]+)\\}";
         Pattern pattern = Pattern.compile(functionPattern);
         Matcher matcher = pattern.matcher(cellOriginalValue);
 
-        List<String> ranges = new ArrayList<>();
+        Set<String> ranges = new HashSet<>();
 
         while (matcher.find()) {
             ranges.add(matcher.group(2));

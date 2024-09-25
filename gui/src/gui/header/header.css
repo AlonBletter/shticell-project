@@ -111,6 +111,10 @@
     -fx-text-fill: black;
 }
 
+.choice-box > .label {
+    -fx-text-fill: white;
+}
+
 .choice-box:hover {
     -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #76F485, #22C232);
     -fx-border-color: linear-gradient(from 0% 100% to 0% 0%, #22C232, #76F485);

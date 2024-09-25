@@ -42,7 +42,7 @@
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="25.0">
                                  <image>
-                                    <Image url="@../resources/align-left.png" />
+                                    <Image url="@../resource/align-left.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -51,7 +51,7 @@
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="25.0">
                                  <image>
-                                    <Image url="@../resources/format.png" />
+                                    <Image url="@../resource/format.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -60,7 +60,7 @@
                            <graphic>
                               <ImageView fitHeight="20.0" fitWidth="25.0">
                                  <image>
-                                    <Image url="@../resources/align-right.png" />
+                                    <Image url="@../resource/align-right.png" />
                                  </image>
                               </ImageView>
                            </graphic>

@@ -1,36 +1,41 @@
-package gui.left.filterdialog;
+package gui.left.dialog.sort;
 
 import gui.app.AppController;
 import gui.common.ShticellResourcesConstants;
-import gui.left.filterdialog.filtercolumnpicker.FilterColumnPickerController;
+import gui.left.dialog.sort.columnpicker.ColumnPickerController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-public class FilterDialogController {
+public class SortDialogController {
     @FXML private Button cancelButton;
-    @FXML private VBox columnsAddVBox;
-    @FXML private Button filterButton;
     @FXML private TextField rangeCoordinatesTextField;
-    private int columnNumber = 0;
-    private AppController mainController;
+    @FXML private VBox columnsAddVBox;
+    @FXML private Button sortButton;
+
     private Stage dialogStage;
-    private List<FilterColumnPickerController> columnPickers = new LinkedList<>();
+    private AppController mainController;
+    private List<ColumnPickerController> columnPickers = new LinkedList<>();
+    private int columnNumber = 0;
 
     @FXML
     void initialize() {
-
+        rangeCoordinatesTextField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                sortButton.fire();
+            }
+        });
     }
 
     public void addColumnPicker() {
@@ -38,9 +43,9 @@ public class FilterDialogController {
 
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(ShticellResourcesConstants.FILTER_PICKER_URL);
+            loader.setLocation(ShticellResourcesConstants.COLUMN_PICKER_URL);
             Node columnPicker = loader.load();
-            FilterColumnPickerController controller = loader.getController();
+            ColumnPickerController controller = loader.getController();
 
             controller.setColumnCounter(columnNumber);
             controller.setDialogController(this);
@@ -59,21 +64,17 @@ public class FilterDialogController {
     }
 
     @FXML
-    void filterButtonAction(ActionEvent event) {
-        String rangeToFilter = rangeCoordinatesTextField.getText();
-        Map<String, List<String>> filterRequestValues = new HashMap<>();
+    void sortButtonAction(ActionEvent event) {
+        String rangeToSort = rangeCoordinatesTextField.getText();
 
-        for(FilterColumnPickerController controller : columnPickers) {
+        List<String> selectedColumns = new ArrayList<>();
+
+        for (ColumnPickerController controller : columnPickers) {
             String selectedColumn = controller.getSelectedColumn();
-            List<String> selectedValues = controller.getPickedValues();
-            if (!selectedValues.isEmpty()) {
-                filterRequestValues.put(selectedColumn, selectedValues);
-            }
+            selectedColumns.add(selectedColumn);
         }
 
-        if (!filterRequestValues.isEmpty()) {
-            mainController.filterRange(rangeToFilter, filterRequestValues);
-        }
+        mainController.sortRange(rangeToSort, selectedColumns);
     }
 
     public void setDialogStage(Stage dialogStage) {
@@ -82,9 +83,5 @@ public class FilterDialogController {
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
-    }
-
-    public List<String> getColumnUniqueValues(String columnLetter) {
-        return mainController.getColumnUniqueValues(columnLetter);
     }
 }

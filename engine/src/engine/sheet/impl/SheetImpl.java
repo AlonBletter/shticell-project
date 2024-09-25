@@ -69,7 +69,10 @@ public class SheetImpl implements Sheet, Serializable {
         lastModifiedCells.clear();
         cellToUpdate.setOriginalValue(newOriginalValue);
         updateSheetEffectiveValues();
-        versionNumber++;
+
+        if(!lastModifiedCells.isEmpty()) {
+            versionNumber++;
+        }
 
         return !lastModifiedCells.isEmpty();
     }
@@ -142,7 +145,7 @@ public class SheetImpl implements Sheet, Serializable {
         for(int row = 1; row <= numberOfRows; row++) {
             Coordinate coordinate = CoordinateFactory.createCoordinate(row, parsedColumn);
             // Best practice here is to return effective values, consider changing in the next app version.
-            String effectiveValue = addNewCellIfEmptyCell(coordinate).getEffectiveValue().getValue().toString();
+            String effectiveValue = addNewCellIfEmptyCell(coordinate).getEffectiveValue().extractStringValue();
             String value = !effectiveValue.isEmpty() ? effectiveValue : "(Empty Cell/s)";
             uniqueValues.add(value);
         }
@@ -241,7 +244,7 @@ public class SheetImpl implements Sheet, Serializable {
                 // Add the current cell coordinate to the list of references
                 referencesList.add(entry.getKey());
             }
-            //TODO maybe change to set inside the cells
+
             entry.getValue().setDependsOn(new LinkedList<>(currentCellReferences));
         }
 
@@ -249,7 +252,7 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     private Set<Coordinate> getCurrentCellDependencies(String cellOriginalValue, Coordinate currentCell) {
-        List<String> extractRanges = ExpressionUtils.extractRanges(cellOriginalValue);
+        Set<String> extractRanges = ExpressionUtils.extractRanges(cellOriginalValue);
         Set<Coordinate> allCoordinates = new HashSet<>();
 
         for (String rangeName : extractRanges) {
@@ -260,7 +263,7 @@ public class SheetImpl implements Sheet, Serializable {
             }
         }
 
-        List<Coordinate> currentCellReferences = ExpressionUtils.extractReferences(cellOriginalValue);
+        Set<Coordinate> currentCellReferences = ExpressionUtils.extractReferences(cellOriginalValue);
 
         if (!currentCellReferences.isEmpty()) {
             allCoordinates.addAll(currentCellReferences);
@@ -292,11 +295,8 @@ public class SheetImpl implements Sheet, Serializable {
         for(Map.Entry<Coordinate, Cell> entry : activeCells.entrySet()) {
             List<Coordinate> influenceOnCoordinate = cellInfluenceOn.get(entry.getKey());
 
-            if (influenceOnCoordinate != null) {
-                entry.getValue().setInfluenceOn(influenceOnCoordinate);
-            } else {
-                entry.getValue().setInfluenceOn(new LinkedList<>());
-            }
+            entry.getValue().setInfluenceOn(
+                    Objects.requireNonNullElseGet(influenceOnCoordinate, LinkedList::new));
         }
     }
 

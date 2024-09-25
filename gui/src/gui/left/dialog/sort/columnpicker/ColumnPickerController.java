@@ -1,6 +1,6 @@
-package gui.left.sortdialog.columnpicker;
+package gui.left.dialog.sort.columnpicker;
 
-import gui.left.sortdialog.SortDialogController;
+import gui.left.dialog.sort.SortDialogController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

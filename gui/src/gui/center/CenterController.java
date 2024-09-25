@@ -6,7 +6,7 @@ import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
 import gui.app.AppController;
 import gui.common.ShticellResourcesConstants;
-import gui.singlecell.SingleCellController;
+import gui.center.singlecell.SingleCellController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;

@@ -1,4 +1,4 @@
-package gui.left.rangedialog;
+package gui.left.dialog.range;
 
 import gui.app.AppController;
 import javafx.event.ActionEvent;

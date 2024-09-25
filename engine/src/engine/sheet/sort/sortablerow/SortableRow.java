@@ -33,6 +33,6 @@ public SortableRow(int originalRow, int startColumn, int endColumn, Map<Integer,
     }
 
     public String getEffectiveValueString(int column) {
-        return cellsInRow.get(column - startColumn).getEffectiveValue().getValue().toString();
+        return cellsInRow.get(column - startColumn).getEffectiveValue().extractStringValue();
     }
 }

@@ -4,10 +4,8 @@ import engine.sheet.api.Sheet;
 import engine.sheet.cell.api.Cell;
 import engine.sheet.coordinate.Coordinate;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SheetConverter {
     public static SheetDTO convertToDTO(Sheet sheet) {
@@ -18,8 +16,8 @@ public class SheetConverter {
                 sheet.getRowHeightUnits(),
                 sheet.getColumnWidthUnits(),
                 convertActiveCellsToDTO(sheet.getActiveCells()),
-                sheet.getCellInfluenceOn(), //TODO Maybe needs a copy
-                sheet.getCellDependsOn(),
+                copyRelations(sheet.getCellInfluenceOn()),
+                copyRelations(sheet.getCellDependsOn()),
                 convertLastModifiedCellsToDTO(sheet.getLastModifiedCells()),
                 sheet.getVersionNumber()
         );
@@ -36,20 +34,6 @@ public class SheetConverter {
         return cellDTOs;
     }
 
-    private static Map<Integer, SheetDTO> convertVersionsToDTO(Map<Integer, Sheet> versions) {
-        Map<Integer, SheetDTO> versionsDTO = new HashMap<>();
-
-        for (Map.Entry<Integer, Sheet> entry : versions.entrySet()) {
-            int versionNum = entry.getKey();
-            Sheet sheet = entry.getValue();
-            SheetDTO sheetDTO = convertToDTO(sheet);
-
-            versionsDTO.put(versionNum, sheetDTO);
-        }
-
-        return versionsDTO;
-    }
-
     private static Map<Coordinate, CellDTO> convertActiveCellsToDTO(Map<Coordinate, Cell> activeCells) {
         Map<Coordinate, CellDTO> activeCellsDTO = new HashMap<>();
 
@@ -62,5 +46,15 @@ public class SheetConverter {
         }
 
         return activeCellsDTO;
+    }
+
+    public static Map<Coordinate, List<Coordinate>> copyRelations(Map<Coordinate, List<Coordinate>> original) {
+        Map<Coordinate, List<Coordinate>> copy = new HashMap<>();
+
+        for (Map.Entry<Coordinate, List<Coordinate>> entry : original.entrySet()) {
+            copy.put(entry.getKey(), new LinkedList<>(entry.getValue()));
+        }
+
+        return copy;
     }
 }

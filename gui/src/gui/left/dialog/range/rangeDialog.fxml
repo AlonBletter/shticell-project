@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="115.0" prefWidth="314.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.left.rangedialog.RangeDialogController">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="115.0" prefWidth="314.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.left.dialog.range.RangeDialogController">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" maxWidth="118.66666412353516" minWidth="10.0" prefWidth="84.66666412353516" />
     <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="194.66666793823242" minWidth="10.0" prefWidth="159.33333587646484" />

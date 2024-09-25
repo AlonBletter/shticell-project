@@ -1,4 +1,4 @@
-package gui.singlecell;
+package gui.center.singlecell;
 
 import dto.CellDTO;
 import engine.sheet.cell.api.CellType;

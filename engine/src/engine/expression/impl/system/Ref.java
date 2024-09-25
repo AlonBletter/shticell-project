@@ -19,7 +19,6 @@ public class Ref extends UnaryExpression {
         EffectiveValue effectiveValue = expression.evaluate(sheet);
         String arg = effectiveValue.extractValueWithExpectation(String.class);
 
-        // Aviad needs to decide what to present if there is a ref to an empty cell \ invalid argument.
         if (arg == null) {
             throw new IllegalArgumentException("Invalid arguments to " + this.getClass().getSimpleName().toUpperCase() + " function!\n" +
                     "Expected <"+ CellType.TEXT +"> but received <" + effectiveValue.getCellType() + ">");
@@ -27,11 +26,6 @@ public class Ref extends UnaryExpression {
 
         Coordinate coordinate = CoordinateFactory.createCoordinate(arg);
         CellReadActions cell = sheet.getCell(coordinate);
-        //TODO FIX?
-
-//        if(cell == null) { celltype empty
-//            return new EffectiveValueImpl(CellType.TEXT, "!UNDEFINED!");
-//        }
 
         return cell.getEffectiveValue();
     }

@@ -1,14 +1,13 @@
 package engine.sheet.cell.impl;
 
+import engine.sheet.cell.api.Cell;
 import engine.sheet.cell.api.CellStyle;
 import engine.sheet.cell.api.CellType;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.effectivevalue.EffectiveValue;
-import engine.sheet.cell.api.Cell;
 import engine.sheet.effectivevalue.EffectiveValueImpl;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 

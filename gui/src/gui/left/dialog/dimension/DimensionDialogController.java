@@ -1,11 +1,10 @@
-package gui.left.dimensiondialog;
+package gui.left.dialog.dimension;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
-import javafx.util.converter.DoubleStringConverter;
 
 public class DimensionDialogController {
     @FXML private Button applyButton;

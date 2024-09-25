@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.HBox?>
 
 
-<HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="411.0" spacing="15.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.left.sortdialog.columnpicker.ColumnPickerController">
+<HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="46.0" prefWidth="411.0" spacing="15.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.left.dialog.sort.columnpicker.ColumnPickerController">
    <children>
       <Label fx:id="columnCounterLabel" prefHeight="17.0" prefWidth="22.0" />
       <Label text="Column Letter:" />

@@ -112,6 +112,10 @@
     -fx-text-fill: black;
 }
 
+.choice-box > .label {
+    -fx-text-fill: white;
+}
+
 .choice-box .open-button .arrow {
     -fx-border-color: white;
     -fx-background-color: white;

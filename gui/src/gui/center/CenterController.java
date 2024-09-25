@@ -20,6 +20,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,6 +41,7 @@ public class CenterController {
     private final Map<Integer, Double> rowHeightUnits;
     private final List<SingleCellController> currentDependsOn;
     private final List<SingleCellController> currentInfluenceOn;
+    private boolean editable;
 
     public CenterController() {
         this.gridCells = FXCollections.observableMap(new HashMap<>());
@@ -61,11 +63,12 @@ public class CenterController {
         return centerGrid;
     }
 
-    public void initializeGrid(SheetDTO sheet) {
+    public void initializeGrid(SheetDTO sheet, boolean editable) {
         numOfRows = sheet.numOfRows();
         numOfColumns = sheet.numOfColumns();
         double rowHeightUnits = sheet.rowHeightUnits();
         double columnWidthUnits = sheet.columnWidthUnits();
+        this.editable = editable;
 
         gridPaneReset(rowHeightUnits, columnWidthUnits);
         setRowsConstrains(rowHeightUnits);
@@ -81,8 +84,32 @@ public class CenterController {
             }
         }
 
-        centerGrid.getStylesheets().add(getClass().getResource("/gui/center/center.css").toExternalForm());
+        if (ShticellResourcesConstants.DEFAULT_CENTER_CSS_URL != null) {
+            centerGrid.getStylesheets().add(ShticellResourcesConstants.DEFAULT_CENTER_CSS_URL.toExternalForm());
+        } else {
+            System.err.println("CSS resource not found: " + ShticellResourcesConstants.DEFAULT_CENTER_CSS_RESOURCE_IDENTIFIER);
+        }
+
         gridCells.get(CoordinateFactory.createCoordinate(1, 1)).onCellClickUpdate(null);
+    }
+
+    public void setSkin(String skinType) {
+        switch (skinType) {
+            case "Blue":
+                applyCSS(ShticellResourcesConstants.BLUE_CENTER_CSS_URL);
+                break;
+            case "Red":
+                applyCSS(ShticellResourcesConstants.RED_CENTER_CSS_URL);
+                break;
+            case "Default":
+                applyCSS(ShticellResourcesConstants.DEFAULT_CENTER_CSS_URL);
+                break;
+        }
+    }
+
+    private void applyCSS(URL cssURL) {
+        centerGrid.getStylesheets().clear();
+        centerGrid.getStylesheets().add(cssURL.toExternalForm());
     }
 
     private void addSingleCell(Coordinate coordinate, CellDTO cell) {
@@ -95,10 +122,11 @@ public class CenterController {
             cellController.setDataFromDTO(coordinate, cell);
             cellController.setMainController(mainController);
             cellController.setCenterController(this);
+            cellController.setEditable(editable);
             gridCells.put(coordinate, cellController);
             centerGrid.add(singleCell, coordinate.getColumn(), coordinate.getRow());
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("IOException occurred...", e);
         }
     }
 
@@ -120,8 +148,9 @@ public class CenterController {
         centerGrid = new GridPane();
         centerGrid.setGridLinesVisible(true);
         centerGrid.getChildren().clear();
-        centerGrid.setMinWidth(columnWidthUnits*(numOfColumns + 1));
-        centerGrid.setMinHeight(rowHeightUnits*(numOfRows + 1));
+//        centerGrid.setMinWidth((columnWidthUnits*numOfColumns) + ROW_AND_COLUMN_SIZE);
+//        centerGrid.setMinHeight((rowHeightUnits*numOfRows) + ROW_AND_COLUMN_SIZE);
+        centerGrid.getStyleClass().add("grid");
     }
 
     private void initializeRowsTitle(double rowHeightUnitsValue) {
@@ -132,8 +161,10 @@ public class CenterController {
             rowTitle.setMaxHeight(rowHeightUnitsValue);
             rowTitle.setPrefHeight(rowHeightUnitsValue);
             rowTitle.setPrefWidth(ROW_AND_COLUMN_SIZE);
-            final int finalRow = row;
-            rowTitle.setOnMouseClicked(e -> selectRow(finalRow));
+            if (editable) {
+                final int finalRow = row;
+                rowTitle.setOnMouseClicked(e -> selectRow(finalRow));
+            }
             rowTitles.put(row, rowTitle);
             centerGrid.add(rowTitle, 0, row);
             GridPane.setHalignment(rowTitle, HPos.RIGHT);
@@ -151,8 +182,10 @@ public class CenterController {
             columnTitle.setPrefWidth(columnWidthUnitsValue);
             columnTitle.setPrefHeight(ROW_AND_COLUMN_SIZE);
 
-            final int finalCol = col;
-            columnTitle.setOnMouseClicked(e -> selectColumn(finalCol));
+            if (editable) {
+                final int finalCol = col;
+                columnTitle.setOnMouseClicked(e -> selectColumn(finalCol));
+            }
             columnTitles.put(columnLetter, columnTitle);
             centerGrid.add(columnTitle, col, 0);
             GridPane.setHalignment(columnTitle, HPos.CENTER);

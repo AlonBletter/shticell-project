@@ -1,25 +1,22 @@
 package gui.header;
 
-import dto.CellDTO;
-import engine.Engine;
 import engine.sheet.coordinate.Coordinate;
 import gui.app.AppController;
+import gui.common.ShticellResourcesConstants;
 import gui.singlecell.CellModel;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.net.URL;
 
 public class HeaderController {
     private AppController mainController;
@@ -33,6 +30,8 @@ public class HeaderController {
     @FXML private Label titleLabel;
     @FXML private Button updateValueButton;
     @FXML private ComboBox<String> versionSelectorComboBox;
+    @FXML private GridPane headerGridPane;
+    @FXML private ChoiceBox<String> skinSelectorChoiceBox;
 
     private SimpleStringProperty filePath;
     private SimpleBooleanProperty isFileLoaded;
@@ -51,11 +50,38 @@ public class HeaderController {
         isFileLoaded.bind(mainController.isFileLoadedProperty());
     }
 
+    public void setSkin(String skinType) {
+        switch (skinType) {
+            case "Blue":
+                applyCSS(ShticellResourcesConstants.BLUE_HEADER_CSS_URL);
+                break;
+            case "Red":
+                applyCSS(ShticellResourcesConstants.RED_HEADER_CSS_URL);
+                break;
+            case "Default":
+                applyCSS(ShticellResourcesConstants.DEFAULT_HEADER_CSS_URL);
+                break;
+        }
+    }
+
+    private void applyCSS(URL cssURL) {
+        headerGridPane.getStylesheets().clear();
+        headerGridPane.getStylesheets().add(cssURL.toExternalForm());
+    }
+
     @FXML
     private void initialize() {
         loadedFilePathLabel.textProperty().bind(filePath);
         actionLineTextField.disableProperty().bind(isFileLoaded.not());
         updateValueButton.disableProperty().bind(isFileLoaded.not());
+        skinSelectorChoiceBox.disableProperty().bind(isFileLoaded.not());
+        ObservableList<String> skins = FXCollections.observableArrayList("Default", "Blue", "Red");
+        skinSelectorChoiceBox.setItems(skins);
+        skinSelectorChoiceBox.getSelectionModel().selectFirst();
+        skinSelectorChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            mainController.setComponentsSkin(newValue);
+        });
+
         initializeVersionSelectorComboBox();
 
         actionLineTextField.setOnKeyPressed(event -> {

@@ -3,7 +3,6 @@ package gui.common;
 import java.net.URL;
 
 public class ShticellResourcesConstants {
-    public static final String HEADER_FXML_RESOURCE_IDENTIFIER = "/gui/header/header.fxml";
     public static final String APP_FXML_RESOURCE_IDENTIFIER = "/gui/app/app.fxml";
     public static final String CELL_FXML_RESOURCE_IDENTIFIER = "/gui/singlecell/singlecell.fxml";
     public static final String LOADING_DIALOG_FXML_RESOURCE_IDENTIFIER = "/gui/task/loadingDialog.fxml";
@@ -12,7 +11,7 @@ public class ShticellResourcesConstants {
     public static final String SORT_DIALOG_FXML_RESOURCE_IDENTIFIER = "/gui/left/sortdialog/sortDialog.fxml";
     public static final String COLUMN_PICKER_FXML_RESOURCE_IDENTIFIER = "/gui/left/sortdialog/columnpicker/columnPicker.fxml";
     public static final String FILTER_DIALOG_FXML_RESOURCE_IDENTIFIER = "/gui/left/filterdialog/filterDialog.fxml";
-    public static final String FILTER_COLUMN_PICKER_FXML_RESOURCE_IDENTIFIER = "/gui/left/filterdialog/filterpicker/filterColumnPicker.fxml";
+    public static final String FILTER_COLUMN_PICKER_FXML_RESOURCE_IDENTIFIER = "/gui/left/filterdialog/filtercolumnpicker/filterColumnPicker.fxml";
 
     public static final URL CELL_FXML_URL = ShticellResourcesConstants.class.getResource(CELL_FXML_RESOURCE_IDENTIFIER);
     public static final URL LOADING_DIALOG_URL = ShticellResourcesConstants.class.getResource(LOADING_DIALOG_FXML_RESOURCE_IDENTIFIER);
@@ -25,6 +24,26 @@ public class ShticellResourcesConstants {
 
 
     public static final String DEFAULT_CENTER_CSS_RESOURCE_IDENTIFIER = "/gui/center/center.css";
-    //TODO FIX
+    public static final String BLUE_CENTER_CSS_RESOURCE_IDENTIFIER = "/gui/center/centerBlueSkin.css";
+    public static final String RED_CENTER_CSS_RESOURCE_IDENTIFIER = "/gui/center/centerRedSkin.css";
+
+    public static final String DEFAULT_HEADER_CSS_RESOURCE_IDENTIFIER = "/gui/header/header.css";
+    public static final String BLUE_HEADER_CSS_RESOURCE_IDENTIFIER = "/gui/header/headerBlueSkin.css";
+    public static final String RED_HEADER_CSS_RESOURCE_IDENTIFIER = "/gui/header/headerRedSkin.css";
+
+    public static final String DEFAULT_LEFT_CSS_RESOURCE_IDENTIFIER = "/gui/left/left.css";
+    public static final String BLUE_LEFT_CSS_RESOURCE_IDENTIFIER = "/gui/left/leftBlueSkin.css";
+    public static final String RED_LEFT_CSS_RESOURCE_IDENTIFIER = "/gui/left/leftRedSkin.css";
+
     public static final URL DEFAULT_CENTER_CSS_URL = ShticellResourcesConstants.class.getResource(DEFAULT_CENTER_CSS_RESOURCE_IDENTIFIER);
+    public static final URL BLUE_CENTER_CSS_URL = ShticellResourcesConstants.class.getResource(BLUE_CENTER_CSS_RESOURCE_IDENTIFIER);
+    public static final URL RED_CENTER_CSS_URL = ShticellResourcesConstants.class.getResource(RED_CENTER_CSS_RESOURCE_IDENTIFIER);
+
+    public static final URL DEFAULT_HEADER_CSS_URL = ShticellResourcesConstants.class.getResource(DEFAULT_HEADER_CSS_RESOURCE_IDENTIFIER);
+    public static final URL BLUE_HEADER_CSS_URL = ShticellResourcesConstants.class.getResource(BLUE_HEADER_CSS_RESOURCE_IDENTIFIER);
+    public static final URL RED_HEADER_CSS_URL = ShticellResourcesConstants.class.getResource(RED_HEADER_CSS_RESOURCE_IDENTIFIER);
+
+    public static final URL DEFAULT_LEFT_CSS_URL = ShticellResourcesConstants.class.getResource(DEFAULT_LEFT_CSS_RESOURCE_IDENTIFIER);
+    public static final URL BLUE_LEFT_CSS_URL = ShticellResourcesConstants.class.getResource(BLUE_LEFT_CSS_RESOURCE_IDENTIFIER);
+    public static final URL RED_LEFT_CSS_URL = ShticellResourcesConstants.class.getResource(RED_LEFT_CSS_RESOURCE_IDENTIFIER);
 }

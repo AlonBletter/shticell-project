@@ -38,10 +38,11 @@ public class AppController {
     @FXML private VBox leftComponent;
     @FXML private LeftController leftComponentController;
     @FXML private BorderPane borderPane;
-    @FXML private ScrollPane scrollPane;
+    @FXML private ScrollPane mainScrollPane;
 
     private final Engine engine;
     private CenterController centerComponentController;
+    private ScrollPane centerScrollPane;
     private Stage primaryStage;
     private Task<Boolean> currentRunningTask;
     private SingleCellController selectedCell;
@@ -51,7 +52,8 @@ public class AppController {
 
     public AppController() {
         engine = new EngineImpl();
-        this.centerComponentController = new CenterController();
+        centerScrollPane = new ScrollPane();
+        centerComponentController = new CenterController();
         this.isFileLoaded = new SimpleBooleanProperty(false);
     }
 
@@ -66,6 +68,7 @@ public class AppController {
             centerComponentController.setMainController(this);
             leftComponentController.setMainController(this);
         }
+
     }
 
     public void setSelectedCell(SingleCellController selectedCell) {
@@ -155,8 +158,7 @@ public class AppController {
     private Consumer<Void> getLoadFileConsumerSuccess(String filePath, Stage dialogStage) {
         return (v) -> {
             try {
-                ScrollPane centerScrollPane = new ScrollPane();
-                centerComponentController.initializeGrid(engine.getSpreadsheet());
+                centerComponentController.initializeGrid(engine.getSpreadsheet(), true);
                 centerScrollPane.setContent(centerComponentController.getCenterGrid());
                 borderPane.setCenter(centerScrollPane);
                 headerComponentController.initializeHeaderAfterLoad(filePath);
@@ -175,8 +177,6 @@ public class AppController {
         try {
             int oldVersion = engine.getCurrentVersionNumber();
             engine.updateCell(cellToUpdateCoordinate, newCellValue);
-            //List<CellDTO> lastModifiedCells = engine.getSpreadsheet().lastModifiedCells();
-            //centerComponentController.updateCells(lastModifiedCells);
 
             if(oldVersion != engine.getCurrentVersionNumber()) {
                 centerComponentController.updateCells(engine.getSpreadsheet());
@@ -201,7 +201,7 @@ public class AppController {
 
     private void displaySheet(SheetDTO sheetToDisplay, String title) {
         CenterController centerController = new CenterController();
-        centerController.initializeGrid(sheetToDisplay);
+        centerController.initializeGrid(sheetToDisplay, false);
 
         ScrollPane displayScrollPane = new ScrollPane();
         displayScrollPane.setContent(centerController.getCenterGrid());
@@ -340,5 +340,11 @@ public class AppController {
         }
 
         displaySheet(filteredSheet, "Filtered Sheet");
+    }
+
+    public void setComponentsSkin(String newSkin) {
+        headerComponentController.setSkin(newSkin);
+        leftComponentController.setSkin(newSkin);
+        centerComponentController.setSkin(newSkin);
     }
 }

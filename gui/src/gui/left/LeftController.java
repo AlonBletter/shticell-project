@@ -15,12 +15,15 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 public class LeftController {
@@ -39,6 +42,7 @@ public class LeftController {
     @FXML private Button viewRangeButton;
     @FXML private Button sortButton;
     @FXML private Button filterButton;
+    @FXML private VBox leftVBox;
 
 
     private AppController mainController;
@@ -276,5 +280,24 @@ public class LeftController {
                 (int) (color.getRed() * 255),
                 (int) (color.getGreen() * 255),
                 (int) (color.getBlue() * 255));
+    }
+
+    public void setSkin(String skinType) {
+        switch (skinType) {
+            case "Blue":
+                applyCSS(ShticellResourcesConstants.BLUE_LEFT_CSS_URL);
+                break;
+            case "Red":
+                applyCSS(ShticellResourcesConstants.RED_LEFT_CSS_URL);
+                break;
+            case "Default":
+                applyCSS(ShticellResourcesConstants.DEFAULT_LEFT_CSS_URL);
+                break;
+        }
+    }
+
+    private void applyCSS(URL cssURL) {
+        leftVBox.getStylesheets().clear();
+        leftVBox.getStylesheets().add(cssURL.toExternalForm());
     }
 }

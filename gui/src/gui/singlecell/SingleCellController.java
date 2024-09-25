@@ -20,6 +20,7 @@ public class SingleCellController extends CellModel {
 
     private AppController mainController;
     private CenterController centerController;
+    private boolean editable;
 
     public SingleCellController() {
         super();
@@ -118,5 +119,9 @@ public class SingleCellController extends CellModel {
         } else {
             valueLabel.setStyle(null);
         }
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
     }
 }

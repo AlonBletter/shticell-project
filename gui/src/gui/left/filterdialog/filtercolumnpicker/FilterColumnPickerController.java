@@ -1,4 +1,4 @@
-package gui.left.filterdialog.filterpicker;
+package gui.left.filterdialog.filtercolumnpicker;
 
 import gui.left.filterdialog.FilterDialogController;
 import javafx.beans.property.BooleanProperty;

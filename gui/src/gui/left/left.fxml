@@ -14,28 +14,28 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="200.0" spacing="20.0" styleClass="general-vbox" stylesheets="@left.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.left.LeftController">
+<VBox fx:id="leftVBox" alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="200.0" spacing="20.0" styleClass="general-vbox" stylesheets="@left.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.left.LeftController">
    <padding>
       <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
    </padding>
    <children>
       <VBox minHeight="350.0" minWidth="150.0" prefHeight="350.0" prefWidth="150.0" spacing="10.0">
          <children>
-            <Label alignment="CENTER" prefHeight="25.0" prefWidth="150.0" text="Cell Styling">
+            <Label alignment="CENTER" prefHeight="25.0" prefWidth="150.0" styleClass="cell-style-label" text="Cell Styling">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
             <VBox prefHeight="60.0" prefWidth="150.0" spacing="3.0">
                <children>
-                  <Label prefWidth="85.0" styleClass="left-label" text="Cell Dimensions" />
+                  <Label maxWidth="1.7976931348623157E308" prefWidth="85.0" styleClass="left-label" text="Cell Dimensions" />
                   <Button fx:id="columnWidthButton" alignment="TOP_LEFT" minHeight="29.0" minWidth="150.0" mnemonicParsing="false" onAction="#columnWidthButtonAction" prefWidth="150.0" text="Column Width" />
                   <Button fx:id="rowHeightButton" alignment="TOP_LEFT" minHeight="29.0" minWidth="150.0" mnemonicParsing="false" onAction="#rowHeightButtonAction" prefHeight="25.0" prefWidth="150.0" text="Row Height" />
                </children>
             </VBox>
             <VBox>
                <children>
-                  <Label text="Column Alignment" />
+                  <Label maxWidth="1.7976931348623157E308" styleClass="left-label" text="Column Alignment" />
                   <HBox fx:id="alignTogglesHBox">
                      <children>
                           <ToggleButton fx:id="leftAlignToggle" onAction="#leftAlignToggleAction" prefWidth="50.0">
@@ -71,7 +71,7 @@
             </VBox>
             <VBox>
                <children>
-                  <Label text="Background Color" />
+                  <Label maxWidth="1.7976931348623157E308" styleClass="left-label" text="Background Color" />
                   <ColorPicker fx:id="backgroundColorPicker" minHeight="29.0" minWidth="150.0" prefHeight="29.0" prefWidth="150.0">
                      <value>
                         <Color />
@@ -81,7 +81,7 @@
             </VBox>
             <VBox prefWidth="150.0">
                <children>
-                  <Label text="Text Color" />
+                  <Label maxWidth="1.7976931348623157E308" styleClass="left-label" text="Text Color" />
                   <ColorPicker fx:id="textColorPicker" minHeight="29.0" minWidth="150.0" prefHeight="29.0" prefWidth="150.0">
                      <value>
                         <Color />
@@ -99,7 +99,7 @@
       <Separator prefWidth="150.0" />
       <VBox>
          <children>
-            <Label text="Filter &amp; Sort" />
+            <Label maxWidth="1.7976931348623157E308" styleClass="left-label" text="Filter &amp; Sort" />
             <HBox>
                <children>
                   <Button fx:id="filterButton" alignment="TOP_LEFT" minHeight="29.0" minWidth="75.0" mnemonicParsing="false" onAction="#filterButtonAction" prefHeight="25.0" prefWidth="75.0" text="Filter" />
@@ -111,7 +111,7 @@
       <Separator prefWidth="150.0" />
       <VBox maxHeight="1.7976931348623157E308" prefHeight="209.0" prefWidth="150.0" VBox.vgrow="ALWAYS">
          <children>
-            <Label text="Ranges" />
+            <Label maxWidth="1.7976931348623157E308" styleClass="left-label" text="Ranges" />
             <VBox maxHeight="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                <children>
                   <ListView fx:id="rangesListView" maxHeight="1.7976931348623157E308" prefHeight="120.0" prefWidth="150.0" VBox.vgrow="ALWAYS" />

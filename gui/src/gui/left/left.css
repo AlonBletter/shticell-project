@@ -1,7 +1,6 @@
-/* General Button Style */
 .general-vbox {
-    -fx-background-color: #ffffff; /* Light gray */
-    -fx-border-color: #d0d0d0; /* Light gray */
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d0d0d0;
 }
 
 .button {
@@ -44,14 +43,6 @@
 .color-picker .label {
     -fx-text-fill: white;
 }
-
-/*.left-label {*/
-/*    -fx-font-family: Tahoma;*/
-/*}*/
-
-/*.cell-style-label {*/
-/*    -fx-font-family: Tahoma;*/
-/*}*/
 
 .toggle-button {
     -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #67EE75, #11B622);

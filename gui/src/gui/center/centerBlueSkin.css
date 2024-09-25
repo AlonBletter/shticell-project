@@ -1,7 +1,8 @@
 .grid {
-    -fx-background-color: #ffffff;
+    -fx-background-color: #c6e7f8;
     -fx-border-color: #d0d0d0;
     -fx-border-width: 1px;
+    -fx-padding: 0;
 }
 
 .title {
@@ -20,7 +21,7 @@
     -fx-background-color: #f0f0f0;
     -fx-border-color: #c0c0c0;
     -fx-border-width: 1px;
-    -fx-text-fill: #2c2c2c;
+    -fx-text-fill: #67A8EE;
     -fx-cursor: hand;
 }
 

@@ -2,7 +2,7 @@ package gui.left.filterdialog;
 
 import gui.app.AppController;
 import gui.common.ShticellResourcesConstants;
-import gui.left.filterdialog.filterpicker.FilterColumnPickerController;
+import gui.left.filterdialog.filtercolumnpicker.FilterColumnPickerController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

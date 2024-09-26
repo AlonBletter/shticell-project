@@ -49,16 +49,28 @@ public class AppController {
     private List<SingleCellController> selectedRow;
     private List<SingleCellController> selectedColumn;
     private final SimpleBooleanProperty isFileLoaded;
+    private SimpleBooleanProperty textSpinAnimation;
+    private SimpleBooleanProperty textFadeAnimation;
 
     public AppController() {
         engine = new EngineImpl();
         centerScrollPane = new ScrollPane();
         centerComponentController = new CenterController();
         this.isFileLoaded = new SimpleBooleanProperty(false);
+        this.textSpinAnimation = new SimpleBooleanProperty(false);
+        this.textFadeAnimation = new SimpleBooleanProperty(false);
     }
 
     public SimpleBooleanProperty isFileLoadedProperty() {
         return isFileLoaded;
+    }
+
+    public SimpleBooleanProperty getTextSpinAnimationProperty() {
+        return textSpinAnimation;
+    }
+
+    public SimpleBooleanProperty textFadeAnimationProperty() {
+        return textFadeAnimation;
     }
 
     @FXML
@@ -356,5 +368,19 @@ public class AppController {
         headerComponentController.setSkin(newSkin);
         leftComponentController.setSkin(newSkin);
         centerComponentController.setSkin(newSkin);
+    }
+
+    public void setAnimations(String newValue) {
+        textSpinAnimation.set(false);
+        textFadeAnimation.set(false);
+
+        switch (newValue) {
+            case "Dancing Cells":
+                textSpinAnimation.set(true);
+                break;
+            case "New Value Fade":
+                textFadeAnimation.set(true);
+                break;
+        }
     }
 }

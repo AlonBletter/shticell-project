@@ -32,6 +32,7 @@ public class HeaderController {
     @FXML private ComboBox<String> versionSelectorComboBox;
     @FXML private GridPane headerGridPane;
     @FXML private ChoiceBox<String> skinSelectorChoiceBox;
+    @FXML private ChoiceBox<String> animationButton;
 
     private final SimpleStringProperty filePath;
     private final SimpleBooleanProperty isFileLoaded;
@@ -50,37 +51,27 @@ public class HeaderController {
         isFileLoaded.bind(mainController.isFileLoadedProperty());
     }
 
-    public void setSkin(String skinType) {
-        switch (skinType) {
-            case "Blue":
-                applyCSS(ShticellResourcesConstants.BLUE_HEADER_CSS_URL);
-                break;
-            case "Red":
-                applyCSS(ShticellResourcesConstants.RED_HEADER_CSS_URL);
-                break;
-            case "Default":
-                applyCSS(ShticellResourcesConstants.DEFAULT_HEADER_CSS_URL);
-                break;
-        }
-    }
-
-    private void applyCSS(URL cssURL) {
-        headerGridPane.getStylesheets().clear();
-        headerGridPane.getStylesheets().add(cssURL.toExternalForm());
-    }
-
     @FXML
     private void initialize() {
         loadedFilePathLabel.textProperty().bind(filePath);
         actionLineTextField.disableProperty().bind(isFileLoaded.not());
         updateValueButton.disableProperty().bind(isFileLoaded.not());
         skinSelectorChoiceBox.disableProperty().bind(isFileLoaded.not());
+        animationButton.disableProperty().bind(isFileLoaded.not());
+
         ObservableList<String> skins = FXCollections.observableArrayList("Default", "Blue", "Red");
         skinSelectorChoiceBox.setItems(skins);
         skinSelectorChoiceBox.getSelectionModel().selectFirst();
         skinSelectorChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 mainController.setComponentsSkin(newValue)
         );
+
+        ObservableList<String> animations = FXCollections.observableArrayList("No Animations", "Dancing Cells", "New Value Fade");
+        animationButton.setItems(animations);
+        animationButton.getSelectionModel().selectFirst();
+        animationButton.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            mainController.setAnimations(newValue);
+        });
 
         initializeVersionSelectorComboBox();
 
@@ -184,5 +175,24 @@ public class HeaderController {
 
     public void requestActionLineFocus() {
         actionLineTextField.requestFocus();
+    }
+
+    public void setSkin(String skinType) {
+        switch (skinType) {
+            case "Blue":
+                applyCSS(ShticellResourcesConstants.BLUE_HEADER_CSS_URL);
+                break;
+            case "Red":
+                applyCSS(ShticellResourcesConstants.RED_HEADER_CSS_URL);
+                break;
+            case "Default":
+                applyCSS(ShticellResourcesConstants.DEFAULT_HEADER_CSS_URL);
+                break;
+        }
+    }
+
+    private void applyCSS(URL cssURL) {
+        headerGridPane.getStylesheets().clear();
+        headerGridPane.getStylesheets().add(cssURL.toExternalForm());
     }
 }

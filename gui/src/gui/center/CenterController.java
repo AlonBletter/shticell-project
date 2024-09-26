@@ -7,6 +7,7 @@ import engine.sheet.coordinate.CoordinateFactory;
 import gui.app.AppController;
 import gui.center.singlecell.SingleCellController;
 import gui.common.ShticellResourcesConstants;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;
@@ -133,6 +134,7 @@ public class CenterController {
             cellController.setMainController(mainController);
             cellController.setCenterController(this);
             cellController.setEditable(editable);
+
             gridCells.put(coordinate, cellController);
             centerGrid.add(singleCell, coordinate.getColumn(), coordinate.getRow());
         } catch (IOException e) {

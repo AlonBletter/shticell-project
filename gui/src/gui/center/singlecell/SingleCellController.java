@@ -7,12 +7,16 @@ import engine.sheet.effectivevalue.EffectiveValue;
 import gui.app.AppController;
 import gui.center.CenterController;
 import gui.common.ShticellResourcesConstants;
+import javafx.animation.*;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
+import javafx.util.Duration;
 
 import java.net.URL;
 
@@ -23,6 +27,11 @@ public class SingleCellController extends CellModel {
     private AppController mainController;
     private CenterController centerController;
     private boolean editable;
+    private final SimpleBooleanProperty textSpinAnimation = new SimpleBooleanProperty(false);
+    private final SimpleBooleanProperty textFadeAnimation = new SimpleBooleanProperty(false);
+    private RotateTransition rotateTransition;
+    private ScaleTransition scaleTransition;
+    private Timeline backgroundColorTimeline;
 
     public SingleCellController() {
         super();
@@ -31,6 +40,45 @@ public class SingleCellController extends CellModel {
     @FXML
     private void initialize() {
         valueLabel.textProperty().bind(effectiveValue);
+
+        textSpinAnimation.addListener((observable, oldValue, newValue) -> {
+            if (newValue && !getOriginalValue().isEmpty()) {
+                rotateTransition = new RotateTransition(Duration.millis(1000), valueLabel);
+                rotateTransition.setByAngle(360);
+                rotateTransition.setCycleCount(Animation.INDEFINITE);
+                rotateTransition.setInterpolator(Interpolator.EASE_BOTH);
+
+                scaleTransition = new ScaleTransition(Duration.millis(1000), valueLabel);
+                scaleTransition.setByX(0.5);
+                scaleTransition.setByY(0.5);
+                scaleTransition.setAutoReverse(true);
+                scaleTransition.setCycleCount(Animation.INDEFINITE);
+                scaleTransition.setInterpolator(Interpolator.EASE_BOTH);
+
+                backgroundColorTimeline = new Timeline(
+                        new KeyFrame(Duration.millis(0), new KeyValue(cellPane.styleProperty(), "-fx-background-color: #ffcccb")),
+                        new KeyFrame(Duration.millis(300), new KeyValue(cellPane.styleProperty(), "-fx-background-color: #ffffcc")),
+                        new KeyFrame(Duration.millis(600), new KeyValue(cellPane.styleProperty(), "-fx-background-color: #ccffcc")),
+                        new KeyFrame(Duration.millis(900), new KeyValue(cellPane.styleProperty(), "-fx-background-color: #ccffff")),
+                        new KeyFrame(Duration.millis(1200), new KeyValue(cellPane.styleProperty(), "-fx-background-color: #e0ccff"))
+                );
+                backgroundColorTimeline.setCycleCount(Animation.INDEFINITE);
+                backgroundColorTimeline.setAutoReverse(true);
+
+                rotateTransition.play();
+                scaleTransition.play();
+                backgroundColorTimeline.play();
+
+            } else if(!newValue && !getOriginalValue().isEmpty()) {
+                rotateTransition.stop();
+                scaleTransition.stop();
+                backgroundColorTimeline.stop();
+                valueLabel.setRotate(0);
+                valueLabel.setScaleX(1);
+                valueLabel.setScaleY(1);
+                cellPane.setStyle(null);
+            }
+        });
     }
 
     public void clearSelection() {
@@ -39,6 +87,8 @@ public class SingleCellController extends CellModel {
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
+        textSpinAnimation.bind(mainController.getTextSpinAnimationProperty());
+        textFadeAnimation.bind(mainController.textFadeAnimationProperty());
     }
     public void setCenterController(CenterController centerController) {
         this.centerController = centerController;
@@ -53,19 +103,39 @@ public class SingleCellController extends CellModel {
         }
     }
 
-    public void setAlignment(Pos pos) {
-        valueLabel.setAlignment(pos);
+    public void setAlignment(Pos targetPos) {
+        valueLabel.setAlignment(targetPos);
     }
 
     public Pos getAlignment() {
         return valueLabel.getAlignment();
     }
 
+    public void setCellText(String newText) {
+        if (textFadeAnimation.getValue()) {
+            FadeTransition fadeOut = new FadeTransition(Duration.millis(500), valueLabel);
+            fadeOut.setFromValue(1.0);
+            fadeOut.setToValue(0.0);
+            fadeOut.setOnFinished(event -> {
+                setEffectiveValue(newText);
+
+                FadeTransition fadeIn = new FadeTransition(Duration.millis(500), valueLabel);
+                fadeIn.setFromValue(0.0);
+                fadeIn.setToValue(1.0);
+                fadeIn.play();
+            });
+
+            fadeOut.play();
+        } else {
+            setEffectiveValue(newText);
+        }
+    }
+
     public void setDataFromDTO(Coordinate coordinate, CellDTO cell) {
         setCoordinate(coordinate);
 
         if (cell != null) {
-            setEffectiveValue(formatEffectiveValue(cell.effectiveValue()));
+            setCellText(formatEffectiveValue(cell.effectiveValue()));
             setOriginalValue(cell.originalValue());
             setLastModifiedVersion(String.valueOf(cell.lastModifiedVersion()));
             updateBackgroundColor(cell.cellStyle().getBackgroundColor());
@@ -73,12 +143,11 @@ public class SingleCellController extends CellModel {
             setDependsOn(cell.dependsOn());
             setInfluenceOn(cell.influenceOn());
         } else {
-            setEffectiveValue("");
+            setCellText("");
             setOriginalValue("");
             setLastModifiedVersion("1");
         }
     }
-
     public Node getCellNode() {
         return cellPane;
     }

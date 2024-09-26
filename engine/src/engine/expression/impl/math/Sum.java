@@ -3,7 +3,6 @@ package engine.expression.impl.math;
 import engine.expression.api.Expression;
 import engine.expression.type.UnaryExpression;
 import engine.sheet.api.SheetReadActions;
-import engine.sheet.cell.api.Cell;
 import engine.sheet.cell.api.CellReadActions;
 import engine.sheet.cell.api.CellType;
 import engine.sheet.coordinate.Coordinate;
@@ -32,7 +31,7 @@ public class Sum extends UnaryExpression {
             CellReadActions cell = sheet.getCell(coordinate);
             EffectiveValue cellEffectiveValue = cell.getEffectiveValue();
 
-            if(cellEffectiveValue.getCellType() != CellType.NUMERIC) {
+            if(cellEffectiveValue.cellType() != CellType.NUMERIC) {
                 result = 0;
                 continue;
             }

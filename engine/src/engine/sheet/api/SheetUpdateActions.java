@@ -1,7 +1,6 @@
 package engine.sheet.api;
 
 import engine.generated.STLSheet;
-import engine.sheet.cell.api.Cell;
 import engine.sheet.coordinate.Coordinate;
 
 import java.util.List;
@@ -15,7 +14,6 @@ public interface SheetUpdateActions {
     void setRowHeightUnits(int rowHeightUnits);
     void setColumnWidthUnits(int columnWidthUnits);
     void init(STLSheet sheetToInitFrom);
-
     void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor);
     void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor);
     void addRange(String rangeName, String rangeCoordinates);

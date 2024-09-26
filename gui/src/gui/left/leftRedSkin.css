@@ -1,6 +1,7 @@
 .general-vbox {
     -fx-background-color: #f8c6c6;
     -fx-border-color: #d0d0d0;
+    -fx-font-family: "Georgia";
 }
 
 .left-label {
@@ -23,6 +24,7 @@
     -fx-border-radius: 13px;
     -fx-text-fill: white;
     -fx-font-weight: bold;
+    -fx-padding: 5 5 5 5;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 3, 0, 0, 1);
 }
 
@@ -39,6 +41,10 @@
 }
 
 .list-view {
+    -fx-background-radius: 10;
+}
+
+.list-view .list-cell {
     -fx-background-radius: 10;
 }
 
@@ -64,6 +70,10 @@
     -fx-border-radius: 13px;
     -fx-font-weight: bold;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 3, 0, 0, 1);
+}
+
+.combo-box:editable .text-field .text {
+    -fx-font-size: 10;
 }
 
 .toggle-button:hover {

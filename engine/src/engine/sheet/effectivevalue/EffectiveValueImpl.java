@@ -5,25 +5,7 @@ import engine.sheet.cell.api.CellType;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class EffectiveValueImpl implements EffectiveValue, Serializable {
-
-    private CellType cellType;
-    private Object value;
-
-    public EffectiveValueImpl(CellType cellType, Object value) {
-        this.cellType = cellType;
-        this.value = value;
-    }
-
-    @Override
-    public CellType getCellType() {
-        return cellType;
-    }
-
-    @Override
-    public Object getValue() {
-        return value;
-    }
+public record EffectiveValueImpl(CellType cellType, Object value) implements EffectiveValue, Serializable {
 
     @Override
     public <T> T extractValueWithExpectation(Class<T> type) {
@@ -34,8 +16,6 @@ public class EffectiveValueImpl implements EffectiveValue, Serializable {
         return null;
     }
 
-
-    //TODO remove later if time...
     @Override
     public String extractStringValue() {
         String formattedObject;
@@ -69,11 +49,6 @@ public class EffectiveValueImpl implements EffectiveValue, Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         EffectiveValueImpl that = (EffectiveValueImpl) o;
         return cellType == that.cellType && Objects.equals(value, that.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(cellType, value);
     }
 
     @Override

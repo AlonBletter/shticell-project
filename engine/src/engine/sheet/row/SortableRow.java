@@ -1,4 +1,4 @@
-package engine.sheet.sort.sortablerow;
+package engine.sheet.row;
 
 import engine.sheet.cell.api.Cell;
 

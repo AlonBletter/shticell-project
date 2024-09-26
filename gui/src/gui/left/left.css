@@ -3,6 +3,12 @@
     -fx-border-color: #d0d0d0;
 }
 
+.cell-style-label {
+    -fx-font-size: 24;
+    -fx-text-fill: #67EE75;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 3, 0, 0, 1);
+}
+
 .button {
     -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #67EE75, #11B622);
     -fx-border-color: linear-gradient(from 0% 100% to 0% 0%, #11B622, #67EE75);
@@ -12,6 +18,10 @@
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 3, 0, 0, 1);
+}
+
+.list-view .list-cell {
+    -fx-background-radius: 10;
 }
 
 .button:hover {

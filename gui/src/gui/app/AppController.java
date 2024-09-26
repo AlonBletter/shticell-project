@@ -158,8 +158,11 @@ public class AppController {
     private Consumer<Void> getLoadFileConsumerSuccess(String filePath, Stage dialogStage) {
         return (v) -> {
             try {
-                centerComponentController.initializeGrid(engine.getSpreadsheet(), true);
+                SheetDTO sheetDTO = engine.getSpreadsheet();
+                centerComponentController.initializeGrid(sheetDTO, true);
                 centerScrollPane.setContent(centerComponentController.getCenterGrid());
+                centerScrollPane.setFitToWidth(true);
+                centerScrollPane.setFitToHeight(true);
                 borderPane.setCenter(centerScrollPane);
                 headerComponentController.initializeHeaderAfterLoad(filePath);
                 leftComponentController.loadRanges(engine.getRanges());
@@ -280,6 +283,9 @@ public class AppController {
         try {
             engine.addRange(rangeName, rangeCoordinates);
             return true;
+        } catch (InvalidCellBoundsException e) {
+            handleInvalidCellBoundException(e);
+            return false;
         } catch (Exception e) {
             showErrorAlert("Invalid Range Addition", "An error occurred while adding the range.", e.getMessage());
             return false;
@@ -307,6 +313,9 @@ public class AppController {
 
         try {
             sortedSheet = engine.getSortedSheet(rangeCoordinatesToSort, columnsToSortBy);
+        } catch (InvalidCellBoundsException e) {
+            handleInvalidCellBoundException(e);
+            return;
         } catch (Exception e) {
             showErrorAlert("Invalid Sort Request", "An error occurred while sorting the range.", e.getMessage());
             return;
@@ -316,7 +325,7 @@ public class AppController {
     }
 
     public int getNumberOfColumns() {
-        //TODO add method in engine api that gets the number of column (consider not mandatory)
+        //add method in engine api that gets the number of column (consider not mandatory)
         return engine.getSpreadsheet().numOfColumns();
     }
 
@@ -332,6 +341,9 @@ public class AppController {
         SheetDTO filteredSheet;
         try {
             filteredSheet = engine.getFilteredSheet(rangeToFilter, filterRequestValues);
+        } catch (InvalidCellBoundsException e) {
+            handleInvalidCellBoundException(e);
+            return;
         } catch (Exception e) {
             showErrorAlert("Invalid Filter Request", "An error occurred while filtering the range.", e.getMessage());
             return;

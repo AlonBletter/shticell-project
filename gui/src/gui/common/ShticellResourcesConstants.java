@@ -35,6 +35,10 @@ public class ShticellResourcesConstants {
     public static final String BLUE_LEFT_CSS_RESOURCE_IDENTIFIER = "/gui/left/leftBlueSkin.css";
     public static final String RED_LEFT_CSS_RESOURCE_IDENTIFIER = "/gui/left/leftRedSkin.css";
 
+    public static final String DEFAULT_CELL_CSS_RESOURCE_IDENTIFIER = "/gui/center/singlecell/singleCell.css";
+    public static final String BLUE_CELL_CSS_RESOURCE_IDENTIFIER = "/gui/center/singlecell/singleCellBlueSkin.css";
+    public static final String RED_CELL_CSS_RESOURCE_IDENTIFIER = "/gui/center/singlecell/singleCellRedSkin.css";
+
     public static final URL DEFAULT_CENTER_CSS_URL = ShticellResourcesConstants.class.getResource(DEFAULT_CENTER_CSS_RESOURCE_IDENTIFIER);
     public static final URL BLUE_CENTER_CSS_URL = ShticellResourcesConstants.class.getResource(BLUE_CENTER_CSS_RESOURCE_IDENTIFIER);
     public static final URL RED_CENTER_CSS_URL = ShticellResourcesConstants.class.getResource(RED_CENTER_CSS_RESOURCE_IDENTIFIER);
@@ -46,4 +50,8 @@ public class ShticellResourcesConstants {
     public static final URL DEFAULT_LEFT_CSS_URL = ShticellResourcesConstants.class.getResource(DEFAULT_LEFT_CSS_RESOURCE_IDENTIFIER);
     public static final URL BLUE_LEFT_CSS_URL = ShticellResourcesConstants.class.getResource(BLUE_LEFT_CSS_RESOURCE_IDENTIFIER);
     public static final URL RED_LEFT_CSS_URL = ShticellResourcesConstants.class.getResource(RED_LEFT_CSS_RESOURCE_IDENTIFIER);
+
+    public static final URL DEFAULT_CELL_CSS_URL = ShticellResourcesConstants.class.getResource(DEFAULT_CELL_CSS_RESOURCE_IDENTIFIER);
+    public static final URL BLUE_CELL_CSS_URL = ShticellResourcesConstants.class.getResource(BLUE_CELL_CSS_RESOURCE_IDENTIFIER);
+    public static final URL RED_CELL_CSS_URL = ShticellResourcesConstants.class.getResource(RED_CELL_CSS_RESOURCE_IDENTIFIER);
 }

@@ -13,7 +13,7 @@ import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
 import engine.sheet.range.Range;
 import engine.sheet.range.RangeImpl;
-import engine.sheet.sort.sortablerow.SortableRow;
+import engine.sheet.row.SortableRow;
 
 import java.io.*;
 import java.util.*;
@@ -200,9 +200,7 @@ public class SheetImpl implements Sheet, Serializable {
         List<Coordinate> effectiveValueCalculationOrder = getEffectiveValueCalculationOrder(dependencyGraph);
 
         for(Coordinate coordinate : effectiveValueCalculationOrder) {
-            if(getCell(coordinate) != EmptyCell.INSTANCE) {
-                updateCellEffectiveValue(addNewCellIfEmptyCell(coordinate));
-            }
+            updateCellEffectiveValue(addNewCellIfEmptyCell(coordinate));
         }
 
         cellInfluenceOn = dependencyGraph;
@@ -356,7 +354,7 @@ public class SheetImpl implements Sheet, Serializable {
 
         List<SortableRow> sortableRows = getSortableRows(start, end, columnIndicesToSort);
         sortableRows.sort(getSortableRowComparator(columnsToSortBy));
-        updateRowsAfterSorting(sortableRows, start);
+        updateRowsAfterModification(sortableRows, start);
     }
 
     private void validateRangeCoordinates(Coordinate start, Coordinate end) {
@@ -428,7 +426,7 @@ public class SheetImpl implements Sheet, Serializable {
         return sortableRows;
     }
 
-    private void updateRowsAfterSorting(List<SortableRow> sortableRows, Coordinate start) {
+    private void updateRowsAfterModification(List<SortableRow> sortableRows, Coordinate start) {
         for (int row = 0; row < sortableRows.size(); row++) {
             SortableRow sortedRow = sortableRows.get(row);
             List<Cell> sortedCells = sortedRow.getCellsInRow();
@@ -499,9 +497,9 @@ public class SheetImpl implements Sheet, Serializable {
                 String column = entry.getKey();
                 List<String> filterValues = entry.getValue();
                 int columnIndex = parseSingleLetterColumn(column);
-                String effectiveValue = row.getEffectiveValueString(columnIndex);
-
-                if (!filterValues.contains(effectiveValue)) {
+                String effectiveValueString = row.getEffectiveValueString(columnIndex);
+                String value = !effectiveValueString.isEmpty() ? effectiveValueString : "(Empty Cell/s)";
+                if (!filterValues.contains(value)) {
                     allMatch = false;
                     break;
                 }
@@ -523,17 +521,7 @@ public class SheetImpl implements Sheet, Serializable {
             }
         }
 
-        for (int row = 0; row < filteredRows.size(); row++) {
-            SortableRow sortedRow = filteredRows.get(row);
-            List<Cell> sortedCells = sortedRow.getCellsInRow();
-            int columnIndex = start.getColumn();
-
-            for (Cell cell : sortedCells) {
-                Coordinate coordinate = CoordinateFactory.createCoordinate(start.getRow() + row, columnIndex);
-                activeCells.put(coordinate, cell);
-                columnIndex++;
-            }
-        }
+        updateRowsAfterModification(filteredRows, start);
 
         for (int row = filteredRows.size(); row < numberOfRowsToFilter; row++) {
             for (int column = start.getColumn(); column <= end.getColumn(); column++) {

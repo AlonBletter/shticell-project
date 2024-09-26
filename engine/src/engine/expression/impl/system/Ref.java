@@ -21,7 +21,7 @@ public class Ref extends UnaryExpression {
 
         if (arg == null) {
             throw new IllegalArgumentException("Invalid arguments to " + this.getClass().getSimpleName().toUpperCase() + " function!\n" +
-                    "Expected <"+ CellType.TEXT +"> but received <" + effectiveValue.getCellType() + ">");
+                    "Expected <"+ CellType.TEXT +"> but received <" + effectiveValue.cellType() + ">");
         }
 
         Coordinate coordinate = CoordinateFactory.createCoordinate(arg);

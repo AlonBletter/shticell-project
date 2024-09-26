@@ -5,8 +5,8 @@ import dto.SheetDTO;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
 import gui.app.AppController;
-import gui.common.ShticellResourcesConstants;
 import gui.center.singlecell.SingleCellController;
+import gui.common.ShticellResourcesConstants;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;
@@ -105,11 +105,21 @@ public class CenterController {
                 applyCSS(ShticellResourcesConstants.DEFAULT_CENTER_CSS_URL);
                 break;
         }
+
+        setSkinsForCells(skinType);
     }
 
     private void applyCSS(URL cssURL) {
         centerGrid.getStylesheets().clear();
         centerGrid.getStylesheets().add(cssURL.toExternalForm());
+    }
+
+    private void setSkinsForCells(String skinType) {
+        for (int row = 1; row <= numOfRows; row++) {
+            for (int col = 1; col <= numOfColumns; col++) {
+                gridCells.get(CoordinateFactory.createCoordinate(row, col)).setSkin(skinType);
+            }
+        }
     }
 
     private void addSingleCell(Coordinate coordinate, CellDTO cell) {
@@ -148,8 +158,8 @@ public class CenterController {
         centerGrid = new GridPane();
         centerGrid.setGridLinesVisible(true);
         centerGrid.getChildren().clear();
-//        centerGrid.setMinWidth((columnWidthUnits*numOfColumns) + ROW_AND_COLUMN_SIZE);
-//        centerGrid.setMinHeight((rowHeightUnits*numOfRows) + ROW_AND_COLUMN_SIZE);
+        centerGrid.setMinWidth((columnWidthUnits*numOfColumns) + ROW_AND_COLUMN_SIZE);
+        centerGrid.setMinHeight((rowHeightUnits*numOfRows) + ROW_AND_COLUMN_SIZE);
         centerGrid.getStyleClass().add("grid");
     }
 
@@ -225,7 +235,6 @@ public class CenterController {
             cellController.getCellNode().getStyleClass().removeAll("selected-row", "selected-column");
         }
         selectedCells.clear();
-
         unmarkRange();
     }
 
@@ -300,10 +309,11 @@ public class CenterController {
                 cellController.setDataFromDTO(coordinate, cellDTO);
             }
         }
-    } // The problem with the influence cells mark of b2 \ c2 in 1-insurance is that we receive only the modified cells,
+    }
 
+    // The problem with the influence cells mark of b2 \ c2 in 1-insurance is that we receive only the modified cells,
     // hence when updating d2 we don't get b2 and c2 for the setDataFromDTO... only D2 was modified...
-    //TODO temporary solution
+    // temporary solution
     public void updateCells(SheetDTO sheetDTO) {
         for(int row = 1; row <= numOfRows; row++) {
             for(int col = 1; col <= numOfColumns; col++) {
@@ -314,6 +324,7 @@ public class CenterController {
             }
         }
     }
+
     public void updateColumnWidth(int columnIndex, double newWidth) {
         ColumnConstraints columnConstraints = new ColumnConstraints();
         columnConstraints.setMinWidth(newWidth);
@@ -345,7 +356,7 @@ public class CenterController {
     }
 
     public void markRange(List<Coordinate> cellsInRange) {
-        clearSelection();
+        unmarkRange();
         for(Coordinate coordinate : cellsInRange) {
             SingleCellController cellController = gridCells.get(coordinate);
             cellController.getCellNode().getStyleClass().add("range-mark");

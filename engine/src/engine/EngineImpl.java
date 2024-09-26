@@ -7,7 +7,6 @@ import dto.SheetDTO;
 import engine.exception.InvalidCellBoundsException;
 import engine.generated.STLSheet;
 import engine.sheet.api.Sheet;
-import engine.sheet.cell.api.Cell;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.impl.SheetImpl;
 import engine.sheet.range.Range;
@@ -43,7 +42,7 @@ public class EngineImpl implements Engine {
     public CellDTO getCell(Coordinate cellToGetCoordinate) {
         validateLoadedSheet();
         Sheet currentVersion = versionManager.getCurrentVersionSheet();
-        return CellConverter.convertToDTO((Cell)currentVersion.getCell(cellToGetCoordinate)); //TODO think of a better way
+        return CellConverter.convertToDTO(currentVersion.getCell(cellToGetCoordinate));
     }
 
     @Override

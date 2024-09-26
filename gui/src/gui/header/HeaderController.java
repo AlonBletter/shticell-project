@@ -33,9 +33,9 @@ public class HeaderController {
     @FXML private GridPane headerGridPane;
     @FXML private ChoiceBox<String> skinSelectorChoiceBox;
 
-    private SimpleStringProperty filePath;
-    private SimpleBooleanProperty isFileLoaded;
-    private ObservableList<String> versionNumberList;
+    private final SimpleStringProperty filePath;
+    private final SimpleBooleanProperty isFileLoaded;
+    private final ObservableList<String> versionNumberList;
     private Coordinate selectedCellCoordinate;
     private Stage primaryStage;
 
@@ -78,26 +78,25 @@ public class HeaderController {
         ObservableList<String> skins = FXCollections.observableArrayList("Default", "Blue", "Red");
         skinSelectorChoiceBox.setItems(skins);
         skinSelectorChoiceBox.getSelectionModel().selectFirst();
-        skinSelectorChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            mainController.setComponentsSkin(newValue);
-        });
+        skinSelectorChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                mainController.setComponentsSkin(newValue)
+        );
 
         initializeVersionSelectorComboBox();
 
         actionLineTextField.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
-                updateValueButton.fire(); // Trigger the button action
+                updateValueButton.fire();
             }
         });
     }
 
     private void initializeVersionSelectorComboBox() {
         versionSelectorComboBox.setItems(versionNumberList);
-        versionNumberList.addFirst("");
         versionSelectorComboBox.disableProperty().bind(isFileLoaded.not());
 
         versionSelectorComboBox.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) { //TODO maybe disable the edit for the combobox
+            if (!newValue.matches("\\d*") || !newValue.matches("")) {
                 versionSelectorComboBox.getEditor().setText(newValue.replaceAll("\\D", ""));
             }
         });
@@ -106,6 +105,7 @@ public class HeaderController {
             if (newVersion != null && !newVersion.isEmpty()) {
                 int versionToLoadNumber = Integer.parseInt(newVersion);
                 mainController.displaySheetByVersion(versionToLoadNumber);
+                versionSelectorComboBox.getSelectionModel().selectFirst();
             }
         });
 
@@ -114,7 +114,7 @@ public class HeaderController {
             if (input != null && !input.isEmpty()) {
                 int versionToLoadNumber = Integer.parseInt(input);
                 mainController.displaySheetByVersion(versionToLoadNumber);
-                versionSelectorComboBox.getSelectionModel().clearSelection();
+                versionSelectorComboBox.getSelectionModel().selectFirst();
             }
         });
     }
@@ -132,10 +132,12 @@ public class HeaderController {
     public void initializeHeaderAfterLoad(String loadedFilePath) {
         filePath.setValue(loadedFilePath);
         versionSelectorComboBox.getItems().clear();
+        versionNumberList.addFirst("");
+        versionSelectorComboBox.getSelectionModel().selectFirst();
         refreshComboBoxVersion();
     }
 
-    public void refreshComboBoxVersion() { //TODO find a better way...
+    public void refreshComboBoxVersion() {
         if (mainController.getSheetCurrentVersion() != 1) {
             versionNumberList.add(String.valueOf(mainController.getSheetCurrentVersion() - 1));
         }

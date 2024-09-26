@@ -6,15 +6,14 @@ import engine.Engine;
 import engine.EngineImpl;
 import engine.exception.InvalidCellBoundsException;
 import engine.sheet.cell.api.CellType;
-import engine.sheet.effectivevalue.EffectiveValue;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
+import engine.sheet.effectivevalue.EffectiveValue;
 import ui.api.ConsoleCommands;
 import ui.api.UI;
 
 import java.util.InputMismatchException;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 public class ConsoleUI implements UI {
@@ -213,7 +212,7 @@ public class ConsoleUI implements UI {
         CellDTO cellToDisplayDTO = spreadsheetEngine.getCell(cellToDisplay);
         EffectiveValue cellEffectiveValue = cellToDisplayDTO.effectiveValue();
 
-        if (cellEffectiveValue.getCellType() == CellType.EMPTY) {
+        if (cellEffectiveValue.cellType() == CellType.EMPTY) {
             System.out.println("The cell is empty.");
         } else {
             System.out.println("Cell's identifier: " + cellToDisplay);
@@ -226,7 +225,7 @@ public class ConsoleUI implements UI {
         SheetDTO sheetDTO = spreadsheetEngine.getSpreadsheet();
         CellDTO cellToDisplayDTO = spreadsheetEngine.getCell(cellToDisplay);
 
-        if (cellToDisplayDTO.effectiveValue().getCellType() != CellType.EMPTY) {
+        if (cellToDisplayDTO.effectiveValue().cellType() != CellType.EMPTY) {
             int numberOfCellsModifiedInVersion = cellToDisplayDTO.lastModifiedVersion();
             System.out.println("The cell was last modified at version #" + numberOfCellsModifiedInVersion);
             printCoordinates("The cells that " + cellToDisplay + " depends on:", sheetDTO.cellReferences().get(cellToDisplay));
@@ -275,23 +274,22 @@ public class ConsoleUI implements UI {
     }
 
     private void displaySpreadsheetVersion() {
-        Map<Integer, SheetDTO> versionsDTO = spreadsheetEngine.getSpreadsheet().versions();
+        int currentVersionNumber = spreadsheetEngine.getCurrentVersionNumber();
 
         System.out.println("Displaying the versions of the spreadsheet:");
         System.out.printf("%-10s | %-20s%n", "Version #", "Cells Modified");
 
-        for (Map.Entry<Integer, SheetDTO> entry : versionsDTO.entrySet()) {
-            int versionNum = entry.getKey();
-            SheetDTO sheetDTO = entry.getValue();
+        for (int i = 1 ; i <= currentVersionNumber ; i++ ) {
+            SheetDTO sheetDTO = spreadsheetEngine.getSheetByVersion(i);
             int numberOfCellsModifiedInVersion = sheetDTO.lastModifiedCells().size();
 
-            System.out.printf("%-10d | %-20d%n", versionNum, numberOfCellsModifiedInVersion);
+            System.out.printf("%-10d | %-20d%n", i, numberOfCellsModifiedInVersion);
         }
 
-        getVersionToDisplayFromUser(versionsDTO);
+        getVersionToDisplayFromUser(currentVersionNumber);
     }
 
-    private void getVersionToDisplayFromUser(Map<Integer, SheetDTO> versionsDTO) {
+    private void getVersionToDisplayFromUser(int currentVersionNumber) {
         String userInput;
 
         while (true) {
@@ -306,10 +304,10 @@ public class ConsoleUI implements UI {
 
                 int versionNumber = Integer.parseInt(userInput);
 
-                if (versionNumber < 1 || versionNumber > versionsDTO.size()) {
-                    System.out.println("Invalid option! Please enter a number between 1 and " + versionsDTO.size() + ".");
+                if (versionNumber < 1 || versionNumber > currentVersionNumber) {
+                    System.out.println("Invalid option! Please enter a number between 1 and " + currentVersionNumber + ".");
                 } else {
-                    printSpreadsheet(versionsDTO.get(versionNumber));
+                    printSpreadsheet(spreadsheetEngine.getSheetByVersion(versionNumber));
                     break;
                 }
             } catch (NumberFormatException e) {
@@ -365,10 +363,10 @@ public class ConsoleUI implements UI {
     }
 
     private String formatValueFromSheet(EffectiveValue objectFromSheet) {
-        String formattedObject = objectFromSheet.getValue().toString();
+        String formattedObject = objectFromSheet.value().toString();
 
-        if(CellType.NUMERIC == objectFromSheet.getCellType()) {
-            double doubleValue = (Double) objectFromSheet.getValue();
+        if(CellType.NUMERIC == objectFromSheet.cellType()) {
+            double doubleValue = (Double) objectFromSheet.value();
 
             if(doubleValue % 1 == 0) {
                 long longValue = (long) doubleValue;
@@ -377,11 +375,11 @@ public class ConsoleUI implements UI {
             } else {
                 formattedObject = String.format("%,.2f", doubleValue);
             }
-        } else if(CellType.BOOLEAN == objectFromSheet.getCellType()) {
-            boolean booleanValue = (Boolean) objectFromSheet.getValue();
+        } else if(CellType.BOOLEAN == objectFromSheet.cellType()) {
+            boolean booleanValue = (Boolean) objectFromSheet.value();
 
             formattedObject = Boolean.toString(booleanValue).toUpperCase();
-        } else if (CellType.EMPTY == objectFromSheet.getCellType()) {
+        } else if (CellType.EMPTY == objectFromSheet.cellType()) {
             formattedObject = "";
         }
 

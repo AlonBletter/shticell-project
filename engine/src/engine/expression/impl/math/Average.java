@@ -32,7 +32,7 @@ public class Average extends UnaryExpression {
             CellReadActions cell = sheet.getCell(coordinate);
             EffectiveValue cellEffectiveValue = cell.getEffectiveValue();
 
-            if(cellEffectiveValue.getCellType() != CellType.NUMERIC) {
+            if(cellEffectiveValue.cellType() != CellType.NUMERIC) {
                 continue;
             }
             numberCounter++;

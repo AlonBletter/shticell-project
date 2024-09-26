@@ -18,6 +18,7 @@
     -fx-text-fill: rgba(0, 0, 0, 0.5);
     -fx-border-radius: 13px;
     -fx-font-weight: bold;
+    -fx-font-family: "Comic Sans MS";
 }
 
 .header-label {
@@ -33,6 +34,7 @@
     -fx-font-weight: bold;
     -fx-border-color: black;
     -fx-border-width: 1;
+    -fx-font-family: "Comic Sans MS";
 }
 
 .combo-box {
@@ -44,6 +46,7 @@
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 3, 0, 0, 1);
+    -fx-font-family: "Comic Sans MS";
 }
 
 .combo-box .arrow-button {
@@ -83,6 +86,7 @@
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 3, 0, 0, 1);
+    -fx-font-family: "Comic Sans MS";
 }
 
 .button:hover {
@@ -110,10 +114,12 @@
 
 .choice-box .label {
     -fx-text-fill: black;
+    -fx-font-family: "Comic Sans MS";
 }
 
 .choice-box > .label {
     -fx-text-fill: white;
+    -fx-font-family: "Comic Sans MS";
 }
 
 .choice-box .open-button .arrow {

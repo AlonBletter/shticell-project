@@ -53,18 +53,18 @@
             <Label fx:id="selectedCellIDLabel" />
          </children>
       </VBox>
-      <VBox alignment="TOP_CENTER" prefHeight="75.0" prefWidth="123.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+      <VBox alignment="TOP_CENTER" prefHeight="75.0" prefWidth="123.0" styleClass="header-label" GridPane.columnIndex="1" GridPane.rowIndex="2">
          <GridPane.margin>
             <Insets left="2.0" />
          </GridPane.margin>
          <children>
-            <Label styleClass="header-label" text="Original Cell Value" underline="true" />
+            <Label text="Original Cell Value" underline="true" />
             <Label fx:id="originalCellValueLabel" />
          </children>
       </VBox>
-      <VBox alignment="TOP_CENTER" maxWidth="250.0" minWidth="150.0" prefHeight="81.0" prefWidth="150.0" GridPane.columnIndex="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
+      <VBox alignment="TOP_CENTER" maxWidth="250.0" minWidth="150.0" prefHeight="81.0" prefWidth="150.0" styleClass="header-label" GridPane.columnIndex="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
          <children>
-            <Label styleClass="header-label" text="Last Updated Cell Version" underline="true" />
+            <Label text="Last Updated Cell Version" underline="true" />
             <Label fx:id="lastUpdatedCellVersionLabel" />
          </children>
          <GridPane.margin>

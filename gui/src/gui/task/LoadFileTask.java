@@ -7,11 +7,11 @@ import javafx.concurrent.Task;
 import java.util.function.Consumer;
 
 public class LoadFileTask extends Task<Boolean> {
-    private Engine engine;
-    private String filePathToLoad;
-    private Consumer<Void> onSuccess;
-    private Consumer<Exception> onFailure;
-    private static final int SLEEP_TIME = 200; // TODO dont forget to change before submitting
+    private final Engine engine;
+    private final String filePathToLoad;
+    private final Consumer<Void> onSuccess;
+    private final Consumer<Exception> onFailure;
+    private static final int SLEEP_TIME = 200;
 
     public LoadFileTask(Engine engine, String filePathToLoad, Consumer<Void> onSuccess, Consumer<Exception> onFailure) {
         this.engine = engine;
@@ -21,7 +21,7 @@ public class LoadFileTask extends Task<Boolean> {
     }
 
     @Override
-    protected Boolean call() throws Exception {
+    protected Boolean call() {
         try {
             updateMessage("Fetching file...");
             updateProgress(0, 1);

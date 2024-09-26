@@ -18,11 +18,11 @@ public class Equal extends BinaryExpression {
         EffectiveValue effectiveValue1 = expression1.evaluate(sheet);
         EffectiveValue effectiveValue2 = expression2.evaluate(sheet);
 
-        CellType type1 = effectiveValue1.getCellType();
-        CellType type2 = effectiveValue2.getCellType();
+        CellType type1 = effectiveValue1.cellType();
+        CellType type2 = effectiveValue2.cellType();
 
         if(type1 == type2) {
-            return new EffectiveValueImpl(CellType.BOOLEAN, effectiveValue1.getValue().equals(effectiveValue2.getValue()));
+            return new EffectiveValueImpl(CellType.BOOLEAN, effectiveValue1.value().equals(effectiveValue2.value()));
         }
 
         return new EffectiveValueImpl(CellType.BOOLEAN, false);

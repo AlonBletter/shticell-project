@@ -18,6 +18,7 @@
 .row-title, .column-title {
     -fx-font-size: 16px;
     -fx-alignment: center;
+    -fx-font-family: "Comic Sans MS";
     -fx-background-color: #f0f0f0;
     -fx-border-color: #c0c0c0;
     -fx-border-width: 1px;

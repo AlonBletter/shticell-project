@@ -18,8 +18,8 @@ public class Or extends BinaryExpression {
         EffectiveValue effectiveValue1 = expression1.evaluate(sheet);
         EffectiveValue effectiveValue2 = expression2.evaluate(sheet);
 
-        CellType type1 = effectiveValue1.getCellType();
-        CellType type2 = effectiveValue2.getCellType();
+        CellType type1 = effectiveValue1.cellType();
+        CellType type2 = effectiveValue2.cellType();
 
         if(type1 != CellType.BOOLEAN || type2 != CellType.BOOLEAN) {
             return new EffectiveValueImpl(CellType.ERROR, "UNKNOWN");

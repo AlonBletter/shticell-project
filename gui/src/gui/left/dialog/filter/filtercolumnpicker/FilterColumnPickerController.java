@@ -31,15 +31,23 @@ public class FilterColumnPickerController {
     private final List<String> pickedValues = new ArrayList<>();
     private Stage dialogStage;
     private String currentColumn;
+    private boolean firstTime = true;
+    private final SimpleBooleanProperty columnSelected = new SimpleBooleanProperty(false);
 
     @FXML
     void initialize() {
         columnLetterChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
+            if (newValue != null && !newValue.isEmpty()) {
                 pickedValues.clear();
                 currentColumn = newValue;
+                columnSelected.set(true);
+                firstTime = true;
+            } else {
+                columnSelected.set(false);
             }
         });
+
+        pickValuesButton.disableProperty().bind(columnSelected.not());
     }
 
     @FXML
@@ -52,8 +60,9 @@ public class FilterColumnPickerController {
         List<String> columnUniqueValues = dialogController.getColumnUniqueValues(currentColumn);
         listView.getItems().addAll(columnUniqueValues);
 
-        if (pickedValues.isEmpty()) {
+        if (pickedValues.isEmpty() && firstTime) {
             pickedValues.addAll(columnUniqueValues);
+            firstTime = false;
         }
 
         listView.setCellFactory(CheckBoxListCell.forListView(item -> {
@@ -123,9 +132,8 @@ public class FilterColumnPickerController {
             columnLetterChoiceBox.getItems().add(String.valueOf(current));
         }
 
-        if (!columnLetterChoiceBox.getItems().isEmpty()) {
-            columnLetterChoiceBox.setValue(columnLetterChoiceBox.getItems().getFirst());
-        }
+        columnLetterChoiceBox.getItems().addFirst("");
+        columnLetterChoiceBox.getSelectionModel().selectFirst();
     }
 
     public String getSelectedColumn() {

@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
@@ -44,6 +45,7 @@ public class FilterDialogController {
 
             controller.setColumnCounter(columnNumber);
             controller.setDialogController(this);
+            controller.setDialogStage(dialogStage);
             controller.setColumnRange(mainController.getNumberOfColumns());
             columnsAddVBox.getChildren().add(columnPicker);
             columnPickers.add(controller);
@@ -66,13 +68,20 @@ public class FilterDialogController {
         for(FilterColumnPickerController controller : columnPickers) {
             String selectedColumn = controller.getSelectedColumn();
             List<String> selectedValues = controller.getPickedValues();
-            if (!selectedValues.isEmpty()) {
+            //!selectedValues.isEmpty() &&
+            if (!selectedColumn.isEmpty()) {
                 filterRequestValues.put(selectedColumn, selectedValues);
             }
         }
 
         if (!filterRequestValues.isEmpty()) {
             mainController.filterRange(rangeToFilter, filterRequestValues);
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error!");
+            alert.setHeaderText(null);
+            alert.setContentText("No filter was selected!\nPlease pick values for at least one column.");
+            alert.showAndWait();
         }
     }
 

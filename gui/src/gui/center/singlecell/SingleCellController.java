@@ -6,12 +6,15 @@ import engine.sheet.coordinate.Coordinate;
 import engine.sheet.effectivevalue.EffectiveValue;
 import gui.app.AppController;
 import gui.center.CenterController;
+import gui.common.ShticellResourcesConstants;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+
+import java.net.URL;
 
 public class SingleCellController extends CellModel {
     @FXML private AnchorPane cellPane;
@@ -72,7 +75,7 @@ public class SingleCellController extends CellModel {
         } else {
             setEffectiveValue("");
             setOriginalValue("");
-            setLastModifiedVersion("1"); //TODO PROBABLY AFTER REMOVING SINGLETON THERE WILL BE SOMETHING THERE
+            setLastModifiedVersion("1");
         }
     }
 
@@ -81,10 +84,10 @@ public class SingleCellController extends CellModel {
     }
 
     private String formatEffectiveValue(EffectiveValue effectiveValue) {
-        String formattedObject = effectiveValue.getValue().toString();
+        String formattedObject = effectiveValue.value().toString();
 
-        if (CellType.NUMERIC == effectiveValue.getCellType()) {
-            double doubleValue = (Double) effectiveValue.getValue();
+        if (CellType.NUMERIC == effectiveValue.cellType()) {
+            double doubleValue = (Double) effectiveValue.value();
 
             if (doubleValue % 1 == 0) {
                 long longValue = (long) doubleValue;
@@ -93,11 +96,11 @@ public class SingleCellController extends CellModel {
             } else {
                 formattedObject = String.format("%,.2f", doubleValue);
             }
-        } else if (CellType.BOOLEAN == effectiveValue.getCellType()) {
-            boolean booleanValue = (Boolean) effectiveValue.getValue();
+        } else if (CellType.BOOLEAN == effectiveValue.cellType()) {
+            boolean booleanValue = (Boolean) effectiveValue.value();
 
             formattedObject = Boolean.toString(booleanValue).toUpperCase();
-        } else if (CellType.EMPTY == effectiveValue.getCellType()) {
+        } else if (CellType.EMPTY == effectiveValue.cellType()) {
             formattedObject = "";
         }
 
@@ -122,5 +125,24 @@ public class SingleCellController extends CellModel {
 
     public void setEditable(boolean editable) {
         this.editable = editable;
+    }
+
+    public void setSkin(String skinType) {
+        switch (skinType) {
+            case "Blue":
+                applyCSS(ShticellResourcesConstants.BLUE_CELL_CSS_URL);
+                break;
+            case "Red":
+                applyCSS(ShticellResourcesConstants.RED_CELL_CSS_URL);
+                break;
+            case "Default":
+                applyCSS(ShticellResourcesConstants.DEFAULT_CELL_CSS_URL);
+                break;
+        }
+    }
+
+    private void applyCSS(URL cssURL) {
+        cellPane.getStylesheets().clear();
+        cellPane.getStylesheets().add(cssURL.toExternalForm());
     }
 }

@@ -33,6 +33,7 @@ public class HeaderController {
     @FXML private GridPane headerGridPane;
     @FXML private ChoiceBox<String> skinSelectorChoiceBox;
     @FXML private ChoiceBox<String> animationButton;
+    @FXML private Tooltip originalValueToolTip;
 
     private final SimpleStringProperty filePath;
     private final SimpleBooleanProperty isFileLoaded;
@@ -59,6 +60,16 @@ public class HeaderController {
         skinSelectorChoiceBox.disableProperty().bind(isFileLoaded.not());
         animationButton.disableProperty().bind(isFileLoaded.not());
 
+        originalValueToolTip.textProperty().bind(originalCellValueLabel.textProperty());
+        originalCellValueLabel.setOnMouseEntered(event -> {
+            if (isTextTruncated(originalCellValueLabel)) {
+                Tooltip.install(originalCellValueLabel, originalValueToolTip);
+            } else {
+                Tooltip.uninstall(originalCellValueLabel, originalValueToolTip);
+            }
+        });
+        originalCellValueLabel.setOnMouseExited(event -> Tooltip.uninstall(originalCellValueLabel, originalValueToolTip));
+
         ObservableList<String> skins = FXCollections.observableArrayList("Default", "Blue", "Red");
         skinSelectorChoiceBox.setItems(skins);
         skinSelectorChoiceBox.getSelectionModel().selectFirst();
@@ -80,6 +91,10 @@ public class HeaderController {
                 updateValueButton.fire();
             }
         });
+    }
+
+    private boolean isTextTruncated(Label label) {
+        return label.getWidth() < label.getFont().getSize() * label.getText().length();
     }
 
     private void initializeVersionSelectorComboBox() {

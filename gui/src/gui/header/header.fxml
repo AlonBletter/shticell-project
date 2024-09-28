@@ -6,6 +6,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
@@ -59,7 +60,10 @@
          </GridPane.margin>
          <children>
             <Label text="Original Cell Value" underline="true" />
-            <Label fx:id="originalCellValueLabel" />
+            <Label fx:id="originalCellValueLabel">
+               <tooltip>
+                  <Tooltip fx:id="originalValueToolTip" text="Empty Tooltip" />
+               </tooltip></Label>
          </children>
       </VBox>
       <VBox alignment="TOP_CENTER" maxWidth="250.0" minWidth="150.0" prefHeight="81.0" prefWidth="150.0" styleClass="header-label" GridPane.columnIndex="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">

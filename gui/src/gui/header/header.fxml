@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<GridPane fx:id="headerGridPane" maxWidth="1.7976931348623157E308" minHeight="100.0" minWidth="400.0" prefHeight="143.0" prefWidth="902.0" styleClass="gridPane" stylesheets="@header.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.header.HeaderController">
+  <columnConstraints>
+    <ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="-Infinity" minWidth="10.0" prefWidth="114.0" />
+    <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" maxWidth="300.0" minWidth="0.0" prefWidth="126.0" />
+      <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="194.0" />
+      <ColumnConstraints halignment="LEFT" hgrow="NEVER" maxWidth="1.7976931348623157E308" minWidth="7.0" prefWidth="150.0" />
+      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="250.0" minWidth="0.0" prefWidth="156.0" />
+      <ColumnConstraints hgrow="NEVER" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="150.0" />
+  </columnConstraints>
+  <rowConstraints>
+      <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="48.0" valignment="CENTER" />
+    <RowConstraints maxHeight="56.0" minHeight="10.0" prefHeight="45.0" vgrow="ALWAYS" />
+    <RowConstraints maxHeight="51.0" minHeight="10.0" prefHeight="37.333335876464844" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <Button fx:id="loadFileButton" mnemonicParsing="false" onAction="#loadFileButtonAction" prefHeight="25.0" prefWidth="100.0" styleClass="loadFileButton" text="Load File" GridPane.rowIndex="1">
+         <GridPane.margin>
+            <Insets />
+         </GridPane.margin>
+      </Button>
+      <Label fx:id="titleLabel" prefHeight="35.0" styleClass="shticell-title" text="Shticell" GridPane.valignment="CENTER">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <Label fx:id="loadedFilePathLabel" maxWidth="1.7976931348623157E308" prefHeight="27.0" prefWidth="691.0" styleClass="file-path-label" text="File Path" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
+         <padding>
+            <Insets left="10.0" />
+         </padding>
+      </Label>
+      <TextField fx:id="actionLineTextField" alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="25.0" prefWidth="170.0" promptText="Input Line" styleClass="actionLineTextField" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+      <Button fx:id="updateValueButton" mnemonicParsing="false" onAction="#updateValueButtonAction" prefHeight="25.0" prefWidth="150.0" text="Update Value" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+      <VBox alignment="TOP_CENTER" maxWidth="200.0" prefWidth="83.0" styleClass="header-label" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
+         <GridPane.margin>
+            <Insets />
+         </GridPane.margin>
+         <children>
+            <Label text="Selected Cell ID" underline="true" />
+            <Label fx:id="selectedCellIDLabel" />
+         </children>
+      </VBox>
+      <VBox alignment="TOP_CENTER" prefHeight="75.0" prefWidth="123.0" styleClass="header-label" GridPane.columnIndex="1" GridPane.rowIndex="2">
+         <GridPane.margin>
+            <Insets left="2.0" />
+         </GridPane.margin>
+         <children>
+            <Label text="Original Cell Value" underline="true" />
+            <Label fx:id="originalCellValueLabel">
+               <tooltip>
+                  <Tooltip fx:id="originalValueToolTip" text="Empty Tooltip" />
+               </tooltip></Label>
+         </children>
+      </VBox>
+      <VBox alignment="TOP_CENTER" maxWidth="250.0" minWidth="150.0" prefHeight="81.0" prefWidth="150.0" styleClass="header-label" GridPane.columnIndex="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
+         <children>
+            <Label text="Last Updated Cell Version" underline="true" />
+            <Label fx:id="lastUpdatedCellVersionLabel" />
+         </children>
+         <GridPane.margin>
+            <Insets left="10.0" right="10.0" />
+         </GridPane.margin>
+      </VBox>
+      <ComboBox fx:id="versionSelectorComboBox" editable="true" prefHeight="25.0" prefWidth="150.0" promptText="Previous Versions" GridPane.columnIndex="5" GridPane.rowIndex="2">
+         <GridPane.margin>
+            <Insets left="5.0" />
+         </GridPane.margin>
+      </ComboBox>
+      <VBox alignment="CENTER" GridPane.columnIndex="5">
+         <GridPane.margin>
+            <Insets left="5.0" />
+         </GridPane.margin>
+         <children>
+            <Label styleClass="header-label" text="Skins" />
+            <ChoiceBox fx:id="skinSelectorChoiceBox" prefHeight="25.0" prefWidth="150.0" />
+         </children>
+      </VBox>
+      <VBox alignment="CENTER" GridPane.columnIndex="4">
+         <children>
+            <Label styleClass="header-label" text="Animations" />
+            <ChoiceBox fx:id="animationButton" prefHeight="25.0" prefWidth="150.0" />
+         </children>
+      </VBox>
+   </children>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
+   </padding>
+</GridPane>

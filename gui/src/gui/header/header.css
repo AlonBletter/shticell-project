@@ -1,0 +1,122 @@
+.gridPane {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d0d0d0;
+    -fx-border-width: 1px;
+}
+
+.shticell-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 24px;
+    -fx-text-fill: #67EE75;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 3, 0, 0, 1);
+}
+
+.file-path-label {
+    -fx-background-color: rgba(0, 0, 0, 0.2);
+    -fx-background-radius: 20;
+    -fx-text-fill: rgba(0, 0, 0, 0.5);
+    -fx-border-radius: 13px;
+    -fx-font-weight: bold;
+}
+
+.text-field {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-text-fill: rgba(0, 0, 0, 0.8);
+    -fx-border-radius: 13px;
+    -fx-font-weight: bold;
+    -fx-border-color: black;
+    -fx-border-width: 1;
+}
+
+.combo-box {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #67EE75, #11B622);
+    -fx-border-color: linear-gradient(from 0% 100% to 0% 0%, #11B622, #67EE75);
+    -fx-border-width: 2px;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 3, 0, 0, 1);
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-border-color: white;
+    -fx-padding: 0 8 0 8;
+}
+
+.combo-box .arrow-button .arrow {
+    -fx-border-color: white;
+    -fx-background-color: white;
+}
+
+.combo-box:editable .text-field {
+    -fx-background-color: white;
+    -fx-border-color: transparent;
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10px;
+}
+
+.combo-box:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #76F485, #22C232);
+    -fx-border-color: linear-gradient(from 0% 100% to 0% 0%, #22C232, #76F485);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 4, 0, 0, 1.5);
+}
+
+.button {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #67EE75, #11B622);
+    -fx-border-color: linear-gradient(from 0% 100% to 0% 0%, #11B622, #67EE75);
+    -fx-border-width: 2px;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 13px;
+    -fx-background-insets: 2;
+    -fx-border-insets: 2;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 3, 0, 0, 1);
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #76F485, #22C232);
+    -fx-border-color: linear-gradient(from 0% 100% to 0% 0%, #22C232, #76F485);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 4, 0, 0, 1.5);
+}
+
+.button:pressed {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #56c964, #0e8e1b);
+    -fx-border-color: linear-gradient(from 0% 100% to 0% 0%, #0e8e1b, #56c964);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 2, 0, 0, 0.5);
+}
+
+.choice-box {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #67EE75, #11B622);
+    -fx-border-color: linear-gradient(from 0% 100% to 0% 0%, #11B622, #67EE75);
+    -fx-border-width: 2px;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-font-weight: bold;
+    -fx-text-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 3, 0, 0, 1);
+}
+
+.choice-box .open-button .arrow {
+    -fx-border-color: white;
+    -fx-background-color: white;
+}
+
+.choice-box .label {
+    -fx-text-fill: black;
+}
+
+.choice-box > .label {
+    -fx-text-fill: white;
+}
+
+.choice-box:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #76F485, #22C232);
+    -fx-border-color: linear-gradient(from 0% 100% to 0% 0%, #22C232, #76F485);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 4, 0, 0, 1.5);
+}

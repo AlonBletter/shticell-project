@@ -22,7 +22,7 @@ public class Sum extends UnaryExpression {
         String rangeName = effectiveValue.extractValueWithExpectation(String.class);
         List<Coordinate> cellsInRange = sheet.getRangeCellsCoordinates(rangeName);
 
-        if (rangeName == null) {
+        if (rangeName == null || cellsInRange == null) {
             return new EffectiveValueImpl(CellType.ERROR, Double.NaN);
         }
 
@@ -32,7 +32,7 @@ public class Sum extends UnaryExpression {
             EffectiveValue cellEffectiveValue = cell.getEffectiveValue();
 
             if(cellEffectiveValue.cellType() != CellType.NUMERIC) {
-                result = 0;
+                result += 0;
                 continue;
             }
             result += cellEffectiveValue.extractValueWithExpectation(Double.class);

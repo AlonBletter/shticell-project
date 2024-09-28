@@ -1,5 +1,7 @@
 package gui.left;
 
+import dto.CellDTO;
+import engine.sheet.cell.api.CellType;
 import engine.sheet.range.Range;
 import gui.app.AppController;
 import gui.common.ShticellResourcesConstants;
@@ -7,6 +9,7 @@ import gui.left.dialog.dimension.DimensionDialogController;
 import gui.left.dialog.filter.FilterDialogController;
 import gui.left.dialog.range.RangeDialogController;
 import gui.left.dialog.sort.SortDialogController;
+import gui.left.dialog.whatif.WhatIfDialogController;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,6 +27,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 
 public class LeftController {
     @FXML private Button columnWidthButton;
@@ -42,6 +46,8 @@ public class LeftController {
     @FXML private Button sortButton;
     @FXML private Button filterButton;
     @FXML private VBox leftVBox;
+    @FXML private Button whatIfButton;
+
 
 
     private AppController mainController;
@@ -250,6 +256,7 @@ public class LeftController {
         addRangeButton.disableProperty().bind(mainIsFileLoadedProperty.not());
         sortButton.disableProperty().bind(mainIsFileLoadedProperty.not());
         filterButton.disableProperty().bind(mainIsFileLoadedProperty.not());
+        whatIfButton.disableProperty().bind(mainIsFileLoadedProperty.not());
     }
 
     public void setPrimaryStage(Stage primaryStage) {
@@ -284,13 +291,13 @@ public class LeftController {
     public void setSkin(String skinType) {
         switch (skinType) {
             case "Blue":
-                applyCSS(ShticellResourcesConstants.BLUE_LEFT_CSS_URL);
+                applyCSS(Objects.requireNonNull(ShticellResourcesConstants.BLUE_LEFT_CSS_URL));
                 break;
             case "Red":
-                applyCSS(ShticellResourcesConstants.RED_LEFT_CSS_URL);
+                applyCSS(Objects.requireNonNull(ShticellResourcesConstants.RED_LEFT_CSS_URL));
                 break;
             case "Default":
-                applyCSS(ShticellResourcesConstants.DEFAULT_LEFT_CSS_URL);
+                applyCSS(Objects.requireNonNull(ShticellResourcesConstants.DEFAULT_LEFT_CSS_URL));
                 break;
         }
     }
@@ -298,5 +305,39 @@ public class LeftController {
     private void applyCSS(URL cssURL) {
         leftVBox.getStylesheets().clear();
         leftVBox.getStylesheets().add(cssURL.toExternalForm());
+    }
+
+    @FXML
+    void whatIfButtonAction(ActionEvent event) {
+        CellDTO currentCell = mainController.getCurrentCell();
+        if(currentCell.effectiveValue().cellType() != CellType.NUMERIC || currentCell.containsFunction()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.initOwner(primaryStage);
+            alert.setContentText("Invalid cell selection: The selected cell must contain a pure (non-function) " +
+                    "numeric value for the 'What If' feature.");
+            alert.showAndWait();
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(ShticellResourcesConstants.WHAT_IF_DIALOG_URL);
+            Parent root = loader.load();
+
+            WhatIfDialogController dialogController = loader.getController();
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("What-If");
+            dialogStage.setResizable(false);
+            dialogStage.setScene(new Scene(root));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            dialogController.setMainController(mainController);
+            dialogController.setDialogStage(dialogStage);
+            dialogStage.showAndWait();
+        } catch (IOException e) {
+            throw new RuntimeException("IO Exception occurred...");
+        }
     }
 }

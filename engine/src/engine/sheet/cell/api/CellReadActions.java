@@ -13,4 +13,5 @@ public interface CellReadActions {
     CellStyle getStyle();
     List<Coordinate> getDependsOn();
     List<Coordinate> getInfluenceOn();
+    boolean isContainFunction();
 }

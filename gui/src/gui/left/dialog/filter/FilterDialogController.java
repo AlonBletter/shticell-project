@@ -27,7 +27,7 @@ public class FilterDialogController {
     private int columnNumber = 0;
     private AppController mainController;
     private Stage dialogStage;
-    private List<FilterColumnPickerController> columnPickers = new LinkedList<>();
+    private final List<FilterColumnPickerController> columnPickers = new LinkedList<>();
 
     @FXML
     void initialize() {
@@ -68,8 +68,7 @@ public class FilterDialogController {
         for(FilterColumnPickerController controller : columnPickers) {
             String selectedColumn = controller.getSelectedColumn();
             List<String> selectedValues = controller.getPickedValues();
-            //!selectedValues.isEmpty() &&
-            if (!selectedColumn.isEmpty()) {
+            if (!selectedValues.isEmpty() &&!selectedColumn.isEmpty()) {
                 filterRequestValues.put(selectedColumn, selectedValues);
             }
         }

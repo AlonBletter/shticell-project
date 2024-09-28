@@ -12,7 +12,8 @@ public class CellConverter {
                 cell.getLastModifiedVersion(),
                 cell.getDependsOn(),
                 cell.getInfluenceOn(),
-                cell.getStyle()
+                cell.getStyle(),
+                cell.isContainFunction()
         );
     }
 }

@@ -15,10 +15,10 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 import java.net.URL;
+import java.util.Objects;
 
 public class SingleCellController extends CellModel {
     @FXML private AnchorPane cellPane;
@@ -32,6 +32,8 @@ public class SingleCellController extends CellModel {
     private RotateTransition rotateTransition;
     private ScaleTransition scaleTransition;
     private Timeline backgroundColorTimeline;
+    private String effectiveValueToRestore;
+    private boolean whatIfFlag = false;
 
     public SingleCellController() {
         super();
@@ -87,8 +89,10 @@ public class SingleCellController extends CellModel {
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
-        textSpinAnimation.bind(mainController.getTextSpinAnimationProperty());
-        textFadeAnimation.bind(mainController.textFadeAnimationProperty());
+        if (mainController != null) {
+            textSpinAnimation.bind(mainController.getTextSpinAnimationProperty());
+            textFadeAnimation.bind(mainController.textFadeAnimationProperty());
+        }
     }
     public void setCenterController(CenterController centerController) {
         this.centerController = centerController;
@@ -148,6 +152,7 @@ public class SingleCellController extends CellModel {
             setLastModifiedVersion("1");
         }
     }
+
     public Node getCellNode() {
         return cellPane;
     }
@@ -199,13 +204,13 @@ public class SingleCellController extends CellModel {
     public void setSkin(String skinType) {
         switch (skinType) {
             case "Blue":
-                applyCSS(ShticellResourcesConstants.BLUE_CELL_CSS_URL);
+                applyCSS(Objects.requireNonNull(ShticellResourcesConstants.BLUE_CELL_CSS_URL));
                 break;
             case "Red":
-                applyCSS(ShticellResourcesConstants.RED_CELL_CSS_URL);
+                applyCSS(Objects.requireNonNull(ShticellResourcesConstants.RED_CELL_CSS_URL));
                 break;
             case "Default":
-                applyCSS(ShticellResourcesConstants.DEFAULT_CELL_CSS_URL);
+                applyCSS(Objects.requireNonNull(ShticellResourcesConstants.DEFAULT_CELL_CSS_URL));
                 break;
         }
     }
@@ -213,5 +218,21 @@ public class SingleCellController extends CellModel {
     private void applyCSS(URL cssURL) {
         cellPane.getStylesheets().clear();
         cellPane.getStylesheets().add(cssURL.toExternalForm());
+    }
+
+    public void setExpectedValue(EffectiveValue value) {
+        if(!whatIfFlag) {
+            effectiveValueToRestore = getEffectiveValue();
+            whatIfFlag = true;
+        }
+
+        setEffectiveValue(formatEffectiveValue(value));
+    }
+
+    public void restoreEffectiveValue() {
+        if (whatIfFlag) {
+            whatIfFlag = false;
+            setEffectiveValue(effectiveValueToRestore);
+        }
     }
 }

@@ -27,4 +27,5 @@ public interface Engine {
     SheetDTO getSortedSheet(String rangeToSortBy, List<String> columnsToSortBy);
     List<String> getColumnUniqueValue(String columnLetter);
     SheetDTO getFilteredSheet(String rangeToFilter, Map<String, List<String>> filterRequestValues);
+    SheetDTO getExpectedValue(Coordinate cellToCalculate, String newValueOfCell);
 }

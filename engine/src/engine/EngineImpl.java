@@ -25,6 +25,7 @@ public class EngineImpl implements Engine {
     public static final int SHEET_MAX_ROWS = 50;
 
     private final VersionManager versionManager = new VersionManagerImpl();
+    private Sheet whatIfCopy;
 
     @Override
     public SheetDTO getSpreadsheet() {
@@ -125,6 +126,17 @@ public class EngineImpl implements Engine {
         Sheet copyCurrentVersionSheet = versionManager.getCurrentVersionSheet().copySheet();
         copyCurrentVersionSheet.filter(rangeToFilter, filterRequestValues);
         return SheetConverter.convertToDTO(copyCurrentVersionSheet);
+    }
+
+    @Override
+    public SheetDTO getExpectedValue(Coordinate cellToCalculate, String newValueOfCell) {
+        validateLoadedSheet();
+        if (whatIfCopy == null || whatIfCopy.getVersionNumber() != versionManager.getCurrentVersionNumber()) {
+            whatIfCopy = versionManager.getCurrentVersionSheet().copySheet();
+        }
+        whatIfCopy.updateCell(cellToCalculate, newValueOfCell);
+
+        return SheetConverter.convertToDTO(whatIfCopy);
     }
 
     @Override

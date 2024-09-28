@@ -18,7 +18,7 @@ public class CellImpl implements Cell, Serializable {
     private int lastModifiedVersion;
     private List<Coordinate> dependsOn;
     private List<Coordinate> influenceOn;
-    private CellStyle cellStyle;
+    private final CellStyle cellStyle;
 
     public CellImpl(Coordinate coordinate) {
         this.coordinate = coordinate;
@@ -73,6 +73,11 @@ public class CellImpl implements Cell, Serializable {
     @Override
     public void setLastModifiedVersion(int value) {
         this.lastModifiedVersion = value;
+    }
+
+    @Override
+    public boolean isContainFunction() {
+        return originalValue.startsWith("{") && originalValue.endsWith("}");
     }
 
     @Override

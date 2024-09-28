@@ -14,12 +14,12 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="leftVBox" alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="200.0" spacing="20.0" styleClass="general-vbox" stylesheets="@left.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.left.LeftController">
+<VBox fx:id="leftVBox" alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="200.0" spacing="10.0" styleClass="general-vbox" stylesheets="@left.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.left.LeftController">
    <padding>
       <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
    </padding>
    <children>
-      <VBox minHeight="350.0" minWidth="150.0" prefHeight="350.0" prefWidth="150.0" spacing="10.0">
+      <VBox minWidth="150.0" prefHeight="350.0" prefWidth="150.0" spacing="8.0">
          <children>
             <Label alignment="CENTER" prefHeight="25.0" prefWidth="150.0" styleClass="cell-style-label" text="Cell Styling">
                <font>
@@ -97,15 +97,16 @@
          </children>
       </VBox>
       <Separator prefWidth="150.0" />
-      <VBox>
+      <VBox spacing="3.0">
          <children>
-            <Label maxWidth="1.7976931348623157E308" styleClass="left-label" text="Filter &amp; Sort" />
+            <Label maxWidth="1.7976931348623157E308" styleClass="left-label" text="Sheet Commands" />
             <HBox>
                <children>
                   <Button fx:id="filterButton" alignment="TOP_LEFT" minHeight="29.0" minWidth="75.0" mnemonicParsing="false" onAction="#filterButtonAction" prefHeight="25.0" prefWidth="75.0" text="Filter" />
                   <Button fx:id="sortButton" alignment="TOP_LEFT" minHeight="29.0" minWidth="75.0" mnemonicParsing="false" onAction="#sortButtonAction" prefHeight="25.0" prefWidth="75.0" text="Sort" />
                </children>
             </HBox>
+            <Button fx:id="whatIfButton" alignment="TOP_LEFT" minHeight="29.0" minWidth="150.0" mnemonicParsing="false" onAction="#whatIfButtonAction" prefHeight="29.0" prefWidth="150.0" text="What-If" />
          </children>
       </VBox>
       <Separator prefWidth="150.0" />

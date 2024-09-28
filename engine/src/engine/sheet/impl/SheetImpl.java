@@ -3,14 +3,13 @@ package engine.sheet.impl;
 import engine.exception.InvalidCellBoundsException;
 import engine.expression.ExpressionUtils;
 import engine.generated.*;
-import engine.sheet.effectivevalue.EffectiveValue;
 import engine.sheet.api.Sheet;
 import engine.sheet.cell.api.Cell;
 import engine.sheet.cell.api.CellReadActions;
 import engine.sheet.cell.impl.CellImpl;
-import engine.sheet.cell.impl.EmptyCell;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
+import engine.sheet.effectivevalue.EffectiveValue;
 import engine.sheet.range.Range;
 import engine.sheet.range.RangeImpl;
 import engine.sheet.row.SortableRow;
@@ -49,7 +48,7 @@ public class SheetImpl implements Sheet, Serializable {
         Cell cell = activeCells.get(coordinate);
 
         if(cell == null) {
-            activeCells.put(coordinate, EmptyCell.INSTANCE);
+            activeCells.computeIfAbsent(coordinate, CellImpl::new);
             return activeCells.get(coordinate);
         }
 
@@ -121,7 +120,7 @@ public class SheetImpl implements Sheet, Serializable {
         Range range = ranges.get(rangeNameToView);
 
         if (range == null) {
-            throw new IllegalArgumentException("Range with the name [" + rangeNameToView + "] does not exist.");
+            return null;
         }
 
         return range.getCellsInRange();
@@ -254,8 +253,8 @@ public class SheetImpl implements Sheet, Serializable {
         Set<Coordinate> allCoordinates = new HashSet<>();
 
         for (String rangeName : extractRanges) {
-            if (rangeName != null) {
-                List<Coordinate> currentCellRangeCoordinates = getRangeCellsCoordinates(rangeName);
+            List<Coordinate> currentCellRangeCoordinates = getRangeCellsCoordinates(rangeName);
+            if (rangeName != null && currentCellRangeCoordinates != null) {
                 allCoordinates.addAll(currentCellRangeCoordinates);
                 activeRanges.computeIfAbsent(rangeName, k -> new HashSet<>()).add(currentCell);
             }

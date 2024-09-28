@@ -1,15 +1,16 @@
 package gui.app;
 
+import dto.CellDTO;
 import dto.SheetDTO;
 import engine.Engine;
 import engine.EngineImpl;
 import engine.exception.InvalidCellBoundsException;
 import engine.sheet.coordinate.Coordinate;
 import gui.center.CenterController;
+import gui.center.singlecell.SingleCellController;
 import gui.common.ShticellResourcesConstants;
 import gui.header.HeaderController;
 import gui.left.LeftController;
-import gui.center.singlecell.SingleCellController;
 import gui.task.LoadFileTask;
 import gui.task.LoadingDialogController;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -49,8 +50,8 @@ public class AppController {
     private List<SingleCellController> selectedRow;
     private List<SingleCellController> selectedColumn;
     private final SimpleBooleanProperty isFileLoaded;
-    private SimpleBooleanProperty textSpinAnimation;
-    private SimpleBooleanProperty textFadeAnimation;
+    private final SimpleBooleanProperty textSpinAnimation;
+    private final SimpleBooleanProperty textFadeAnimation;
 
     public AppController() {
         engine = new EngineImpl();
@@ -224,6 +225,8 @@ public class AppController {
         sheetStage.setTitle(title);
         sheetStage.initModality(Modality.APPLICATION_MODAL);
         Scene scene = new Scene(displayScrollPane);
+        sheetStage.setWidth(800);
+        sheetStage.setHeight(600);
         sheetStage.setScene(scene);
         sheetStage.showAndWait();
     }
@@ -382,5 +385,23 @@ public class AppController {
                 textFadeAnimation.set(true);
                 break;
         }
+    }
+
+    public void displayExpectedValue(Number newValue) {
+        try {
+//            Map<Coordinate, EffectiveValue> modifiedCells = engine.getExpectedValue(selectedCell.getCoordinate(), String.valueOf(newValue.doubleValue()));
+            SheetDTO sheet = engine.getExpectedValue(selectedCell.getCoordinate(), String.valueOf(newValue.doubleValue()));
+            centerComponentController.refreshExpectedValues(sheet);
+        } catch (Exception e) {
+            showErrorAlert("Invalid Usage of What-If", "An error occurred while using the what-if command.", e.getMessage());
+        }
+    }
+
+    public void restoreCurrentValues() {
+        centerComponentController.restoreCurrentValues();
+    }
+
+    public CellDTO getCurrentCell() {
+        return engine.getCell(selectedCell.getCoordinate());
     }
 }

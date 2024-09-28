@@ -49,6 +49,11 @@ public enum EmptyCell implements Cell, Serializable {
     }
 
     @Override
+    public boolean isContainFunction() {
+        throw new UnsupportedOperationException("Empty cell has no information.");
+    }
+
+    @Override
     public void setOriginalValue(String value) {
         throw new UnsupportedOperationException("Cannot modify an empty cell.");
     }

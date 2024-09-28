@@ -7,7 +7,6 @@ import engine.sheet.coordinate.CoordinateFactory;
 import gui.app.AppController;
 import gui.center.singlecell.SingleCellController;
 import gui.common.ShticellResourcesConstants;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;
@@ -22,10 +21,7 @@ import javafx.scene.layout.RowConstraints;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CenterController {
     private final static int ROW_AND_COLUMN_SIZE = 30;
@@ -97,13 +93,13 @@ public class CenterController {
     public void setSkin(String skinType) {
         switch (skinType) {
             case "Blue":
-                applyCSS(ShticellResourcesConstants.BLUE_CENTER_CSS_URL);
+                applyCSS(Objects.requireNonNull(ShticellResourcesConstants.BLUE_CENTER_CSS_URL));
                 break;
             case "Red":
-                applyCSS(ShticellResourcesConstants.RED_CENTER_CSS_URL);
+                applyCSS(Objects.requireNonNull(ShticellResourcesConstants.RED_CENTER_CSS_URL));
                 break;
             case "Default":
-                applyCSS(ShticellResourcesConstants.DEFAULT_CENTER_CSS_URL);
+                applyCSS(Objects.requireNonNull(ShticellResourcesConstants.DEFAULT_CENTER_CSS_URL));
                 break;
         }
 
@@ -371,5 +367,22 @@ public class CenterController {
             cellController.getCellNode().getStyleClass().removeAll("range-mark");
         }
         selectedRange.clear();
+    }
+
+    public void refreshExpectedValues(SheetDTO modifiedCells) {
+        for(Map.Entry<Coordinate, CellDTO> entry : modifiedCells.activeCells().entrySet()) {
+            SingleCellController cellController = gridCells.get(entry.getKey());
+            cellController.setExpectedValue(modifiedCells.activeCells().get(entry.getKey()).effectiveValue());
+        }
+    }
+
+    public void restoreCurrentValues() {
+        for(int row = 1; row <= numOfRows; row++) {
+            for(int col = 1; col <= numOfColumns; col++) {
+                Coordinate coordinate = CoordinateFactory.createCoordinate(row, col);
+                SingleCellController cellController = gridCells.get(coordinate);
+                cellController.restoreEffectiveValue();
+            }
+        }
     }
 }

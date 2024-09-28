@@ -13,6 +13,7 @@ public record CellDTO(
         int lastModifiedVersion,
         List<Coordinate> dependsOn,
         List<Coordinate> influenceOn,
-        CellStyle cellStyle
+        CellStyle cellStyle,
+        boolean containsFunction
 ) {
 }

@@ -62,6 +62,10 @@
     -fx-text-fill: white;
 }
 
+.color-picker .arrow-button .arrow {
+    -fx-background-color: white;
+}
+
 .toggle-button {
     -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #EE6767, #B61111);
     -fx-border-color: linear-gradient(from 0% 100% to 0% 0%, #B61111, #EE6767);

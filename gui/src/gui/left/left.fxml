@@ -106,7 +106,12 @@
                   <Button fx:id="sortButton" alignment="TOP_LEFT" minHeight="29.0" minWidth="75.0" mnemonicParsing="false" onAction="#sortButtonAction" prefHeight="25.0" prefWidth="75.0" text="Sort" />
                </children>
             </HBox>
-            <Button fx:id="whatIfButton" alignment="TOP_LEFT" minHeight="29.0" minWidth="150.0" mnemonicParsing="false" onAction="#whatIfButtonAction" prefHeight="29.0" prefWidth="150.0" text="What-If" />
+            <HBox>
+               <children>
+                  <Button fx:id="whatIfButton" alignment="TOP_LEFT" minHeight="29.0" minWidth="75.0" mnemonicParsing="false" onAction="#whatIfButtonAction" prefHeight="25.0" prefWidth="75.0" text="What-If" />
+                  <Button fx:id="createGraphButton" alignment="TOP_LEFT" minHeight="29.0" minWidth="75.0" mnemonicParsing="false" onAction="#createGraphListener" prefHeight="25.0" prefWidth="75.0" text="Graphs" />
+               </children>
+            </HBox>
          </children>
       </VBox>
       <Separator prefWidth="150.0" />

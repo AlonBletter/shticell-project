@@ -5,7 +5,9 @@ import dto.SheetDTO;
 import engine.Engine;
 import engine.EngineImpl;
 import engine.exception.InvalidCellBoundsException;
+import engine.sheet.cell.api.CellType;
 import engine.sheet.coordinate.Coordinate;
+import engine.sheet.effectivevalue.EffectiveValue;
 import gui.center.CenterController;
 import gui.center.singlecell.SingleCellController;
 import gui.common.ShticellResourcesConstants;
@@ -20,6 +22,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
@@ -29,9 +32,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class AppController {
     @FXML private GridPane headerComponent;
@@ -393,7 +398,8 @@ public class AppController {
             SheetDTO sheet = engine.getExpectedValue(selectedCell.getCoordinate(), String.valueOf(newValue.doubleValue()));
             centerComponentController.refreshExpectedValues(sheet);
         } catch (Exception e) {
-            showErrorAlert("Invalid Usage of What-If", "An error occurred while using the what-if command.", e.getMessage());
+            showErrorAlert("Invalid Usage of What-If",
+                    "An error occurred while using the what-if command.", e.getMessage());
         }
     }
 
@@ -403,5 +409,107 @@ public class AppController {
 
     public CellDTO getCurrentCell() {
         return engine.getCell(selectedCell.getCoordinate());
+    }
+
+    public void createGraph(String xAxisRange, String yAxisRange, String chartType) {
+        List<Coordinate> xAxis = engine.getAxis(xAxisRange);
+        List<Coordinate> yAxis = engine.getAxis(yAxisRange);
+
+        if (xAxis.getFirst().getColumn() != xAxis.getLast().getColumn()
+                || yAxis.getFirst().getColumn() != yAxis.getLast().getColumn()) {
+
+            showErrorAlert("Invalid graph settings",
+                    "An error occurred while creating the graph.", null);
+            return;
+        }
+
+        List<Double> xAxisData = getValuesFromCoordinates(xAxis);
+        List<Double> yAxisData = getValuesFromCoordinates(yAxis);
+
+        if (xAxisData.size() != yAxisData.size()) {
+            showErrorAlert("Mismatch in data size",
+                    "X-axis and Y-axis ranges must have the same number of data points.", null);
+            return;
+        }
+
+        switch (chartType) {
+            case "BarChart":
+                showBarChart(xAxisData, yAxisData);
+                break;
+            case "LineChart":
+                showLineChart(xAxisData, yAxisData);
+                break;
+            default:
+                showErrorAlert("Invalid chart type",
+                        "Unknown chart type: " + chartType, null);
+                break;
+        }
+    }
+
+    private List<Double> getValuesFromCoordinates(List<Coordinate> coordinates) {
+        List<Double> values = new ArrayList<>();
+        for (Coordinate coord : coordinates) {
+            CellDTO cell = engine.getCell(coord);
+            EffectiveValue value = cell.effectiveValue();
+            if (value.cellType() == CellType.NUMERIC) {
+                values.add(value.extractValueWithExpectation(Double.class));
+            } else {
+                showErrorAlert("Non-numeric data", "All cells in the graph must be numeric.", null);
+                return null;
+            }
+        }
+        return values;
+    }
+
+    private void showBarChart(List<Double> xAxisData, List<Double> yAxisData) {
+        Stage stage = new Stage();
+
+        List<String> newAxis = xAxisData.stream()
+                .map(Object::toString)
+                .toList();
+
+        CategoryAxis xAxis = new CategoryAxis();
+        NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("X Axis");
+        yAxis.setLabel("Y Axis");
+
+        BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
+        barChart.setTitle("Bar Chart");
+
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        for (int i = 0; i < xAxisData.size(); i++) {
+            series.getData().add(new XYChart.Data<>(newAxis.get(i), yAxisData.get(i)));
+        }
+        barChart.getData().add(series);
+
+        VBox vbox = new VBox(barChart);
+        Scene scene = new Scene(vbox, 800, 600);
+
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private void showLineChart(List<Double> xAxisData, List<Double> yAxisData) {
+        Stage stage = new Stage();
+
+        NumberAxis xAxis = new NumberAxis();
+        NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("X Axis");
+        yAxis.setLabel("Y Axis");
+
+        LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.setTitle("Line Chart");
+
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        for (int i = 0; i < xAxisData.size(); i++) {
+            series.getData().add(new XYChart.Data<>(xAxisData.get(i), yAxisData.get(i)));
+        }
+        lineChart.getData().add(series);
+
+        VBox vbox = new VBox(lineChart);
+        Scene scene = new Scene(vbox, 800, 600);
+
+        stage.setScene(scene);
+        stage.show();
     }
 }

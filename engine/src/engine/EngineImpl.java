@@ -5,11 +5,13 @@ import dto.CellDTO;
 import dto.SheetConverter;
 import dto.SheetDTO;
 import engine.exception.InvalidCellBoundsException;
+import engine.expression.ExpressionUtils;
 import engine.generated.STLSheet;
 import engine.sheet.api.Sheet;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.impl.SheetImpl;
 import engine.sheet.range.Range;
+import engine.sheet.range.RangeImpl;
 import engine.verisonmanager.VersionManager;
 import engine.verisonmanager.VersionManagerImpl;
 import jakarta.xml.bind.JAXBContext;
@@ -140,6 +142,14 @@ public class EngineImpl implements Engine {
     }
 
     @Override
+    public List<Coordinate> getAxis(String axisRange) {
+        validateLoadedSheet();
+        List<Coordinate> axis = ExpressionUtils.parseRange(axisRange);
+        Range range = new RangeImpl("axis", axis.getFirst(), axis.getLast());
+        return range.getCellsInRange();
+    }
+
+    @Override
     public List<String> getColumnUniqueValue(String columnLetter) {
         validateLoadedSheet();
         Sheet currentVersion = versionManager.getCurrentVersionSheet();
@@ -246,4 +256,6 @@ public class EngineImpl implements Engine {
             }
         }
     }
+
+
 }

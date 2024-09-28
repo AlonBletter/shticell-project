@@ -3,6 +3,7 @@ package engine;
 import dto.CellDTO;
 import dto.SheetDTO;
 import engine.sheet.coordinate.Coordinate;
+import engine.sheet.effectivevalue.EffectiveValue;
 import engine.sheet.range.Range;
 
 import java.io.IOException;
@@ -28,4 +29,6 @@ public interface Engine {
     List<String> getColumnUniqueValue(String columnLetter);
     SheetDTO getFilteredSheet(String rangeToFilter, Map<String, List<String>> filterRequestValues);
     SheetDTO getExpectedValue(Coordinate cellToCalculate, String newValueOfCell);
+
+    List<Coordinate> getAxis(String axisRange);
 }

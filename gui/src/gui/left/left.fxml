@@ -89,7 +89,7 @@
                   </ColorPicker>
                </children>
             </VBox>
-            <Button fx:id="resetStylingButton" alignment="TOP_LEFT" minHeight="29.0" minWidth="150.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="150.0" text="Reset Styling">
+            <Button fx:id="resetStylingButton" alignment="TOP_LEFT" minHeight="29.0" minWidth="150.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="150.0" text="Reset Colors">
                <VBox.margin>
                   <Insets top="10.0" />
                </VBox.margin>

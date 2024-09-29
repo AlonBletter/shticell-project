@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class AppController {
     @FXML private GridPane headerComponent;
@@ -179,8 +178,8 @@ public class AppController {
                 SheetDTO sheetDTO = engine.getSpreadsheet();
                 centerComponentController.initializeGrid(sheetDTO, true);
                 centerScrollPane.setContent(centerComponentController.getCenterGrid());
-                centerScrollPane.setFitToWidth(true);
-                centerScrollPane.setFitToHeight(true);
+//                centerScrollPane.setFitToWidth(true);
+//                centerScrollPane.setFitToHeight(true);
                 borderPane.setCenter(centerScrollPane);
                 headerComponentController.initializeHeaderAfterLoad(filePath);
                 leftComponentController.loadRanges(engine.getRanges());
@@ -412,14 +411,23 @@ public class AppController {
     }
 
     public void createGraph(String xAxisRange, String yAxisRange, String chartType) {
-        List<Coordinate> xAxis = engine.getAxis(xAxisRange);
-        List<Coordinate> yAxis = engine.getAxis(yAxisRange);
+        List<Coordinate> xAxis = null;
+        List<Coordinate> yAxis = null;
+
+        try {
+            xAxis = engine.getAxis(xAxisRange);
+            yAxis = engine.getAxis(yAxisRange);
+        } catch (Exception e) {
+            showErrorAlert("Invalid graph settings", "An error occurred while creating the graph.",
+                    "Invalid column range format. Expected <coordinate first column cell>..<coordinate last column cell>");
+            return;
+        }
 
         if (xAxis.getFirst().getColumn() != xAxis.getLast().getColumn()
                 || yAxis.getFirst().getColumn() != yAxis.getLast().getColumn()) {
 
             showErrorAlert("Invalid graph settings",
-                    "An error occurred while creating the graph.", null);
+                    "An error occurred while creating the graph.", "Invalid Column");
             return;
         }
 

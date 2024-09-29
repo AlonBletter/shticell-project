@@ -30,8 +30,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 
-import static gui.common.ShticellResourcesConstants.GRAPH_DIALOG_URL;
-
 public class LeftController {
     @FXML private Button columnWidthButton;
     @FXML private Button rowHeightButton;
@@ -51,7 +49,6 @@ public class LeftController {
     @FXML private VBox leftVBox;
     @FXML private Button whatIfButton;
     @FXML private Button createGraphButton;
-
 
     private AppController mainController;
     private Stage primaryStage;

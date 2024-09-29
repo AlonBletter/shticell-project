@@ -136,6 +136,7 @@ public class HeaderController {
 
 
     public void initializeHeaderAfterLoad(String loadedFilePath) {
+        actionLineTextField.setText("");
         filePath.setValue(loadedFilePath);
         versionSelectorComboBox.getItems().clear();
         versionNumberList.addFirst("");

@@ -2,8 +2,8 @@ package ui.impl;
 
 import dto.CellDTO;
 import dto.SheetDTO;
-import engine.Engine;
-import engine.EngineImpl;
+import engine.SheetManager;
+import engine.SheetManagerImpl;
 import engine.exception.InvalidCellBoundsException;
 import engine.sheet.cell.api.CellType;
 import engine.sheet.coordinate.Coordinate;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleUI implements UI {
-    private final Engine spreadsheetEngine = new EngineImpl();
+    private final SheetManager spreadsheetEngine = new SheetManagerImpl(null);
     private Scanner scanner;
 
     @Override
@@ -129,13 +129,13 @@ public class ConsoleUI implements UI {
         int sheetNumOfRows = e.getSheetNumOfRows();
         int SheetNumOfColumns = e.getSheetNumOfColumns();
         char sheetColumnRange = (char) (SheetNumOfColumns + 'A' - 1);
-        char cellColumnChar = (char) (coordinate.getColumn() + 'A' - 1);
+        char cellColumnChar = (char) (coordinate.column() + 'A' - 1);
 
         String message = e.getMessage() != null ? e.getMessage() : "";
 
         System.out.println(message + "Invalid cell bounds!\n" +
                 "Expected column between A-" + sheetColumnRange + " and row between 1-" + sheetNumOfRows + "\n" +
-                "But received column [" + cellColumnChar + "] and row [" + coordinate.getRow() + "]");
+                "But received column [" + cellColumnChar + "] and row [" + coordinate.row() + "]");
     }
 
     private void displaySpreadsheet() {

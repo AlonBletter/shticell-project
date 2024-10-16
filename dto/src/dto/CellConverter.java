@@ -12,7 +12,7 @@ public class CellConverter {
                 cell.getLastModifiedVersion(),
                 cell.getDependsOn(),
                 cell.getInfluenceOn(),
-                cell.getStyle(),
+                new CellStyleDTO(cell.getStyle()),
                 cell.isContainFunction()
         );
     }

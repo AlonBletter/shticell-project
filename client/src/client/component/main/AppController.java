@@ -2,20 +2,25 @@ package client.component.main;
 
 import client.component.dashboard.DashboardController;
 import client.component.login.LoginController;
+import client.component.sheet.app.SheetController;
 import client.util.Constants;
+import dto.SheetDTO;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.URL;
 
-public class AppController {
+public class AppController implements Closeable {
     @FXML StackPane mainPane;
 
     private GridPane loginComponent;
@@ -24,9 +29,13 @@ public class AppController {
     private ScrollPane dashboardComponent;
     private DashboardController dashboardController;
 
-    private Stage primaryStage;
+    private ScrollPane sheetComponent;
+    private SheetController sheetController;
 
-    private SimpleStringProperty username = new SimpleStringProperty();
+    private Stage primaryStage;
+    private final Alert alert = new Alert(Alert.AlertType.ERROR);
+
+    private final SimpleStringProperty username = new SimpleStringProperty();
 
     @FXML
     void initialize() {
@@ -57,8 +66,27 @@ public class AppController {
             dashboardController = fxmlLoader.getController();
             dashboardController.setMainController(this);
             setMainPanelTo(dashboardComponent);
+            dashboardController.setActive();
             primaryStage.setWidth(dashboardComponent.getPrefWidth());
             primaryStage.setHeight(dashboardComponent.getPrefHeight());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadSheetView(SheetDTO sheetToView) {
+        URL sheetUrl = getClass().getResource(Constants.SHEET_FXML_RESOURCE_LOCATION);
+
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(sheetUrl);
+            sheetComponent = fxmlLoader.load();
+            sheetController = fxmlLoader.getController();
+            sheetController.setMainController(this);
+            sheetController.setSheetToView(sheetToView);
+            setMainPanelTo(sheetComponent);
+
+            // sheetController.setActive(); //TODO timer for fetching new version available
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -73,11 +101,29 @@ public class AppController {
         this.primaryStage = primaryStage;
     }
 
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
+
     public void updateUsername(String username) {
         this.username.set(username);
     }
 
     public SimpleStringProperty usernameProperty() {
         return this.username;
+    }
+
+    public void showErrorAlert(String title, String headerText, String contentText) {
+        alert.setTitle(title);
+        alert.setHeaderText(headerText);
+        alert.setContentText(contentText);
+        alert.showAndWait();
+    }
+
+    @Override
+    public void close() {
+        if (dashboardController != null) {
+            dashboardController.close();
+        }
     }
 }

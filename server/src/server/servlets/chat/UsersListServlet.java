@@ -1,4 +1,4 @@
-package server.servlets;
+package server.servlets.chat;
 
 import server.utils.ServletUtils;
 import com.google.gson.Gson;

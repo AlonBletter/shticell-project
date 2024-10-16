@@ -5,13 +5,12 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 
-
-<VBox fx:id="commandsComponent" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1">
+<VBox fx:id="commandsComponent" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.component.dashboard.command.CommandsController">
    <children>
       <Label text="Commands:" />
-      <Button mnemonicParsing="false" prefWidth="150.0" text="View Sheet" />
-      <Button mnemonicParsing="false" prefWidth="150.0" text="Request Permission" />
-      <Button mnemonicParsing="false" prefWidth="150.0" text="Permission Management" />
+      <Button fx:id="viewSheetButton" mnemonicParsing="false" onAction="#viewSheetButtonAction" prefWidth="150.0" text="View Sheet" />
+      <Button fx:id="requestPermissionButton" mnemonicParsing="false" onAction="#requestPermissionButtonAction" prefWidth="150.0" text="Request Permission" />
+      <Button fx:id="permissionManagerButton" mnemonicParsing="false" onAction="#permissionManagerButtonAction" prefWidth="150.0" text="Permission Management" />
    </children>
    <padding>
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

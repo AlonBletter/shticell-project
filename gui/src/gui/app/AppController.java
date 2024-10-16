@@ -2,8 +2,8 @@ package gui.app;
 
 import dto.CellDTO;
 import dto.SheetDTO;
-import engine.Engine;
-import engine.EngineImpl;
+import engine.SheetManager;
+import engine.SheetManagerImpl;
 import engine.exception.InvalidCellBoundsException;
 import engine.sheet.cell.api.CellType;
 import engine.sheet.coordinate.Coordinate;
@@ -45,7 +45,7 @@ public class AppController {
     @FXML private BorderPane borderPane;
     @FXML private ScrollPane mainScrollPane;
 
-    private final Engine engine;
+    private final SheetManager engine;
     private CenterController centerComponentController;
     private ScrollPane centerScrollPane;
     private Stage primaryStage;
@@ -58,7 +58,7 @@ public class AppController {
     private final SimpleBooleanProperty textFadeAnimation;
 
     public AppController() {
-        engine = new EngineImpl();
+        engine = new SheetManagerImpl(null);
         centerScrollPane = new ScrollPane();
         centerComponentController = new CenterController();
         this.isFileLoaded = new SimpleBooleanProperty(false);
@@ -115,11 +115,11 @@ public class AppController {
     }
 
     public double getCurrentSelectedRowHeight() {
-        return centerComponentController.getRowHeight(selectedCell.getCoordinate().getRow());
+        return centerComponentController.getRowHeight(selectedCell.getCoordinate().row());
     }
 
     public double getCurrentSelectedColumnWidth() {
-        return centerComponentController.getColumnWidth(selectedCell.getCoordinate().getColumn());
+        return centerComponentController.getColumnWidth(selectedCell.getCoordinate().column());
     }
 
     public void updateHeaderOnCellClick() {
@@ -248,21 +248,21 @@ public class AppController {
         int sheetNumOfRows = e.getSheetNumOfRows();
         int SheetNumOfColumns = e.getSheetNumOfColumns();
         char sheetColumnRange = (char) (SheetNumOfColumns + 'A' - 1);
-        char cellColumnChar = (char) (coordinate.getColumn() + 'A' - 1);
+        char cellColumnChar = (char) (coordinate.column() + 'A' - 1);
         String message = e.getMessage() != null ? e.getMessage() : "";
 
         showErrorAlert("Invalid cells bounds", "An error occurred while processing the loaded file..",
                 message + "\n" + "Expected column between A-" + sheetColumnRange + " and row between 1-" + sheetNumOfRows + "\n" +
-                "But received column [" + cellColumnChar + "] and row [" + coordinate.getRow() + "].");
+                "But received column [" + cellColumnChar + "] and row [" + coordinate.row() + "].");
     }
 
     public void updateColumnWidth(Double result) {
         int columnIndex;
 
         if(selectedCell != null) {
-            columnIndex = selectedCell.getCoordinate().getColumn();
+            columnIndex = selectedCell.getCoordinate().column();
         } else {
-            columnIndex = selectedColumn.getFirst().getCoordinate().getColumn();
+            columnIndex = selectedColumn.getFirst().getCoordinate().column();
         }
 
         centerComponentController.updateColumnWidth(columnIndex, result);
@@ -272,16 +272,16 @@ public class AppController {
         int rowIndex;
 
         if(selectedCell != null) {
-            rowIndex = selectedCell.getCoordinate().getRow();
+            rowIndex = selectedCell.getCoordinate().row();
         } else {
-            rowIndex = selectedRow.getFirst().getCoordinate().getRow();
+            rowIndex = selectedRow.getFirst().getCoordinate().row();
         }
 
         centerComponentController.updateRowHeight(rowIndex, result);
     }
 
     public void alignColumnCells(Pos pos) {
-        centerComponentController.alignColumnCells(selectedCell.getCoordinate().getColumn(), pos);
+        centerComponentController.alignColumnCells(selectedCell.getCoordinate().column(), pos);
     }
 
     public void updateCellBackgroundColor(String newColor) {
@@ -423,8 +423,8 @@ public class AppController {
             return;
         }
 
-        if (xAxis.getFirst().getColumn() != xAxis.getLast().getColumn()
-                || yAxis.getFirst().getColumn() != yAxis.getLast().getColumn()) {
+        if (xAxis.getFirst().column() != xAxis.getLast().column()
+                || yAxis.getFirst().column() != yAxis.getLast().column()) {
 
             showErrorAlert("Invalid graph settings",
                     "An error occurred while creating the graph.", "Invalid Column");

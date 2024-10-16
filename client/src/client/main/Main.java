@@ -2,6 +2,7 @@ package client.main;
 
 import client.component.main.AppController;
 import client.util.Constants;
+import client.util.http.HttpClientUtil;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -29,6 +30,12 @@ public class Main extends Application {
         primaryStage.setTitle("Shticell Client");
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        HttpClientUtil.shutdown();
+        appMainController.close();
     }
 
     public static void main(String[] args) {

@@ -132,7 +132,7 @@ public class CenterController {
             cellController.setEditable(editable);
 
             gridCells.put(coordinate, cellController);
-            centerGrid.add(singleCell, coordinate.getColumn(), coordinate.getRow());
+            centerGrid.add(singleCell, coordinate.column(), coordinate.row());
         } catch (IOException e) {
             throw new RuntimeException("IOException occurred...", e);
         }

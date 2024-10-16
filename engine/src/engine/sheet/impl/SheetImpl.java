@@ -360,10 +360,10 @@ public class SheetImpl implements Sheet, Serializable {
         validateCoordinateInbound(start);
         validateCoordinateInbound(end);
 
-        int startRow = start.getRow();
-        int startCol = start.getColumn();
-        int endRow = end.getRow();
-        int endCol = end.getColumn();
+        int startRow = start.row();
+        int startCol = start.column();
+        int endRow = end.row();
+        int endCol = end.column();
 
         if (endRow < startRow || endCol < startCol) {
             throw new IllegalArgumentException("Invalid range: The bottom-right coordinate [" + end + "]" +
@@ -380,8 +380,8 @@ public class SheetImpl implements Sheet, Serializable {
         }
 
         List<Integer> columnIndicesToSort = new ArrayList<>();
-        int startColumn = start.getColumn();
-        int endColumn = end.getColumn();
+        int startColumn = start.column();
+        int endColumn = end.column();
 
         for (String column : columnsToSortBy) {
             int columnIndex = parseSingleLetterColumn(column);
@@ -403,11 +403,11 @@ public class SheetImpl implements Sheet, Serializable {
 
     private List<SortableRow> getSortableRows(Coordinate start, Coordinate end, List<Integer> columnIndicesToSort) {
         List<SortableRow> sortableRows = new ArrayList<>();
-        for (int row = start.getRow(); row <= end.getRow(); row++) {
+        for (int row = start.row(); row <= end.row(); row++) {
             Map<Integer, Double> valuesToSort = new HashMap<>();
             List<Cell> cellsInRow = new ArrayList<>();
-            int startColumn = start.getColumn();
-            int endColumn = end.getColumn();
+            int startColumn = start.column();
+            int endColumn = end.column();
 
             for (int col = startColumn; col <= endColumn; col++) {
                 Coordinate cellCoordinate = CoordinateFactory.createCoordinate(row, col);
@@ -429,10 +429,10 @@ public class SheetImpl implements Sheet, Serializable {
         for (int row = 0; row < sortableRows.size(); row++) {
             SortableRow sortedRow = sortableRows.get(row);
             List<Cell> sortedCells = sortedRow.getCellsInRow();
-            int columnIndex = start.getColumn();
+            int columnIndex = start.column();
 
             for (Cell cell : sortedCells) {
-                Coordinate coordinate = CoordinateFactory.createCoordinate(start.getRow() + row, columnIndex);
+                Coordinate coordinate = CoordinateFactory.createCoordinate(start.row() + row, columnIndex);
                 activeCells.put(coordinate, cell);
                 columnIndex++;
             }
@@ -482,7 +482,7 @@ public class SheetImpl implements Sheet, Serializable {
         List<Coordinate> rangeStartEnd = ExpressionUtils.parseRange(rangeToFilter);
         Coordinate start = rangeStartEnd.get(0);
         Coordinate end = rangeStartEnd.get(1);
-        int numberOfRowsToFilter = end.getRow() - start.getRow() + 1;
+        int numberOfRowsToFilter = end.row() - start.row() + 1;
         validateRangeCoordinates(start, end);
         List<Integer> filterColumnIndices = getValidatedUniqueColumnIndices(filterRequestValues.keySet().stream().toList(), start, end);
         List<SortableRow> sortableRows = getSortableRows(start, end, filterColumnIndices);
@@ -514,8 +514,8 @@ public class SheetImpl implements Sheet, Serializable {
 
     private void updateFilteredRows(List<SortableRow> filteredRows, Coordinate start, Coordinate end, int numberOfRowsToFilter) {
         for (int row = 0; row < numberOfRowsToFilter; row++) {
-            for (int column = start.getColumn(); column <= end.getColumn(); column++) {
-                Coordinate coordinate = CoordinateFactory.createCoordinate(start.getRow() + row, column);
+            for (int column = start.column(); column <= end.column(); column++) {
+                Coordinate coordinate = CoordinateFactory.createCoordinate(start.row() + row, column);
                 activeCells.remove(coordinate);
             }
         }
@@ -523,8 +523,8 @@ public class SheetImpl implements Sheet, Serializable {
         updateRowsAfterModification(filteredRows, start);
 
         for (int row = filteredRows.size(); row < numberOfRowsToFilter; row++) {
-            for (int column = start.getColumn(); column <= end.getColumn(); column++) {
-                Coordinate coordinate = CoordinateFactory.createCoordinate(start.getRow() + row, column);
+            for (int column = start.column(); column <= end.column(); column++) {
+                Coordinate coordinate = CoordinateFactory.createCoordinate(start.row() + row, column);
                 activeCells.put(coordinate, addNewCellIfEmptyCell(coordinate));
             }
         }
@@ -543,8 +543,8 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     private void validateCoordinateInbound(Coordinate coordinate) {
-        if(coordinate.getRow() > numberOfRows || coordinate.getRow() < 1 ||
-                coordinate.getColumn() > numberOfColumns || coordinate.getColumn() < 1) {
+        if(coordinate.row() > numberOfRows || coordinate.row() < 1 ||
+                coordinate.column() > numberOfColumns || coordinate.column() < 1) {
             throw new InvalidCellBoundsException(coordinate, numberOfRows, numberOfColumns);
         }
     }

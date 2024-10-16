@@ -29,7 +29,7 @@ public class LoginServlet extends HttpServlet {
                 response.setStatus(HttpServletResponse.SC_CONFLICT);
             } else {
                 usernameFromParameter = usernameFromParameter.trim();
-                //TODO minimize the sync by combining isexist with add user
+                //TODO minimize the sync by combining isExist with add user
                 synchronized (this) {
                     if (userManager.isUserExists(usernameFromParameter)) {
                         String errorMessage = "Username " + usernameFromParameter + " already exists. Please enter a different username.";

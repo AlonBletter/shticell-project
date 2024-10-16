@@ -87,7 +87,7 @@ public class CellImpl implements Cell, Serializable {
 
     @Override
     public CellStyle getStyle() {
-        return new CellStyleImpl(cellStyle.getBackgroundColor(), cellStyle.getTextColor());
+        return cellStyle;
     }
 
     @Override

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="sheetListComponent" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefHeight="217.0" prefWidth="467.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.component.dashboard.sheetlist.SheetListController">
+   <children>
+      <Label text="Available Sheets Table" />
+      <TableView fx:id="sheetsTableView" prefHeight="200.0" prefWidth="200.0">
+        <columns>
+          <TableColumn fx:id="userColumn" prefWidth="137.0" text="Uploaded By User" />
+          <TableColumn fx:id="sheetNameColumn" prefWidth="133.0" text="Sheet Name" />
+            <TableColumn fx:id="dimensionsColumn" prefWidth="100.0" text="Sheet Size" />
+            <TableColumn fx:id="permissionColumn" prefWidth="82.0" text="Permission" />
+        </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+   </children>
+</VBox>

@@ -31,23 +31,6 @@ public class WhatIfDialogController {
         toLimitTextField.disableProperty().bind(isSliderCreated);
         stepSizeTextField.disableProperty().bind(isSliderCreated);
 
-        fromLimitTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("-?\\d*(\\.\\d*)?")) {
-                fromLimitTextField.setText("");
-            }
-        });
-
-        toLimitTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("-?\\d*(\\.\\d*)?")) {
-                toLimitTextField.setText("");
-            }
-        });
-
-        stepSizeTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("-?\\d*(\\.\\d*)?")) {
-                stepSizeTextField.setText("");
-            }
-        });
     }
 
     @FXML
@@ -75,7 +58,7 @@ public class WhatIfDialogController {
             sliderContainer.getChildren().add(valueSlider);
             isSliderCreated.set(true);
         } else {
-            showErrorAlert("Invalid input.\nCannot proceed with an empty field. Please fill all the fields in the form.");
+            showErrorAlert("Invalid input.\nAll fields must contain numbers. Please fill all the fields in the form.");
         }
     }
 

@@ -2,10 +2,12 @@ package gui.app;
 
 import dto.CellDTO;
 import dto.SheetDTO;
-import engine.Engine;
-import engine.EngineImpl;
+import engine.SheetManager;
+import engine.SheetManagerImpl;
 import engine.exception.InvalidCellBoundsException;
+import engine.sheet.cell.api.CellType;
 import engine.sheet.coordinate.Coordinate;
+import engine.sheet.effectivevalue.EffectiveValue;
 import gui.center.CenterController;
 import gui.center.singlecell.SingleCellController;
 import gui.common.ShticellResourcesConstants;
@@ -20,6 +22,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
@@ -29,6 +32,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -41,7 +45,7 @@ public class AppController {
     @FXML private BorderPane borderPane;
     @FXML private ScrollPane mainScrollPane;
 
-    private final Engine engine;
+    private final SheetManager engine;
     private CenterController centerComponentController;
     private ScrollPane centerScrollPane;
     private Stage primaryStage;
@@ -54,7 +58,7 @@ public class AppController {
     private final SimpleBooleanProperty textFadeAnimation;
 
     public AppController() {
-        engine = new EngineImpl();
+        engine = new SheetManagerImpl(null);
         centerScrollPane = new ScrollPane();
         centerComponentController = new CenterController();
         this.isFileLoaded = new SimpleBooleanProperty(false);
@@ -111,11 +115,11 @@ public class AppController {
     }
 
     public double getCurrentSelectedRowHeight() {
-        return centerComponentController.getRowHeight(selectedCell.getCoordinate().getRow());
+        return centerComponentController.getRowHeight(selectedCell.getCoordinate().row());
     }
 
     public double getCurrentSelectedColumnWidth() {
-        return centerComponentController.getColumnWidth(selectedCell.getCoordinate().getColumn());
+        return centerComponentController.getColumnWidth(selectedCell.getCoordinate().column());
     }
 
     public void updateHeaderOnCellClick() {
@@ -174,8 +178,8 @@ public class AppController {
                 SheetDTO sheetDTO = engine.getSpreadsheet();
                 centerComponentController.initializeGrid(sheetDTO, true);
                 centerScrollPane.setContent(centerComponentController.getCenterGrid());
-                centerScrollPane.setFitToWidth(true);
-                centerScrollPane.setFitToHeight(true);
+//                centerScrollPane.setFitToWidth(true);
+//                centerScrollPane.setFitToHeight(true);
                 borderPane.setCenter(centerScrollPane);
                 headerComponentController.initializeHeaderAfterLoad(filePath);
                 leftComponentController.loadRanges(engine.getRanges());
@@ -244,21 +248,21 @@ public class AppController {
         int sheetNumOfRows = e.getSheetNumOfRows();
         int SheetNumOfColumns = e.getSheetNumOfColumns();
         char sheetColumnRange = (char) (SheetNumOfColumns + 'A' - 1);
-        char cellColumnChar = (char) (coordinate.getColumn() + 'A' - 1);
+        char cellColumnChar = (char) (coordinate.column() + 'A' - 1);
         String message = e.getMessage() != null ? e.getMessage() : "";
 
         showErrorAlert("Invalid cells bounds", "An error occurred while processing the loaded file..",
                 message + "\n" + "Expected column between A-" + sheetColumnRange + " and row between 1-" + sheetNumOfRows + "\n" +
-                "But received column [" + cellColumnChar + "] and row [" + coordinate.getRow() + "].");
+                "But received column [" + cellColumnChar + "] and row [" + coordinate.row() + "].");
     }
 
     public void updateColumnWidth(Double result) {
         int columnIndex;
 
         if(selectedCell != null) {
-            columnIndex = selectedCell.getCoordinate().getColumn();
+            columnIndex = selectedCell.getCoordinate().column();
         } else {
-            columnIndex = selectedColumn.getFirst().getCoordinate().getColumn();
+            columnIndex = selectedColumn.getFirst().getCoordinate().column();
         }
 
         centerComponentController.updateColumnWidth(columnIndex, result);
@@ -268,16 +272,16 @@ public class AppController {
         int rowIndex;
 
         if(selectedCell != null) {
-            rowIndex = selectedCell.getCoordinate().getRow();
+            rowIndex = selectedCell.getCoordinate().row();
         } else {
-            rowIndex = selectedRow.getFirst().getCoordinate().getRow();
+            rowIndex = selectedRow.getFirst().getCoordinate().row();
         }
 
         centerComponentController.updateRowHeight(rowIndex, result);
     }
 
     public void alignColumnCells(Pos pos) {
-        centerComponentController.alignColumnCells(selectedCell.getCoordinate().getColumn(), pos);
+        centerComponentController.alignColumnCells(selectedCell.getCoordinate().column(), pos);
     }
 
     public void updateCellBackgroundColor(String newColor) {
@@ -393,7 +397,8 @@ public class AppController {
             SheetDTO sheet = engine.getExpectedValue(selectedCell.getCoordinate(), String.valueOf(newValue.doubleValue()));
             centerComponentController.refreshExpectedValues(sheet);
         } catch (Exception e) {
-            showErrorAlert("Invalid Usage of What-If", "An error occurred while using the what-if command.", e.getMessage());
+            showErrorAlert("Invalid Usage of What-If",
+                    "An error occurred while using the what-if command.", e.getMessage());
         }
     }
 
@@ -403,5 +408,116 @@ public class AppController {
 
     public CellDTO getCurrentCell() {
         return engine.getCell(selectedCell.getCoordinate());
+    }
+
+    public void createGraph(String xAxisRange, String yAxisRange, String chartType) {
+        List<Coordinate> xAxis = null;
+        List<Coordinate> yAxis = null;
+
+        try {
+            xAxis = engine.getAxis(xAxisRange);
+            yAxis = engine.getAxis(yAxisRange);
+        } catch (Exception e) {
+            showErrorAlert("Invalid graph settings", "An error occurred while creating the graph.",
+                    "Invalid column range format. Expected <coordinate first column cell>..<coordinate last column cell>");
+            return;
+        }
+
+        if (xAxis.getFirst().column() != xAxis.getLast().column()
+                || yAxis.getFirst().column() != yAxis.getLast().column()) {
+
+            showErrorAlert("Invalid graph settings",
+                    "An error occurred while creating the graph.", "Invalid Column");
+            return;
+        }
+
+        List<Double> xAxisData = getValuesFromCoordinates(xAxis);
+        List<Double> yAxisData = getValuesFromCoordinates(yAxis);
+
+        if (xAxisData.size() != yAxisData.size()) {
+            showErrorAlert("Mismatch in data size",
+                    "X-axis and Y-axis ranges must have the same number of data points.", null);
+            return;
+        }
+
+        switch (chartType) {
+            case "BarChart":
+                showBarChart(xAxisData, yAxisData);
+                break;
+            case "LineChart":
+                showLineChart(xAxisData, yAxisData);
+                break;
+            default:
+                showErrorAlert("Invalid chart type",
+                        "Unknown chart type: " + chartType, null);
+                break;
+        }
+    }
+
+    private List<Double> getValuesFromCoordinates(List<Coordinate> coordinates) {
+        List<Double> values = new ArrayList<>();
+        for (Coordinate coord : coordinates) {
+            CellDTO cell = engine.getCell(coord);
+            EffectiveValue value = cell.effectiveValue();
+            if (value.cellType() == CellType.NUMERIC) {
+                values.add(value.extractValueWithExpectation(Double.class));
+            } else {
+                showErrorAlert("Non-numeric data", "All cells in the graph must be numeric.", null);
+                return null;
+            }
+        }
+        return values;
+    }
+
+    private void showBarChart(List<Double> xAxisData, List<Double> yAxisData) {
+        Stage stage = new Stage();
+
+        List<String> newAxis = xAxisData.stream()
+                .map(Object::toString)
+                .toList();
+
+        CategoryAxis xAxis = new CategoryAxis();
+        NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("X Axis");
+        yAxis.setLabel("Y Axis");
+
+        BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
+        barChart.setTitle("Bar Chart");
+
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        for (int i = 0; i < xAxisData.size(); i++) {
+            series.getData().add(new XYChart.Data<>(newAxis.get(i), yAxisData.get(i)));
+        }
+        barChart.getData().add(series);
+
+        VBox vbox = new VBox(barChart);
+        Scene scene = new Scene(vbox, 800, 600);
+
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private void showLineChart(List<Double> xAxisData, List<Double> yAxisData) {
+        Stage stage = new Stage();
+
+        NumberAxis xAxis = new NumberAxis();
+        NumberAxis yAxis = new NumberAxis();
+        xAxis.setLabel("X Axis");
+        yAxis.setLabel("Y Axis");
+
+        LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.setTitle("Line Chart");
+
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        for (int i = 0; i < xAxisData.size(); i++) {
+            series.getData().add(new XYChart.Data<>(xAxisData.get(i), yAxisData.get(i)));
+        }
+        lineChart.getData().add(series);
+
+        VBox vbox = new VBox(lineChart);
+        Scene scene = new Scene(vbox, 800, 600);
+
+        stage.setScene(scene);
+        stage.show();
     }
 }

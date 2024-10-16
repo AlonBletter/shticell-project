@@ -1,12 +1,9 @@
 package engine.sheet.range;
 
-import engine.expression.ExpressionUtils;
-import engine.sheet.cell.api.Cell;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,10 +23,10 @@ public class RangeImpl implements Range, Serializable {
     private void initializeCellsInRange() {
         cellsInRange = new LinkedList<>();
 
-        int startRow = start.getRow();
-        int startCol = start.getColumn();
-        int endRow = end.getRow();
-        int endCol = end.getColumn();
+        int startRow = start.row();
+        int startCol = start.column();
+        int endRow = end.row();
+        int endCol = end.column();
 
         if (endRow < startRow || endCol < startCol) {
             throw new IllegalArgumentException("Invalid range: The bottom-right coordinate [" + end + "]" +

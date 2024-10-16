@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="297.0" prefWidth="380.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.left.dialog.graph.GraphController">
+   <top>
+      <Label prefHeight="75.0" prefWidth="91.0" text="Graphs" underline="true" BorderPane.alignment="CENTER">
+         <font>
+            <Font name="Aharoni Bold" size="26.0" />
+         </font>
+      </Label>
+   </top>
+   <center>
+      <VBox prefHeight="200.0" prefWidth="370.0" spacing="25.0" BorderPane.alignment="CENTER">
+         <children>
+            <VBox spacing="10.0">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <children>
+                  <Label text="Please specify the cell ranges for the X and Y axes of the graph:" />
+                  <HBox alignment="CENTER_LEFT" minWidth="360.0" prefHeight="30.0" prefWidth="370.0" spacing="20.0">
+                     <children>
+                        <Label text="X-axis range:" />
+                        <TextField prefHeight="25.0" prefWidth="260.0" promptText="Enter range of cells for the X-axis (e.g. A1..A10)" fx:id="xAxisTextField" />
+                     </children>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="370.0" spacing="20.0">
+                     <children>
+                        <Label text="Y-axis range:" />
+                        <TextField fx:id="yAxisTextField" prefHeight="25.0" prefWidth="260.0" promptText="Enter range of cells for the Y-axis (e.g. B1..B10)" />
+                     </children>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </HBox>
+               </children>
+            </VBox>
+            <VBox prefHeight="60.0" prefWidth="370.0" spacing="10.0">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <children>
+                  <Label text="Select char type:" />
+                  <HBox prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+                     <children>
+                        <RadioButton fx:id="barChartRadioButton" mnemonicParsing="false" text="Bar Chart" />
+                        <RadioButton fx:id="lineChartRadioButton" mnemonicParsing="false" text="Line Chart" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+         <BorderPane.margin>
+            <Insets left="10.0" />
+         </BorderPane.margin>
+      </VBox>
+   </center>
+   <bottom>
+      <HBox alignment="CENTER" prefHeight="44.0" prefWidth="380.0" spacing="20.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="cancelButton" alignment="CENTER" minHeight="30.0" minWidth="100.0" mnemonicParsing="false" onAction="#cancelButtonListener" prefHeight="30.0" prefWidth="100.0" text="Cancel" />
+            <Button fx:id="confirmButton" alignment="CENTER" minHeight="30.0" minWidth="100.0" mnemonicParsing="false" onAction="#confirmButtonListener" prefHeight="30.0" prefWidth="100.0" text="Confirm" />
+         </children>
+      </HBox>
+   </bottom>
+</BorderPane>

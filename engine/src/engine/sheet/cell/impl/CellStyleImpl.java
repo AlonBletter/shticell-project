@@ -7,8 +7,8 @@ import java.util.Objects;
 
 public class CellStyleImpl implements CellStyle, Serializable {
     private String backgroundColor;
-
     private String textColor;
+
     public CellStyleImpl(String backgroundColor, String textColor) {
         this.backgroundColor = backgroundColor;
         this.textColor = textColor;

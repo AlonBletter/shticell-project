@@ -7,6 +7,7 @@ import gui.app.AppController;
 import gui.common.ShticellResourcesConstants;
 import gui.left.dialog.dimension.DimensionDialogController;
 import gui.left.dialog.filter.FilterDialogController;
+import gui.left.dialog.graph.GraphController;
 import gui.left.dialog.range.RangeDialogController;
 import gui.left.dialog.sort.SortDialogController;
 import gui.left.dialog.whatif.WhatIfDialogController;
@@ -47,8 +48,7 @@ public class LeftController {
     @FXML private Button filterButton;
     @FXML private VBox leftVBox;
     @FXML private Button whatIfButton;
-
-
+    @FXML private Button createGraphButton;
 
     private AppController mainController;
     private Stage primaryStage;
@@ -91,6 +91,7 @@ public class LeftController {
 
         deleteRangeButton.disableProperty().bind(rangesListView.getSelectionModel().selectedItemProperty().isNull());
         viewRangeButton.disableProperty().bind(rangesListView.getSelectionModel().selectedItemProperty().isNull());
+
     }
 
     @FXML
@@ -257,6 +258,7 @@ public class LeftController {
         sortButton.disableProperty().bind(mainIsFileLoadedProperty.not());
         filterButton.disableProperty().bind(mainIsFileLoadedProperty.not());
         whatIfButton.disableProperty().bind(mainIsFileLoadedProperty.not());
+        createGraphButton.disableProperty().bind(mainIsFileLoadedProperty.not());
     }
 
     public void setPrimaryStage(Stage primaryStage) {
@@ -338,6 +340,26 @@ public class LeftController {
             dialogStage.showAndWait();
         } catch (IOException e) {
             throw new RuntimeException("IO Exception occurred...");
+        }
+    }
+
+    @FXML
+    void createGraphListener(ActionEvent event) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(ShticellResourcesConstants.GRAPH_DIALOG_URL);
+            Parent parent = fxmlLoader.load();
+            GraphController graphController = fxmlLoader.getController();
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Create Graph");
+            dialogStage.setResizable(false);
+            dialogStage.setScene(new Scene(parent));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            graphController.setMainController(mainController);
+            dialogStage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

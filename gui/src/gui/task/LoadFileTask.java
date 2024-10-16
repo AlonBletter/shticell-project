@@ -1,19 +1,19 @@
 package gui.task;
 
-import engine.Engine;
+import engine.SheetManager;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 
 import java.util.function.Consumer;
 
 public class LoadFileTask extends Task<Boolean> {
-    private final Engine engine;
+    private final SheetManager engine;
     private final String filePathToLoad;
     private final Consumer<Void> onSuccess;
     private final Consumer<Exception> onFailure;
     private static final int SLEEP_TIME = 200;
 
-    public LoadFileTask(Engine engine, String filePathToLoad, Consumer<Void> onSuccess, Consumer<Exception> onFailure) {
+    public LoadFileTask(SheetManager engine, String filePathToLoad, Consumer<Void> onSuccess, Consumer<Exception> onFailure) {
         this.engine = engine;
         this.filePathToLoad = filePathToLoad;
         this.onSuccess = onSuccess;

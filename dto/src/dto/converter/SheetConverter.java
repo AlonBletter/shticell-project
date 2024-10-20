@@ -1,11 +1,12 @@
-package dto;
+package dto.converter;
 
+import dto.CellDTO;
+import dto.SheetDTO;
 import engine.sheet.api.Sheet;
 import engine.sheet.cell.api.Cell;
 import engine.sheet.coordinate.Coordinate;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class SheetConverter {
     public static SheetDTO convertToDTO(Sheet sheet) {

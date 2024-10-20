@@ -4,7 +4,7 @@ import client.component.dashboard.DashboardController;
 import client.component.dashboard.sheetlist.model.SingleSheetInformation;
 import client.component.main.AppController;
 import dto.SheetInfoDTO;
-import engine.permission.PermissionType;
+import dto.permission.PermissionType;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -12,6 +12,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
@@ -46,6 +47,22 @@ public class SheetListController implements Closeable {
             }
         });
 
+        sheetsTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            dashboardController.isSelectedSheetProperty().set(newValue != null);
+        });
+
+        sheetsTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            dashboardController.setIsUserOwnerOfSelectedSheet(newValue != null && newValue.getPermissionType() != PermissionType.OWNER);
+        });
+
+        sheetsTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            dashboardController.setIsUserHasNoPermissions(newValue != null && newValue.getPermissionType() != PermissionType.NONE);
+        });
+
+        sheetsTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            dashboardController.setIsUserHasReaderPermission(newValue != null && newValue.getPermissionType() == PermissionType.READER);
+        });
+
         userColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getOwner()));
 
@@ -57,9 +74,15 @@ public class SheetListController implements Closeable {
 
         permissionColumn.setCellValueFactory(cellData ->
                 new SimpleObjectProperty<>(cellData.getValue().getPermissionType()));
+
+        sheetsTableView.setPlaceholder(new Label("No sheets available"));
     }
 
     private void updateSheetsList(List<SheetInfoDTO> sheetInfoDTOList) {
+        if(sheetInfoDTOList.size() == sheetsTableView.getItems().size() && !wasAPermissionChanged(sheetInfoDTOList)) {
+            return;
+        }
+
         List<SingleSheetInformation> sheetInformationList = convertToSingleSheetInformationModel(sheetInfoDTOList);
 
         Platform.runLater(() -> {
@@ -69,6 +92,29 @@ public class SheetListController implements Closeable {
             items.addAll(sheetInformationList);
             sheetsTableView.getSelectionModel().select(selectedItem);
         });
+    }
+
+    private boolean wasAPermissionChanged(List<SheetInfoDTO> sheetInfoDTOList) {
+        ObservableList<SingleSheetInformation> items = sheetsTableView.getItems();
+
+        for (SheetInfoDTO sheetInfoDTO : sheetInfoDTOList) {
+            PermissionType currentUserPermission = sheetInfoDTO.currentUserPermissionForSheet();
+
+            SingleSheetInformation correspondingSheet = items.stream()
+                    .filter(item -> item.getSheetName().equals(sheetInfoDTO.name()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (correspondingSheet != null) {
+                PermissionType itemPermission = correspondingSheet.getPermissionType();
+
+                if (!currentUserPermission.equals(itemPermission)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private static List<SingleSheetInformation> convertToSingleSheetInformationModel(List<SheetInfoDTO> sheetInfoDTOList) {
@@ -85,7 +131,8 @@ public class SheetListController implements Closeable {
     public void startListRefresher() {
         listRefresher = new SheetListRefresher(
                 this::updateSheetsList,
-                numberOfSheets
+                numberOfSheets,
+                sheetsTableView
         );
 
         timer = new Timer();

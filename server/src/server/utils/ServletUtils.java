@@ -1,11 +1,15 @@
 package server.utils;
 
+import com.google.gson.JsonObject;
 import engine.Engine;
 import engine.EngineImpl;
 import engine.user.UserManager;
 import engine.user.UserManagerImpl;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
 
 import static server.constants.Constants.INT_PARAMETER_ERROR;
 
@@ -68,5 +72,25 @@ public class ServletUtils {
 			}
 		}
 		return INT_PARAMETER_ERROR;
+	}
+
+	public static String validateRequiredParameter(HttpServletRequest request, String paramName, HttpServletResponse response) throws IOException {
+		String paramValue = request.getParameter(paramName);
+
+		if (paramValue == null || paramValue.trim().isEmpty()) {
+			sendErrorResponse(response, "Missing required parameter: " + paramName);
+			return null;
+		}
+		return paramValue;
+	}
+
+	public static void sendErrorResponse(HttpServletResponse response, String errorMessage) throws IOException {
+		response.setContentType("application/json");
+		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+		JsonObject errorResponse = new JsonObject();
+		errorResponse.addProperty("error", errorMessage);
+
+		response.getWriter().write(errorResponse.toString());
 	}
 }

@@ -3,25 +3,19 @@ package client.component.sheet.app;
 import client.component.main.AppController;
 import client.component.sheet.center.CenterController;
 import client.component.sheet.center.singlecell.SingleCellController;
-import client.component.sheet.common.ShticellResourcesConstants;
 import client.component.sheet.header.HeaderController;
 import client.component.sheet.left.LeftController;
-import client.component.sheet.task.LoadFileTask;
-import client.component.sheet.task.LoadingDialogController;
+import client.util.http.SheetService;
+import client.util.http.SheetServiceImpl;
 import dto.CellDTO;
 import dto.SheetDTO;
-import engine.SheetManager;
-import engine.SheetManagerImpl;
 import engine.exception.InvalidCellBoundsException;
 import engine.sheet.cell.api.CellType;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.effectivevalue.EffectiveValue;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
 import javafx.scene.control.Alert;
@@ -37,7 +31,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 public class SheetController implements Closeable {
     @FXML private GridPane headerComponent;
@@ -47,24 +40,23 @@ public class SheetController implements Closeable {
     @FXML private BorderPane borderPane;
     @FXML private ScrollPane mainScrollPane;
 
-    private final SheetManager engine;
+    private final SheetService sheetService;
     private CenterController centerComponentController;
     private ScrollPane centerScrollPane;
     private Stage primaryStage;
-    private Task<Boolean> currentRunningTask;
     private SingleCellController selectedCell;
     private List<SingleCellController> selectedRow;
     private List<SingleCellController> selectedColumn;
-    private final SimpleBooleanProperty isFileLoaded;
+    private final SimpleBooleanProperty readonlyPresentation;
     private final SimpleBooleanProperty textSpinAnimation;
     private final SimpleBooleanProperty textFadeAnimation;
     private AppController mainController;
 
     public SheetController() {
-        engine = new SheetManagerImpl(null);
+        sheetService = new SheetServiceImpl();
         centerScrollPane = new ScrollPane();
         centerComponentController = new CenterController();
-        this.isFileLoaded = new SimpleBooleanProperty(false);
+        this.readonlyPresentation = new SimpleBooleanProperty(false); //TODO change to permissions
         this.textSpinAnimation = new SimpleBooleanProperty(false);
         this.textFadeAnimation = new SimpleBooleanProperty(false);
     }
@@ -74,8 +66,8 @@ public class SheetController implements Closeable {
 
     }
 
-    public SimpleBooleanProperty isFileLoadedProperty() {
-        return isFileLoaded;
+    public SimpleBooleanProperty readonlyPresentationProperty() {
+        return readonlyPresentation;
     }
 
     public SimpleBooleanProperty getTextSpinAnimationProperty() {
@@ -142,86 +134,28 @@ public class SheetController implements Closeable {
         }
     }
 
-    public void loadFile(String filePath) {
-        try {
-            FXMLLoader loader = new FXMLLoader(ShticellResourcesConstants.LOADING_DIALOG_URL);
-            Parent root = loader.load();
-            LoadingDialogController loadingDialogController = loader.getController();
-
-            Stage loadingDialogStage = new Stage();
-            Consumer<Void> onSuccess = getLoadFileConsumerSuccess(filePath, loadingDialogStage);
-            Consumer<Exception> onFailure = getLoadFileConsumerFailure(loadingDialogStage);
-            currentRunningTask = new LoadFileTask(engine, filePath, onSuccess, onFailure);
-            loadingDialogController.bindTaskToUIComponents(currentRunningTask, null);
-            loadingDialogController.setLoadingFileTitleLabel(filePath);
-
-            loadingDialogStage.initModality(Modality.APPLICATION_MODAL);
-            loadingDialogStage.setTitle("Loading file");
-            loadingDialogStage.setResizable(false);
-            loadingDialogStage.setScene(new Scene(root));
-            loadingDialogStage.show();
-
-            new Thread(currentRunningTask).start();
-        } catch (IOException e) {
-            showErrorAlert("File Loading Error", "An error occurred while opening the file dialog", e.getMessage());
-        }
-    }
-
-    private Consumer<Exception> getLoadFileConsumerFailure(Stage dialogStage) {
-        return (exception) -> {
-            if (exception instanceof InvalidCellBoundsException) {
-                handleInvalidCellBoundException((InvalidCellBoundsException) exception);
-            } else {
-                showErrorAlert("File Loading Error", "An error occurred while loading the file", exception.getMessage());
-            }
-            dialogStage.close();
-            currentRunningTask.cancel();
-        };
-    }
-
-    public void setSheetToView(SheetDTO sheet) {
+    public void setSheetToView(SheetDTO sheet, boolean readonly) {
         try {
             centerComponentController.initializeGrid(sheet, true);
             centerScrollPane.setContent(centerComponentController.getCenterGrid());
 //                centerScrollPane.setFitToWidth(true);
 //                centerScrollPane.setFitToHeight(true);
             borderPane.setCenter(centerScrollPane);
-            //headerComponentController.initializeHeaderAfterLoad(filePath); //REMOVE
-            //leftComponentController.loadRanges(engine.getRanges()); //TODO fix
-            isFileLoaded.set(true);
+            headerComponentController.initializeHeaderAfterLoad();
+            //leftComponentController.loadRanges(sheetService.getRanges()); //TODO fix
+            readonlyPresentation.set(readonly);
         } catch (Exception e) {
             showErrorAlert("File Loading Error", "An error occurred while processing the loaded file.", e.getMessage());
         }
     }
 
-    private Consumer<Void> getLoadFileConsumerSuccess(String filePath, Stage dialogStage) {
-        return (v) -> {
-            try {
-                SheetDTO sheetDTO = engine.getSpreadsheet();
-                centerComponentController.initializeGrid(sheetDTO, true);
-                centerScrollPane.setContent(centerComponentController.getCenterGrid());
-//                centerScrollPane.setFitToWidth(true);
-//                centerScrollPane.setFitToHeight(true);
-                borderPane.setCenter(centerScrollPane);
-                headerComponentController.initializeHeaderAfterLoad(filePath);
-                leftComponentController.loadRanges(engine.getRanges());
-                isFileLoaded.set(true);
-            } catch (Exception e) {
-                showErrorAlert("File Loading Error", "An error occurred while processing the loaded file.", e.getMessage());
-                dialogStage.close();
-            } finally {
-                currentRunningTask.cancel();
-            }
-        };
-    }
-
     public boolean updateCell(Coordinate cellToUpdateCoordinate, String newCellValue) {
         try {
-            int oldVersion = engine.getCurrentVersionNumber();
-            engine.updateCell(cellToUpdateCoordinate, newCellValue);
+            int oldVersion = sheetService.getCurrentVersionNumber();
+            sheetService.updateCell(cellToUpdateCoordinate, newCellValue);
 
-            if(oldVersion != engine.getCurrentVersionNumber()) {
-                centerComponentController.updateCells(engine.getSpreadsheet());
+            if(oldVersion != sheetService.getCurrentVersionNumber()) {
+                centerComponentController.updateCells(sheetService.getSpreadsheet());
                 headerComponentController.refreshComboBoxVersion();
             }
             return true;
@@ -233,7 +167,7 @@ public class SheetController implements Closeable {
 
     public void displaySheetByVersion(int version) {
         try {
-            SheetDTO sheetVersion = engine.getSheetByVersion(version);
+            SheetDTO sheetVersion = sheetService.getSheetByVersion(version);
             String titleToDisplay = "Sheet Version: " + version;
             displaySheet(sheetVersion, titleToDisplay);
         } catch (Exception e) {
@@ -309,20 +243,20 @@ public class SheetController implements Closeable {
     public void updateCellBackgroundColor(String newColor) {
         Coordinate currentCellCoordinate = selectedCell.getCoordinate();
 
-        engine.updateCellBackgroundColor(currentCellCoordinate, newColor);
+        sheetService.updateCellBackgroundColor(currentCellCoordinate, newColor);
         centerComponentController.updateCellBackgroundColor(currentCellCoordinate, newColor);
     }
 
     public void updateCellTextColor(String newColor) {
         Coordinate currentCellCoordinate = selectedCell.getCoordinate();
 
-        engine.updateCellTextColor(currentCellCoordinate, newColor);
+        sheetService.updateCellTextColor(currentCellCoordinate, newColor);
         centerComponentController.updateCellTextColor(currentCellCoordinate, newColor);
     }
 
     public boolean addRange(String rangeName, String rangeCoordinates) {
         try {
-            engine.addRange(rangeName, rangeCoordinates);
+            sheetService.addRange(rangeName, rangeCoordinates);
             return true;
         } catch (InvalidCellBoundsException e) {
             handleInvalidCellBoundException(e);
@@ -335,7 +269,7 @@ public class SheetController implements Closeable {
 
     public boolean deleteRange(String rangeNameToDelete) {
         try {
-            engine.deleteRange(rangeNameToDelete);
+            sheetService.deleteRange(rangeNameToDelete);
             centerComponentController.unmarkRange();
             return true;
         } catch (Exception e) {
@@ -345,7 +279,7 @@ public class SheetController implements Closeable {
     }
 
     public void viewRange(String rangeNameToView) {
-        List<Coordinate> cellsInRange = engine.getRange(rangeNameToView);
+        List<Coordinate> cellsInRange = sheetService.getRange(rangeNameToView);
         centerComponentController.markRange(cellsInRange);
     }
 
@@ -353,7 +287,7 @@ public class SheetController implements Closeable {
         SheetDTO sortedSheet;
 
         try {
-            sortedSheet = engine.getSortedSheet(rangeCoordinatesToSort, columnsToSortBy);
+            sortedSheet = sheetService.getSortedSheet(rangeCoordinatesToSort, columnsToSortBy);
         } catch (InvalidCellBoundsException e) {
             handleInvalidCellBoundException(e);
             return;
@@ -366,22 +300,22 @@ public class SheetController implements Closeable {
     }
 
     public int getNumberOfColumns() {
-        //add method in engine api that gets the number of column (consider not mandatory)
-        return engine.getSpreadsheet().numOfColumns();
+        //add method in sheetService api that gets the number of column (consider not mandatory)
+        return sheetService.getSpreadsheet().numOfColumns();
     }
 
     public int getSheetCurrentVersion() {
-        return engine.getCurrentVersionNumber();
+        return sheetService.getCurrentVersionNumber();
     }
 
     public List<String> getColumnUniqueValues(String columnLetter) {
-        return engine.getColumnUniqueValue(columnLetter);
+        return sheetService.getColumnUniqueValue(columnLetter);
     }
 
     public void filterRange(String rangeToFilter, Map<String, List<String>> filterRequestValues) {
         SheetDTO filteredSheet;
         try {
-            filteredSheet = engine.getFilteredSheet(rangeToFilter, filterRequestValues);
+            filteredSheet = sheetService.getFilteredSheet(rangeToFilter, filterRequestValues);
         } catch (InvalidCellBoundsException e) {
             handleInvalidCellBoundException(e);
             return;
@@ -415,8 +349,8 @@ public class SheetController implements Closeable {
 
     public void displayExpectedValue(Number newValue) {
         try {
-//            Map<Coordinate, EffectiveValue> modifiedCells = engine.getExpectedValue(selectedCell.getCoordinate(), String.valueOf(newValue.doubleValue()));
-            SheetDTO sheet = engine.getExpectedValue(selectedCell.getCoordinate(), String.valueOf(newValue.doubleValue()));
+//            Map<Coordinate, EffectiveValue> modifiedCells = sheetService.getExpectedValue(selectedCell.getCoordinate(), String.valueOf(newValue.doubleValue()));
+            SheetDTO sheet = sheetService.getExpectedValue(selectedCell.getCoordinate(), String.valueOf(newValue.doubleValue()));
             centerComponentController.refreshExpectedValues(sheet);
         } catch (Exception e) {
             showErrorAlert("Invalid Usage of What-If",
@@ -429,7 +363,7 @@ public class SheetController implements Closeable {
     }
 
     public CellDTO getCurrentCell() {
-        return engine.getCell(selectedCell.getCoordinate());
+        return sheetService.getCell(selectedCell.getCoordinate());
     }
 
     public void createGraph(String xAxisRange, String yAxisRange, String chartType) {
@@ -437,8 +371,8 @@ public class SheetController implements Closeable {
         List<Coordinate> yAxis = null;
 
         try {
-            xAxis = engine.getAxis(xAxisRange);
-            yAxis = engine.getAxis(yAxisRange);
+            xAxis = sheetService.getAxis(xAxisRange);
+            yAxis = sheetService.getAxis(yAxisRange);
         } catch (Exception e) {
             showErrorAlert("Invalid graph settings", "An error occurred while creating the graph.",
                     "Invalid column range format. Expected <coordinate first column cell>..<coordinate last column cell>");
@@ -479,7 +413,7 @@ public class SheetController implements Closeable {
     private List<Double> getValuesFromCoordinates(List<Coordinate> coordinates) {
         List<Double> values = new ArrayList<>();
         for (Coordinate coord : coordinates) {
-            CellDTO cell = engine.getCell(coord);
+            CellDTO cell = sheetService.getCell(coord);
             EffectiveValue value = cell.effectiveValue();
             if (value.cellType() == CellType.NUMERIC) {
                 values.add(value.extractValueWithExpectation(Double.class));

@@ -6,12 +6,15 @@ import client.component.dashboard.permission.PermissionsController;
 import client.component.dashboard.sheetlist.SheetListController;
 import client.component.main.AppController;
 import dto.SheetDTO;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 import java.io.Closeable;
 
@@ -31,13 +34,64 @@ public class DashboardController implements Closeable {
     private AppController mainController;
 
     private SimpleStringProperty selectedSheetName = new SimpleStringProperty();
+    private SimpleBooleanProperty isSelectedSheet = new SimpleBooleanProperty();
+    private SimpleBooleanProperty isUserOwnerOfSelectedSheet = new SimpleBooleanProperty();
+    private SimpleBooleanProperty isUserHasNoPermissions = new SimpleBooleanProperty();
+    private SimpleBooleanProperty isPermissionRequestSelected = new SimpleBooleanProperty();
+    private SimpleIntegerProperty requestID = new SimpleIntegerProperty();
+    private SimpleBooleanProperty isUserHasReaderPermission = new SimpleBooleanProperty();
 
     @FXML
     void initialize() {
         if(sheetListComponentController != null && commandsComponentController != null) {
             sheetListComponentController.setDashboardController(this);
+            permissionsComponentController.setDashboardController(this);
             commandsComponentController.setDashboardController(this);
         }
+    }
+
+    public SimpleBooleanProperty isUserHasReaderPermissionProperty() {
+        return isUserHasReaderPermission;
+    }
+
+    public void setIsUserHasReaderPermission(boolean isUserHasReaderPermission) {
+        this.isUserHasReaderPermission.set(isUserHasReaderPermission);
+    }
+
+    public SimpleIntegerProperty requestIDProperty() {
+        return requestID;
+    }
+
+    public void setRequestID(int requestID) {
+        this.requestID.set(requestID);
+    }
+
+    public SimpleBooleanProperty isPermissionRequestSelectedProperty() {
+        return isPermissionRequestSelected;
+    }
+
+    public void setIsPermissionRequestSelected(boolean isPermissionRequestSelected) {
+        this.isPermissionRequestSelected.set(isPermissionRequestSelected);
+    }
+
+    public SimpleBooleanProperty isUserHasNoPermissionsProperty() {
+        return isUserHasNoPermissions;
+    }
+
+    public void setIsUserHasNoPermissions(boolean isUserHasNoPermissions) {
+        this.isUserHasNoPermissions.set(isUserHasNoPermissions);
+    }
+
+    public SimpleBooleanProperty isUserOwnerOfSelectedSheetProperty() {
+        return isUserOwnerOfSelectedSheet;
+    }
+
+    public void setIsUserOwnerOfSelectedSheet(boolean isUserOwnerOfSelectedSheet) {
+        this.isUserOwnerOfSelectedSheet.set(isUserOwnerOfSelectedSheet);
+    }
+
+    public SimpleBooleanProperty isSelectedSheetProperty() {
+        return isSelectedSheet;
     }
 
     public SimpleStringProperty selectedSheetNameProperty() {
@@ -51,9 +105,8 @@ public class DashboardController implements Closeable {
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
         sheetListComponentController.setMainController(mainController);
-        permissionsComponentController.setMainController(mainController);
         loadComponentController.setMainController(mainController);
-        // TODO commands
+        // TODO remove those three ^^
     }
 
     public void setActive() {
@@ -66,6 +119,19 @@ public class DashboardController implements Closeable {
     }
 
     public void handleViewSheet(SheetDTO requestedSheet) {
-        mainController.loadSheetView(requestedSheet);
+        close();
+        mainController.loadSheetView(requestedSheet, isUserHasReaderPermission.getValue());
+    }
+
+    public void handleError(String title, String headerText, String contentText) {
+        mainController.showErrorAlert(title, headerText, contentText);
+    }
+
+    public Stage getPrimaryStage() {
+        return mainController.getPrimaryStage();
+    }
+
+    public void refreshPermissions() {
+        permissionsComponentController.refreshView();
     }
 }

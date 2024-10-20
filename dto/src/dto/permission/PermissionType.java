@@ -1,4 +1,4 @@
-package engine.permission;
+package dto.permission;
 
 public enum PermissionType {
     OWNER,

@@ -1,10 +1,13 @@
 package engine;
 
 import dto.*;
+import dto.converter.CellConverter;
+import dto.converter.SheetConverter;
 import engine.exception.InvalidCellBoundsException;
 import engine.expression.ExpressionUtils;
 import engine.generated.STLSheet;
 import engine.sheet.api.Sheet;
+import engine.sheet.api.SheetReadActions;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.impl.SheetImpl;
 import engine.sheet.range.Range;
@@ -24,13 +27,7 @@ public class SheetManagerImpl implements SheetManager {
     public static final int SHEET_MAX_ROWS = 50;
 
     private final VersionManager versionManager = new VersionManagerImpl();
-    private final String owner;
-
     private Sheet whatIfCopy;
-
-    public SheetManagerImpl(String owner) {
-        this.owner = owner;
-    }
 
     @Override
     public void loadSystemSettingsFromFile(String filePath) {
@@ -85,13 +82,6 @@ public class SheetManagerImpl implements SheetManager {
     }
 
     @Override
-    public SheetInfoDTO getSheetInfo() {
-        validateLoadedSheet();
-        Sheet currentSheet = versionManager.getCurrentVersionSheet();
-        return SheetInfoDTO.getSheetInfoDTO(owner, currentSheet);
-    }
-
-    @Override
     public SheetDTO getSpreadsheet() {
         validateLoadedSheet();
         return SheetConverter.convertToDTO(versionManager.getCurrentVersionSheet());
@@ -120,6 +110,12 @@ public class SheetManagerImpl implements SheetManager {
         if (updated) {
             versionManager.addNewVersion(copyOfCurrentVersion);
         }
+    }
+
+    @Override
+    public SheetReadActions getSheetReadActions() {
+        validateLoadedSheet();
+        return versionManager.getCurrentVersionSheet();
     }
 
     @Override

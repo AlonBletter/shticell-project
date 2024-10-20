@@ -89,7 +89,6 @@ public class LeftController {
            mainController.updateCellTextColor(null);
         });
 
-        deleteRangeButton.disableProperty().bind(rangesListView.getSelectionModel().selectedItemProperty().isNull());
         viewRangeButton.disableProperty().bind(rangesListView.getSelectionModel().selectedItemProperty().isNull());
 
     }
@@ -244,21 +243,19 @@ public class LeftController {
 
     public void setMainController(SheetController mainController) {
         this.mainController = mainController;
-        SimpleBooleanProperty mainIsFileLoadedProperty = mainController.isFileLoadedProperty();
-        columnWidthButton.disableProperty().bind(mainIsFileLoadedProperty.not());
-        rowHeightButton.disableProperty().bind(mainIsFileLoadedProperty.not());
-        leftAlignToggle.disableProperty().bind(mainIsFileLoadedProperty.not());
-        centerAlignToggle.disableProperty().bind(mainIsFileLoadedProperty.not());
-        rightAlignToggle.disableProperty().bind(mainIsFileLoadedProperty.not());
-        backgroundColorPicker.disableProperty().bind(mainIsFileLoadedProperty.not());
-        textColorPicker.disableProperty().bind(mainIsFileLoadedProperty.not());
-        resetStylingButton.disableProperty().bind(mainIsFileLoadedProperty.not());
-        rangesListView.disableProperty().bind(mainIsFileLoadedProperty.not());
-        addRangeButton.disableProperty().bind(mainIsFileLoadedProperty.not());
-        sortButton.disableProperty().bind(mainIsFileLoadedProperty.not());
-        filterButton.disableProperty().bind(mainIsFileLoadedProperty.not());
-        whatIfButton.disableProperty().bind(mainIsFileLoadedProperty.not());
-        createGraphButton.disableProperty().bind(mainIsFileLoadedProperty.not());
+        SimpleBooleanProperty readonly = mainController.readonlyPresentationProperty();
+        columnWidthButton.disableProperty().bind(readonly);
+        rowHeightButton.disableProperty().bind(readonly);
+        leftAlignToggle.disableProperty().bind(readonly);
+        centerAlignToggle.disableProperty().bind(readonly);
+        rightAlignToggle.disableProperty().bind(readonly);
+        backgroundColorPicker.disableProperty().bind(readonly);
+        textColorPicker.disableProperty().bind(readonly);
+        resetStylingButton.disableProperty().bind(readonly);
+        addRangeButton.disableProperty().bind(readonly);
+
+        deleteRangeButton.disableProperty().bind(rangesListView.getSelectionModel().selectedItemProperty().isNull()
+                .or(readonly));
     }
 
     public void setPrimaryStage(Stage primaryStage) {

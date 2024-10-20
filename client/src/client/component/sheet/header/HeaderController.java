@@ -1,21 +1,18 @@
 package client.component.sheet.header;
 
-import engine.sheet.coordinate.Coordinate;
 import client.component.sheet.app.SheetController;
-import client.component.sheet.common.ShticellResourcesConstants;
 import client.component.sheet.center.singlecell.CellModel;
+import client.component.sheet.common.ShticellResourcesConstants;
+import engine.sheet.coordinate.Coordinate;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.net.URL;
 
 public class HeaderController {
@@ -23,8 +20,6 @@ public class HeaderController {
 
     @FXML private TextField actionLineTextField;
     @FXML private Label lastUpdatedCellVersionLabel;
-    @FXML private Button loadFileButton;
-    @FXML private Label loadedFilePathLabel;
     @FXML private Label originalCellValueLabel;
     @FXML private Label selectedCellIDLabel;
     @FXML private Label titleLabel;
@@ -35,30 +30,25 @@ public class HeaderController {
     @FXML private ChoiceBox<String> animationButton;
     @FXML private Tooltip originalValueToolTip;
 
-    private final SimpleStringProperty filePath;
     private final SimpleBooleanProperty isFileLoaded;
     private final ObservableList<String> versionNumberList;
     private Coordinate selectedCellCoordinate;
     private Stage primaryStage;
 
     public HeaderController() {
-        filePath = new SimpleStringProperty("File Path");
         isFileLoaded = new SimpleBooleanProperty(false);
         versionNumberList = FXCollections.observableArrayList();
     }
 
     public void setMainController(SheetController mainController) {
         this.mainController = mainController;
-        isFileLoaded.bind(mainController.isFileLoadedProperty());
+        isFileLoaded.bind(mainController.readonlyPresentationProperty().not());
     }
 
     @FXML
     private void initialize() {
-        loadedFilePathLabel.textProperty().bind(filePath);
         actionLineTextField.disableProperty().bind(isFileLoaded.not());
         updateValueButton.disableProperty().bind(isFileLoaded.not());
-        skinSelectorChoiceBox.disableProperty().bind(isFileLoaded.not());
-        animationButton.disableProperty().bind(isFileLoaded.not());
 
         originalValueToolTip.textProperty().bind(originalCellValueLabel.textProperty());
         originalCellValueLabel.setOnMouseEntered(event -> {
@@ -99,7 +89,6 @@ public class HeaderController {
 
     private void initializeVersionSelectorComboBox() {
         versionSelectorComboBox.setItems(versionNumberList);
-        versionSelectorComboBox.disableProperty().bind(isFileLoaded.not());
 
         versionSelectorComboBox.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*") || !newValue.matches("")) {
@@ -133,11 +122,10 @@ public class HeaderController {
         selectedCellIDLabel.setText("");
         originalCellValueLabel.setText("");
     }
-
-
-    public void initializeHeaderAfterLoad(String loadedFilePath) {
+    // maybe unite the both ^ V
+    public void initializeHeaderAfterLoad() {
+        clearDataFromHeader();
         actionLineTextField.setText("");
-        filePath.setValue(loadedFilePath);
         versionSelectorComboBox.getItems().clear();
         versionNumberList.addFirst("");
         versionSelectorComboBox.getSelectionModel().selectFirst();
@@ -152,21 +140,6 @@ public class HeaderController {
 
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
-    }
-
-    @FXML
-    public void loadFileButtonAction() {
-        clearDataFromHeader();
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select XML file");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML files", "*.xml"));
-        File selectedFile = fileChooser.showOpenDialog(primaryStage);
-        if (selectedFile == null) {
-            return;
-        }
-
-        String absolutePath = selectedFile.getAbsolutePath();
-        mainController.loadFile(absolutePath);
     }
 
     @FXML

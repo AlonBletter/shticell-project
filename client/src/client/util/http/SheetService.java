@@ -1,9 +1,7 @@
-package engine;
+package client.util.http;
 
 import dto.CellDTO;
 import dto.SheetDTO;
-import dto.SheetInfoDTO;
-import engine.sheet.api.SheetReadActions;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.range.Range;
 
@@ -12,15 +10,12 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-public interface SheetManager {
-    void loadSystemSettingsFromFile(String filePath);
-    void loadSystemSettingsFromFile(InputStream inputStream);
+public interface SheetService {
     SheetDTO getSpreadsheet();
     CellDTO getCell(Coordinate cellToGetCoordinate);
     void updateCell(Coordinate cellToUpdateCoordinate, String newCellOriginalValue);
     void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor);
     void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor);
-
     int getCurrentVersionNumber();
     SheetDTO getSheetByVersion(int requestedVersionNumber);
     void writeSystemDataToFile(String filePath) throws IOException;
@@ -33,8 +28,5 @@ public interface SheetManager {
     List<String> getColumnUniqueValue(String columnLetter);
     SheetDTO getFilteredSheet(String rangeToFilter, Map<String, List<String>> filterRequestValues);
     SheetDTO getExpectedValue(Coordinate cellToCalculate, String newValueOfCell);
-
     List<Coordinate> getAxis(String axisRange);
-
-    SheetReadActions getSheetReadActions();
 }

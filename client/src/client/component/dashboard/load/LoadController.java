@@ -58,7 +58,7 @@ public class LoadController {
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() ->
+                Platform.runLater(() -> //TODO setDashboard and not mainController! and then preset the error
                         mainController.showErrorAlert("HTTP request error",
                                 "An error occurred while trying to send a load sheet HTTP request.", e.getMessage())
                 );
@@ -66,8 +66,9 @@ public class LoadController {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseBody = response.body().string();
+
                 if (response.code() != 200) {
-                    String responseBody = response.body().string();
                     Platform.runLater(() ->
                             mainController.showErrorAlert("File Loading Error",
                                     "An error occurred while opening the file dialog", responseBody)

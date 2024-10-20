@@ -1,4 +1,4 @@
-package server.servlets;
+package server.servlets.sheet;
 
 import com.google.gson.Gson;
 import dto.SheetDTO;
@@ -16,20 +16,24 @@ import java.io.IOException;
 @WebServlet(name = "Get Sheet Servlet", urlPatterns = "/getSheet")
 public class GetSheetServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        response.setContentType("application/json");
+        String sheetName = ServletUtils.validateRequiredParameter(request, "sheetName", response);
 
-        String sheetName = request.getParameter("sheetName");
+        if (sheetName == null) {
+            return;
+        }
 
-        Engine engine = ServletUtils.getEngine(getServletContext());
         String username = SessionUtils.getUsername(request);
         if (username == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
+
+        Engine engine = ServletUtils.getEngine(getServletContext());
         // TODO check if permission is none, maybe dont return the sheet dto
 
         try {
-            SheetDTO sheet = engine.getSheet(sheetName);
+            SheetDTO sheet = engine.getSheet(sheetName); //TODO synchronized
+            response.setContentType("application/json");
             Gson gson = new Gson();
             String jsonResponse = gson.toJson(sheet);
             response.getWriter().println(jsonResponse);

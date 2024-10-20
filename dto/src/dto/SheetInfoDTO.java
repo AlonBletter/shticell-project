@@ -1,21 +1,24 @@
 package dto;
 
-import engine.permission.PermissionType;
+import dto.permission.PermissionType;
 import engine.sheet.api.Sheet;
-
-import java.util.Objects;
 
 public record SheetInfoDTO(String uploadedByUser, String name, int numOfRows, int numOfColumns,
                            PermissionType currentUserPermissionForSheet) {
 
-    public static SheetInfoDTO getSheetInfoDTO(String owner, Sheet sheet) {
+    public static SheetInfoDTO getSheetInfoDTO(
+            String owner,
+            String sheetName,
+            int numOfRows,
+            int numOfColumns,
+            PermissionType currentUserPermissionForSheet) {
 
         return new SheetInfoDTO(
                 owner,
-                sheet.getName(),
-                sheet.getNumberOfRows(),
-                sheet.getNumberOfColumns(),
-                null //TODO implement!
+                sheetName,
+                numOfRows,
+                numOfColumns,
+                currentUserPermissionForSheet
         );
     }
 

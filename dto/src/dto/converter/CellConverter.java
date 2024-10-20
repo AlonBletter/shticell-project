@@ -1,5 +1,7 @@
-package dto;
+package dto.converter;
 
+import dto.CellDTO;
+import dto.CellStyleDTO;
 import engine.sheet.cell.api.CellReadActions;
 
 public class CellConverter {

@@ -1,58 +1,45 @@
 package client.component.dashboard.command;
 
 import client.component.dashboard.DashboardController;
+import client.component.dashboard.command.dialog.PermissionRequestController;
 import client.util.Constants;
 import client.util.http.HttpClientUtil;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import dto.CellStyleDTO;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import dto.SheetDTO;
-import dto.deserializer.CellStyleDTOAdapter;
-import dto.deserializer.CoordinateTypeAdapter;
-import dto.deserializer.EffectiveValueTypeAdapter;
-import dto.deserializer.SheetDTODeserializer;
-import engine.sheet.coordinate.Coordinate;
-import engine.sheet.effectivevalue.EffectiveValue;
+import dto.permission.PermissionType;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.HttpUrl;
-import okhttp3.Response;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.function.Consumer;
+
+import static client.util.Constants.ADAPTED_GSON;
 
 public class CommandsController {
 
     @FXML private VBox commandsComponent;
-    @FXML private Button permissionManagerButton;
     @FXML private Button requestPermissionButton;
     @FXML private Button viewSheetButton;
+    @FXML private Button refreshPermissionRequestsButton;
+    @FXML private Button rejectButton;
+    @FXML private Button approveButton;
 
     private DashboardController dashboardController;
 
     @FXML
     void initialize() {
-        assert commandsComponent != null : "fx:id=\"commandsComponent\" was not injected: check your FXML file 'commands.fxml'.";
-        assert permissionManagerButton != null : "fx:id=\"permissionManagerButton\" was not injected: check your FXML file 'commands.fxml'.";
-        assert requestPermissionButton != null : "fx:id=\"requestPermissionButton\" was not injected: check your FXML file 'commands.fxml'.";
-        assert viewSheetButton != null : "fx:id=\"viewSheetButton\" was not injected: check your FXML file 'commands.fxml'.";
-
-    }
-
-    @FXML
-    void permissionManagerButtonAction(ActionEvent event) {
-
-    }
-
-    @FXML
-    void requestPermissionButtonAction(ActionEvent event) {
 
     }
 
@@ -60,19 +47,10 @@ public class CommandsController {
     void viewSheetButtonAction(ActionEvent event) {
         String currentSheetName = dashboardController.selectedSheetNameProperty().getValue();
 
-        if(currentSheetName.isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText(null);
-            alert.setContentText("Please select a sheet");
-            alert.showAndWait();
-            return;
-        }
-
         String finalUrl = HttpUrl
                 .parse(Constants.GET_SHEET_PATH)
                 .newBuilder()
-                .addQueryParameter("sheetName", dashboardController.selectedSheetNameProperty().getValue())
+                .addQueryParameter("sheetName", currentSheetName)
                 .build()
                 .toString();
 
@@ -80,9 +58,7 @@ public class CommandsController {
 
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-//                Platform.runLater(() ->
-//                        errorMessageProperty.set("Something went wrong: " + e.getMessage())
-//                );
+                System.err.println(e.getMessage());
             }
 
             @Override
@@ -90,27 +66,140 @@ public class CommandsController {
                 String responseBody = response.body().string();
 
                 if (response.code() != 200) {
-//                    Platform.runLater(() ->
-//                            errorMessageProperty.set("Something went wrong: " + responseBody)
-//                    );
+                    JsonObject responseContent = JsonParser.parseString(responseBody).getAsJsonObject();
+                    Platform.runLater(() -> dashboardController.handleError(
+                            "Error", null, responseContent.get("error").getAsString()));
                 } else {
-                    Gson gson = new GsonBuilder()
-                            .registerTypeAdapter(SheetDTO.class, new SheetDTODeserializer())
-                            .registerTypeAdapter(CellStyleDTO.class, new CellStyleDTOAdapter())
-                            .registerTypeAdapter(Coordinate.class, new CoordinateTypeAdapter())
-                            .registerTypeAdapter(EffectiveValue.class ,new EffectiveValueTypeAdapter())
-                            .create();
-
-                    SheetDTO requestedSheet = gson.fromJson(responseBody, SheetDTO.class);
-                    Platform.runLater(() -> {
-                        dashboardController.handleViewSheet(requestedSheet);
-                    });
+                    SheetDTO requestedSheet = ADAPTED_GSON.fromJson(responseBody, SheetDTO.class);
+                    Platform.runLater(() -> dashboardController.handleViewSheet(requestedSheet));
                 }
             }
         });
     }
 
+    @FXML
+    void requestPermissionButtonAction(ActionEvent event) {
+        URL permissionRequestDialogUrl = getClass().getResource(Constants.PERMISSION_REQUEST_DIALOG_FXML_RESOURCE_LOCATION);
+
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(permissionRequestDialogUrl);
+            Parent root = fxmlLoader.load();
+
+            PermissionRequestController dialogController = fxmlLoader.getController();
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Permission Request");
+            dialogStage.setResizable(false);
+            dialogStage.setScene(new Scene(root));
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(dashboardController.getPrimaryStage());
+            dialogStage.showAndWait();
+
+            PermissionType requestedPermission = dialogController.getRequestedPermission();
+
+            if (requestedPermission != null) {
+                handlePermissionRequestToOwner(requestedPermission);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("IO Exception occurred...");
+        }
+    }
+
+    private void handlePermissionRequestToOwner(PermissionType requestedPermission) {
+        String currentSheetName = dashboardController.selectedSheetNameProperty().getValue();
+
+        String finalUrl = HttpUrl
+                .parse(Constants.REQUEST_PERMISSION)
+                .newBuilder()
+                .addQueryParameter("sheetName", currentSheetName)
+                .addQueryParameter("permissionType", requestedPermission.toString())
+                .build()
+                .toString();
+
+        HttpClientUtil.runAsyncPost(finalUrl, RequestBody.create("", null), new Callback() {
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                System.err.println(e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String responseBody = response.body().string();
+
+                if (response.code() != 200) {
+                    JsonObject responseContent = JsonParser.parseString(responseBody).getAsJsonObject();
+                    Platform.runLater(() -> dashboardController.handleError(
+                            "Error", null, responseContent.get("error").getAsString()));
+                } else {
+                    Platform.runLater(() -> refreshPermissionRequestsButtonAction(null));
+                }
+            }
+        });
+    }
+
+    @FXML
+    void rejectButtonAction(ActionEvent event) {
+        handleOwnerPermissionRequestDecision(false);
+    }
+
+    @FXML
+    void approveButtonAction(ActionEvent event) {
+        handleOwnerPermissionRequestDecision(true);
+    }
+
+    private void handleOwnerPermissionRequestDecision(Boolean approve) {
+        String currentSheetName = dashboardController.selectedSheetNameProperty().getValue();
+
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("requestId", dashboardController.requestIDProperty().getValue());
+        jsonObject.addProperty("sheetName", currentSheetName);
+        jsonObject.addProperty("decision", approve);
+
+        RequestBody requestBody = RequestBody.create(
+                jsonObject.toString(),
+                okhttp3.MediaType.parse("application/json")
+        );
+
+        Consumer<String> responseHandler = response -> {
+            Platform.runLater(() -> refreshPermissionRequestsButtonAction(null));
+        };
+
+        HttpClientUtil.runPostAsyncWithJson(Constants.PERMISSION_REQUEST_DECISION, requestBody, responseHandler);
+    }
+
+
+    @FXML
+    void refreshPermissionRequestsButtonAction(ActionEvent event) {
+        dashboardController.refreshPermissions();
+    }
+
     public void setDashboardController(DashboardController dashboardController) {
         this.dashboardController = dashboardController;
+
+        viewSheetButton.disableProperty().bind(
+                dashboardController.isSelectedSheetProperty().not()
+                        .or(dashboardController.isUserHasNoPermissionsProperty().not())
+        );
+
+        requestPermissionButton.disableProperty().bind(
+                dashboardController.isSelectedSheetProperty().not()
+                        .or(dashboardController.isUserOwnerOfSelectedSheetProperty().not())
+        );
+
+        approveButton.disableProperty().bind(
+                dashboardController.isSelectedSheetProperty().not()
+                        .or(dashboardController.isUserOwnerOfSelectedSheetProperty())
+                                .or(dashboardController.isPermissionRequestSelectedProperty().not())
+        );
+
+        rejectButton.disableProperty().bind(
+                dashboardController.isSelectedSheetProperty().not()
+                        .or(dashboardController.isUserOwnerOfSelectedSheetProperty())
+                                .or(dashboardController.isPermissionRequestSelectedProperty().not())
+        );
+
+        refreshPermissionRequestsButton.disableProperty().bind(dashboardController.isSelectedSheetProperty().not());
     }
 }

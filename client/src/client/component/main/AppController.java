@@ -8,7 +8,6 @@ import dto.SheetDTO;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ScrollPane;
@@ -65,16 +64,17 @@ public class AppController implements Closeable {
             dashboardComponent = fxmlLoader.load();
             dashboardController = fxmlLoader.getController();
             dashboardController.setMainController(this);
-            setMainPanelTo(dashboardComponent);
-            dashboardController.setActive();
+            primaryStage.centerOnScreen();
             primaryStage.setWidth(dashboardComponent.getPrefWidth());
             primaryStage.setHeight(dashboardComponent.getPrefHeight());
+            setMainPanelTo(dashboardComponent);
+            dashboardController.setActive();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void loadSheetView(SheetDTO sheetToView) {
+    public void loadSheetView(SheetDTO sheetToView, boolean readonly) {
         URL sheetUrl = getClass().getResource(Constants.SHEET_FXML_RESOURCE_LOCATION);
 
         try {
@@ -83,9 +83,10 @@ public class AppController implements Closeable {
             sheetComponent = fxmlLoader.load();
             sheetController = fxmlLoader.getController();
             sheetController.setMainController(this);
-            sheetController.setSheetToView(sheetToView);
+            sheetController.setSheetToView(sheetToView, readonly);
+            primaryStage.setWidth(sheetComponent.getPrefWidth());
+            primaryStage.setHeight(sheetComponent.getPrefHeight());
             setMainPanelTo(sheetComponent);
-
             // sheetController.setActive(); //TODO timer for fetching new version available
         } catch (IOException e) {
             e.printStackTrace();

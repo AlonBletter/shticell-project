@@ -1,9 +1,11 @@
 package client.component.dashboard.sheetlist;
 
+import client.component.dashboard.sheetlist.model.SingleSheetInformation;
 import client.util.Constants;
 import client.util.http.HttpClientUtil;
 import dto.SheetInfoDTO;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.scene.control.TableView;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -21,10 +23,12 @@ public class SheetListRefresher extends TimerTask {
 
     private final Consumer<List<SheetInfoDTO>> sheetsListConsumer;
     private final SimpleIntegerProperty numberOfSheets;
+    private final TableView<SingleSheetInformation> sheetsInformationTable;
 
-    public SheetListRefresher(Consumer<List<SheetInfoDTO>> sheetsListConsumer, SimpleIntegerProperty numberOfSheets) {
+    public SheetListRefresher(Consumer<List<SheetInfoDTO>> sheetsListConsumer, SimpleIntegerProperty numberOfSheets, TableView<SingleSheetInformation> sheetsInformationTable) {
         this.sheetsListConsumer = sheetsListConsumer;
         this.numberOfSheets = numberOfSheets;
+        this.sheetsInformationTable = sheetsInformationTable;
     }
 
     @Override
@@ -40,7 +44,7 @@ public class SheetListRefresher extends TimerTask {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 String jsonArrayOfSheets = response.body().string();
                 SheetInfoDTO[] sheetsInfo = GSON_INSTANCE.fromJson(jsonArrayOfSheets, SheetInfoDTO[].class);
-                if (sheetsInfo != null && numberOfSheets.get() != sheetsInfo.length) {
+                if (sheetsInfo != null) {
                     sheetsListConsumer.accept(Arrays.asList(sheetsInfo));
                 }
             }

@@ -1,4 +1,4 @@
-package server.servlets;
+package server.servlets.user;
 
 import server.utils.ServletUtils;
 import server.utils.SessionUtils;
@@ -24,5 +24,4 @@ public class LogoutServlet extends HttpServlet {
             SessionUtils.clearSession(request);
         }
     }
-
 }

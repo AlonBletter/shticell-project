@@ -14,6 +14,7 @@ import engine.sheet.cell.api.CellType;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.effectivevalue.EffectiveValue;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -50,20 +51,34 @@ public class SheetController implements Closeable {
     private final SimpleBooleanProperty readonlyPresentation;
     private final SimpleBooleanProperty textSpinAnimation;
     private final SimpleBooleanProperty textFadeAnimation;
+    private final SimpleIntegerProperty version;
     private AppController mainController;
 
     public SheetController() {
-        sheetService = new SheetServiceImpl();
+        sheetService = new SheetServiceImpl(this);
         centerScrollPane = new ScrollPane();
         centerComponentController = new CenterController();
-        this.readonlyPresentation = new SimpleBooleanProperty(false); //TODO change to permissions
+        this.readonlyPresentation = new SimpleBooleanProperty(false);
         this.textSpinAnimation = new SimpleBooleanProperty(false);
         this.textFadeAnimation = new SimpleBooleanProperty(false);
+        this.version = new SimpleIntegerProperty(1);
     }
 
     @Override
     public void close() throws IOException {
 
+    }
+
+    public int getVersion() {
+        return version.get();
+    }
+
+    public SimpleIntegerProperty versionProperty() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version.set(version);
     }
 
     public SimpleBooleanProperty readonlyPresentationProperty() {
@@ -141,6 +156,7 @@ public class SheetController implements Closeable {
 //                centerScrollPane.setFitToWidth(true);
 //                centerScrollPane.setFitToHeight(true);
             borderPane.setCenter(centerScrollPane);
+            setVersion(sheet.versionNumber());
             headerComponentController.initializeHeaderAfterLoad();
             //leftComponentController.loadRanges(sheetService.getRanges()); //TODO fix
             readonlyPresentation.set(readonly);
@@ -149,30 +165,19 @@ public class SheetController implements Closeable {
         }
     }
 
-    public boolean updateCell(Coordinate cellToUpdateCoordinate, String newCellValue) {
-        try {
-            int oldVersion = sheetService.getCurrentVersionNumber();
-            sheetService.updateCell(cellToUpdateCoordinate, newCellValue);
-
-            if(oldVersion != sheetService.getCurrentVersionNumber()) {
-                centerComponentController.updateCells(sheetService.getSpreadsheet());
-                headerComponentController.refreshComboBoxVersion();
-            }
-            return true;
-        } catch (Exception e) {
-            showErrorAlert("Updating Cell Error", "An error occurred while updating the cell.", e.getMessage());
-            return false;
-        }
+    public void updateCell(Coordinate cellToUpdateCoordinate, String newCellValue) {
+        sheetService.updateCell(cellToUpdateCoordinate, newCellValue, (newSheet) -> {
+            setVersion(version.get() + 1);
+            centerComponentController.updateCells(newSheet);
+            headerComponentController.updateHeader();
+        });
     }
 
     public void displaySheetByVersion(int version) {
-        try {
-            SheetDTO sheetVersion = sheetService.getSheetByVersion(version);
+        sheetService.getSheetByVersion(version, (sheetVersion) -> {
             String titleToDisplay = "Sheet Version: " + version;
             displaySheet(sheetVersion, titleToDisplay);
-        } catch (Exception e) {
-            showErrorAlert("Invalid Version", "An error occurred while displaying the sheet.", e.getMessage());
-        }
+        });
     }
 
     private void displaySheet(SheetDTO sheetToDisplay, String title) {

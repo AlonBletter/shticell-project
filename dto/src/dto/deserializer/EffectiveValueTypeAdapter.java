@@ -17,9 +17,13 @@ public class EffectiveValueTypeAdapter extends TypeAdapter<EffectiveValue> {
         out.name("cellType").value(effectiveValue.cellType().toString());
         out.name("value");
 
-        // Use Gson to serialize the value based on its actual type
-        Gson gson = new Gson();
-        gson.toJson(effectiveValue.value(), effectiveValue.value().getClass(), out);
+        Object value = effectiveValue.value();
+        if (value instanceof Double && ((Double) value).isNaN()) {
+            out.value("NaN");
+        } else {
+            Gson gson = new Gson();
+            gson.toJson(value, value.getClass(), out);
+        }
 
         out.endObject();
     }
@@ -37,8 +41,7 @@ public class EffectiveValueTypeAdapter extends TypeAdapter<EffectiveValue> {
                     cellType = CellType.valueOf(in.nextString().toUpperCase());
                     break;
                 case "value":
-                    // Deserialize the value based on the cell type or other criteria
-                    value = deserializeValue(in, cellType); // Custom method for deserialization based on type
+                    value = deserializeValue(in, cellType);
                     break;
                 default:
                     in.skipValue();
@@ -50,10 +53,18 @@ public class EffectiveValueTypeAdapter extends TypeAdapter<EffectiveValue> {
     }
 
     private Object deserializeValue(JsonReader in, CellType cellType) throws IOException {
-        return switch (cellType) {
-            case NUMERIC -> in.nextDouble();
-            case BOOLEAN -> in.nextBoolean();
-            default -> in.nextString();
-        };
+        switch (cellType) {
+            case NUMERIC:
+                String numericValue = in.nextString();
+                if ("NaN".equals(numericValue)) {
+                    return Double.NaN;
+                } else {
+                    return Double.parseDouble(numericValue);
+                }
+            case BOOLEAN:
+                return in.nextBoolean();
+            default:
+                return in.nextString();
+        }
     }
 }

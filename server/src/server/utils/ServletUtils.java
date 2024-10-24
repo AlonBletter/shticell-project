@@ -63,7 +63,7 @@ public class ServletUtils {
 //		return (ChatManager) servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME);
 //	} //TODO when doing bonus
 
-	public static int getIntParameter(HttpServletRequest request, String name) {
+	public static int getIntParameter(HttpServletRequest request, String name, HttpServletResponse response) throws IOException {
 		String value = request.getParameter(name);
 		if (value != null) {
 			try {
@@ -71,6 +71,7 @@ public class ServletUtils {
 			} catch (NumberFormatException numberFormatException) {
 			}
 		}
+		sendErrorResponse(response, "Missing or invalid 'version' parameter. An integer is required.");
 		return INT_PARAMETER_ERROR;
 	}
 

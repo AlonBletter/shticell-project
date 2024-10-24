@@ -44,23 +44,13 @@ public class SheetListController implements Closeable {
         sheetsTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 dashboardController.setSelectedSheetName(newValue.getSheetName());
+                dashboardController.isSelectedSheetProperty().set(true);
+                dashboardController.setIsUserOwnerOfSelectedSheet(newValue.getPermissionType() == PermissionType.OWNER);
+                dashboardController.setIsUserHasNoPermissions(newValue.getPermissionType() == PermissionType.NONE);
+                dashboardController.setIsUserHasReaderPermission(newValue.getPermissionType() == PermissionType.READER);
+            } else {
+                dashboardController.isSelectedSheetProperty().set(false);
             }
-        });
-
-        sheetsTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            dashboardController.isSelectedSheetProperty().set(newValue != null);
-        });
-
-        sheetsTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            dashboardController.setIsUserOwnerOfSelectedSheet(newValue != null && newValue.getPermissionType() != PermissionType.OWNER);
-        });
-
-        sheetsTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            dashboardController.setIsUserHasNoPermissions(newValue != null && newValue.getPermissionType() != PermissionType.NONE);
-        });
-
-        sheetsTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            dashboardController.setIsUserHasReaderPermission(newValue != null && newValue.getPermissionType() == PermissionType.READER);
         });
 
         userColumn.setCellValueFactory(cellData ->

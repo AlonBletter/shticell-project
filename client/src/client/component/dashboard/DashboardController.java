@@ -43,10 +43,10 @@ public class DashboardController implements Closeable {
 
     @FXML
     void initialize() {
-        if(sheetListComponentController != null && commandsComponentController != null) {
+        if(sheetListComponentController != null && commandsComponentController != null && permissionsComponentController != null) {
             sheetListComponentController.setDashboardController(this);
-            permissionsComponentController.setDashboardController(this);
             commandsComponentController.setDashboardController(this);
+            permissionsComponentController.setDashboardController(this);
         }
     }
 

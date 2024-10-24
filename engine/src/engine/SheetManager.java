@@ -17,7 +17,7 @@ public interface SheetManager {
     void loadSystemSettingsFromFile(InputStream inputStream);
     SheetDTO getSpreadsheet();
     CellDTO getCell(Coordinate cellToGetCoordinate);
-    void updateCell(Coordinate cellToUpdateCoordinate, String newCellOriginalValue);
+    SheetDTO updateCell(Coordinate cellToUpdateCoordinate, String newCellOriginalValue);
     void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor);
     void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor);
 

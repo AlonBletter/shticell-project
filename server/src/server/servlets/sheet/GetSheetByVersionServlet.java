@@ -1,8 +1,10 @@
 package server.servlets.sheet;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import dto.SheetDTO;
 import engine.Engine;
+import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,38 +14,39 @@ import server.constants.Constants;
 import server.utils.ServletUtils;
 import server.utils.SessionUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 
-import static server.constants.Constants.GSON_INSTANCE;
-import static server.constants.Constants.SHEET_NAME;
+import static server.constants.Constants.*;
 
-@WebServlet(name = "Get Sheet Servlet", urlPatterns = "/getSheet")
-public class GetSheetServlet extends HttpServlet {
+@WebServlet(name = "Get Sheet By Version Servlet", urlPatterns = "/sheet/version/get")
+public class GetSheetByVersionServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String sheetName = ServletUtils.validateRequiredParameter(request, SHEET_NAME, response);
 
-        if (sheetName == null) {
+        int version = ServletUtils.getIntParameter(request, VERSION, response);
+
+        if(version == INT_PARAMETER_ERROR) {
             return;
         }
 
+        String sheetName = SessionUtils.getSheetName(request);
         String username = SessionUtils.getUsername(request);
-        if (username == null) {
+        if (username == null || sheetName == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
         Engine engine = ServletUtils.getEngine(getServletContext());
-        // TODO check if permission is none, maybe dont return the sheet dto
+
         response.setContentType("application/json");
 
         try {
-            SheetDTO sheet = engine.getSheet(username, sheetName); //TODO synchronized
-            request.getSession(true).setAttribute(SHEET_NAME, sheetName);
+            SheetDTO sheet = engine.getSheetByVersion(username, sheetName, version); //TODO synchronized
             String jsonResponse = GSON_INSTANCE.toJson(sheet);
             response.getWriter().println(jsonResponse);
+            response.getWriter().flush();
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("{\"error\":\"" + e.getMessage() + "\"}");
+            ServletUtils.sendErrorResponse(response, e.getMessage());
         }
     }
 }

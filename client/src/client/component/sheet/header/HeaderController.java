@@ -42,14 +42,12 @@ public class HeaderController {
 
     public void setMainController(SheetController mainController) {
         this.mainController = mainController;
-        isFileLoaded.bind(mainController.readonlyPresentationProperty().not());
+        actionLineTextField.disableProperty().bind(mainController.readonlyPresentationProperty());
+        updateValueButton.disableProperty().bind(mainController.readonlyPresentationProperty());
     }
 
     @FXML
     private void initialize() {
-        actionLineTextField.disableProperty().bind(isFileLoaded.not());
-        updateValueButton.disableProperty().bind(isFileLoaded.not());
-
         originalValueToolTip.textProperty().bind(originalCellValueLabel.textProperty());
         originalCellValueLabel.setOnMouseEntered(event -> {
             if (isTextTruncated(originalCellValueLabel)) {
@@ -125,17 +123,26 @@ public class HeaderController {
     // maybe unite the both ^ V
     public void initializeHeaderAfterLoad() {
         clearDataFromHeader();
-        actionLineTextField.setText("");
-        versionSelectorComboBox.getItems().clear();
+        versionNumberList.clear();
         versionNumberList.addFirst("");
+        addVersionNumbers();
         versionSelectorComboBox.getSelectionModel().selectFirst();
-        refreshComboBoxVersion();
     }
 
-    public void refreshComboBoxVersion() {
-        if (mainController.getSheetCurrentVersion() != 1) {
-            versionNumberList.add(String.valueOf(mainController.getSheetCurrentVersion() - 1));
+    private void addVersionNumbers() {
+        int currentVersion = mainController.getVersion();
+
+        for(int i = 1 ; i <= currentVersion ; i++) {
+            versionNumberList.add(String.valueOf(i));
         }
+    }
+
+    public void updateHeader() {
+        actionLineTextField.setText("");
+        versionNumberList.add(String.valueOf(mainController.getVersion()));
+
+//        if (mainController.getVersion() != 1) {
+//        }
     }
 
     public void setPrimaryStage(Stage primaryStage) {
@@ -148,11 +155,7 @@ public class HeaderController {
             throw new IllegalArgumentException("Please select a cell before updating value.");
         }
 
-        boolean updated = mainController.updateCell(selectedCellCoordinate, actionLineTextField.getText());
-
-        if (updated) {
-            actionLineTextField.setText("");
-        }
+        mainController.updateCell(selectedCellCoordinate, actionLineTextField.getText());
     }
 
     public void updateHeaderCellData(CellModel selectedCell) {

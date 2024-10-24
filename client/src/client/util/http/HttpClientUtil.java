@@ -55,18 +55,55 @@ public class HttpClientUtil {
         processTheRequest(responseConsumer, request);
     }
 
+    public static void runReqAsyncWithJson(String finalUrl, HttpMethod methodType, RequestBody requestBody, Consumer<String> responseConsumer) {
+        Request.Builder requestBuilder = new Request.Builder()
+                .url(finalUrl);
+
+        getRequestType(methodType, requestBody, requestBuilder);
+
+        Request request = requestBuilder.build();
+
+        processTheRequest(responseConsumer, request);
+    }
+
+    private static void getRequestType(HttpMethod methodType, RequestBody requestBody, Request.Builder requestBuilder) {
+        switch (methodType) {
+            case POST:
+                requestBuilder.post(requestBody);
+                break;
+            case PUT:
+                requestBuilder.put(requestBody);
+                break;
+            case DELETE:
+                requestBuilder.delete(requestBody);
+                break;
+            case PATCH:
+                requestBuilder.patch(requestBody);
+                break;
+            case GET:
+                requestBuilder.get();
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid HTTP method: " + methodType);
+        }
+    }
+
     private static void processTheRequest(Consumer<String> responseConsumer, Request request) {
         Callback callback = new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try {
-                    String json = response.body().string();
-                    if (response.isSuccessful() && response.body() != null) {
-                        responseConsumer.accept(json);
+                    if (response.code() == 204) {
+                        responseConsumer.accept(null);
                     } else {
-                        JsonObject errorObject = JsonParser.parseString(json).getAsJsonObject();
-                        String errorMessage = errorObject.get("error").getAsString();
-                        handleFailure(new IOException(errorMessage));
+                        String json = response.body().string();
+                        if (response.isSuccessful() && json != null) {
+                            responseConsumer.accept(json);
+                        } else {
+                            JsonObject errorObject = JsonParser.parseString(json).getAsJsonObject();
+                            String errorMessage = errorObject.get("error").getAsString();
+                            handleFailure(new IOException(errorMessage));
+                        }
                     }
                 } finally {
                     response.close();

@@ -35,6 +35,8 @@ public class Constants {
     public final static String GET_PERMISSION_REQUESTS = FULL_SERVER_PATH + "/getPermissionRequests";
     public final static String REQUEST_PERMISSION = FULL_SERVER_PATH + "/requestPermission";
     public final static String PERMISSION_REQUEST_DECISION = FULL_SERVER_PATH + "/permission/request/decision";
+    public final static String UPDATE_CELL_PATH = FULL_SERVER_PATH + "/sheet/update";
+    public final static String GET_SHEET_BY_VERSION_PATH = FULL_SERVER_PATH + "/sheet/version/get";
 
     // Gson instance
     public final static Gson GSON_INSTANCE = new Gson(); //TODO redundant, can use the adapted only
@@ -43,5 +45,6 @@ public class Constants {
             .registerTypeAdapter(CellStyleDTO.class, new CellStyleDTOAdapter())
             .registerTypeAdapter(Coordinate.class, new CoordinateTypeAdapter())
             .registerTypeAdapter(EffectiveValue.class ,new EffectiveValueTypeAdapter())
+            .serializeSpecialFloatingPointValues()
             .create();
 }

@@ -8,9 +8,13 @@ import java.util.List;
 public interface PermissionManager {
     void assignPermission(String sheetName, String username, PermissionType permission);
 
+    void initializeSheetPermission(String sheetName, String username);
+
     String getOwner(String sheetName);
 
-    boolean hasPermission(String sheetName, String username, PermissionType requiredPermission);
+    void validateWriterPermission(String sheetName, String username);
+
+    void validateReaderPermission(String sheetName, String username);
 
     PermissionType getUserPermission(String sheetName, String username);
 

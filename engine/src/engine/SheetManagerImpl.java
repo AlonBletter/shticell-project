@@ -101,7 +101,7 @@ public class SheetManagerImpl implements SheetManager {
     }
 
     @Override
-    public void updateCell(Coordinate cellToUpdateCoordinate, String newCellOriginalValue) {
+    public SheetDTO updateCell(Coordinate cellToUpdateCoordinate, String newCellOriginalValue) {
         validateLoadedSheet();
         Sheet copyOfCurrentVersion = versionManager.getCurrentVersionSheet().copySheet();
 
@@ -109,7 +109,10 @@ public class SheetManagerImpl implements SheetManager {
 
         if (updated) {
             versionManager.addNewVersion(copyOfCurrentVersion);
+            return SheetConverter.convertToDTO(copyOfCurrentVersion);
         }
+
+        return null;
     }
 
     @Override

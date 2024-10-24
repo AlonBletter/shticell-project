@@ -180,23 +180,23 @@ public class CommandsController {
 
         viewSheetButton.disableProperty().bind(
                 dashboardController.isSelectedSheetProperty().not()
-                        .or(dashboardController.isUserHasNoPermissionsProperty().not())
+                        .or(dashboardController.isUserHasNoPermissionsProperty())
         );
 
         requestPermissionButton.disableProperty().bind(
                 dashboardController.isSelectedSheetProperty().not()
-                        .or(dashboardController.isUserOwnerOfSelectedSheetProperty().not())
+                        .or(dashboardController.isUserOwnerOfSelectedSheetProperty())
         );
 
         approveButton.disableProperty().bind(
                 dashboardController.isSelectedSheetProperty().not()
-                        .or(dashboardController.isUserOwnerOfSelectedSheetProperty())
+                        .or(dashboardController.isUserOwnerOfSelectedSheetProperty().not())
                                 .or(dashboardController.isPermissionRequestSelectedProperty().not())
         );
 
         rejectButton.disableProperty().bind(
                 dashboardController.isSelectedSheetProperty().not()
-                        .or(dashboardController.isUserOwnerOfSelectedSheetProperty())
+                        .or(dashboardController.isUserOwnerOfSelectedSheetProperty().not())
                                 .or(dashboardController.isPermissionRequestSelectedProperty().not())
         );
 

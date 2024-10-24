@@ -22,11 +22,15 @@ public class PermissionManagerImpl implements PermissionManager {
 
     @Override
     public void assignPermission(String sheetName, String username, PermissionType permission) {
-        sheetPermissions.computeIfAbsent(sheetName, k -> new HashMap<>()).put(username, permission);
+        validateSheet(sheetName);
+        sheetPermissions.get(sheetName).put(username, permission);
+    }
 
-        if(permission == PermissionType.OWNER) {
-            owners.put(sheetName, username);
-        }
+    @Override
+    public void initializeSheetPermission(String sheetName, String username) {
+        sheetPermissions.put(sheetName, new HashMap<>());
+        assignPermission(sheetName, username, PermissionType.OWNER);
+        owners.put(sheetName, username);
     }
 
     @Override
@@ -35,10 +39,23 @@ public class PermissionManagerImpl implements PermissionManager {
     }
 
     @Override
-    public boolean hasPermission(String sheetName, String username, PermissionType requiredPermission) {
-        return sheetPermissions.containsKey(sheetName) &&
-                sheetPermissions.get(sheetName).getOrDefault(username, PermissionType.NONE)
-                        .compareTo(requiredPermission) >= 0;
+    public void validateWriterPermission(String username, String sheetName) {
+        validateSheet(sheetName);
+        PermissionType permission = sheetPermissions.get(sheetName).get(username);
+
+        if(permission != PermissionType.OWNER && permission != PermissionType.WRITER) {
+            throw new IllegalArgumentException("User [" + username + "] does not have writer permission for sheet [" + sheetName + "].");
+        }
+    }
+
+    @Override
+    public void validateReaderPermission(String username, String sheetName) {
+        validateSheet(sheetName);
+        PermissionType permission = sheetPermissions.get(sheetName).get(username);
+
+        if(permission == PermissionType.NONE) {
+            throw new IllegalArgumentException("User [" + username + "] does not have permission for sheet [" + sheetName + "].");
+        }
     }
 
     @Override
@@ -90,7 +107,7 @@ public class PermissionManagerImpl implements PermissionManager {
                 request.setRequestStatus(RequestStatus.REJECTED);
             }
         } else {
-            System.err.println("Permission request not found for requestId: " + requestId);
+            throw new IllegalArgumentException("Permission request not found for requestId: " + requestId);
         }
     }
 

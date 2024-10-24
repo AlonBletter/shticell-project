@@ -7,6 +7,7 @@ import dto.permission.PermissionType;
 import engine.permission.PermissionManager;
 import engine.permission.PermissionManagerImpl;
 import engine.sheet.api.SheetReadActions;
+import engine.sheet.coordinate.Coordinate;
 
 import java.io.InputStream;
 import java.util.*;
@@ -31,7 +32,7 @@ public class EngineImpl implements Engine {
         }
 
         sheetsInSystem.put(sheetName, sheetManager);
-        permissionManager.assignPermission(sheetName, username, PermissionType.OWNER);
+        permissionManager.initializeSheetPermission(sheetName, username);
     }
 
     @Override
@@ -54,7 +55,8 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public SheetDTO getSheet(String sheetName) {
+    public SheetDTO getSheet(String username, String sheetName) {
+        permissionManager.validateReaderPermission(username, sheetName);
         return findSheet(sheetName).getSpreadsheet();
     }
 
@@ -83,5 +85,17 @@ public class EngineImpl implements Engine {
         permissionManager.handleRequest(requestId, sheetName, ownerUsername, ownerDecision);
     }
 
+    @Override
+    public SheetDTO updateCell(String username, String sheetName, Coordinate coordinate, String newValue) {
+        SheetManager sheet = findSheet(sheetName);
+        permissionManager.validateWriterPermission(username, sheetName);
+        return sheet.updateCell(coordinate, newValue);
+    }
 
+    @Override
+    public SheetDTO getSheetByVersion(String username, String sheetName, int version) {
+        SheetManager sheet = findSheet(sheetName);
+        permissionManager.validateReaderPermission(username, sheetName);
+        return sheet.getSheetByVersion(version);
+    }
 }

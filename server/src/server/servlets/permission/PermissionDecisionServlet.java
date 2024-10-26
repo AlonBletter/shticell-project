@@ -2,8 +2,6 @@ package server.servlets.permission;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import dto.permission.PermissionType;
 import engine.Engine;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

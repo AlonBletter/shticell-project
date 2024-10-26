@@ -1,6 +1,5 @@
 package dto;
 
-import engine.sheet.cell.api.CellStyle;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.effectivevalue.EffectiveValue;
 

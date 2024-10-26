@@ -1,29 +1,22 @@
 package client.util.http;
 
-import dto.CellDTO;
+import dto.RangeDTO;
 import dto.SheetDTO;
 import engine.sheet.coordinate.Coordinate;
-import engine.sheet.range.Range;
 
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
 public interface SheetService {
-    SheetDTO getSpreadsheet();
-    CellDTO getCell(Coordinate cellToGetCoordinate);
     void updateCell(Coordinate cellToUpdateCoordinate, String newCellOriginalValue, Consumer<SheetDTO> updateSheet);
-    void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor);
-    void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor);
-    int getCurrentVersionNumber();
+    void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor, Runnable updateView);
+    void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor, Runnable updateView);
     void getSheetByVersion(int requestedVersionNumber, Consumer<SheetDTO> displaySheet);
-    void addRange(String rangeName, String rangeCoordinates);
-    void deleteRange(String rangeNameToDelete);
-    List<Coordinate> getRange(String rangeNameToView);
-    List<Range> getRanges();
-    SheetDTO getSortedSheet(String rangeToSortBy, List<String> columnsToSortBy);
-    List<String> getColumnUniqueValue(String columnLetter);
-    SheetDTO getFilteredSheet(String rangeToFilter, Map<String, List<String>> filterRequestValues);
-    SheetDTO getExpectedValue(Coordinate cellToCalculate, String newValueOfCell);
-    List<Coordinate> getAxis(String axisRange);
+    void addRange(String rangeName, String rangeCoordinates, Consumer<RangeDTO> updateRanges);
+    void deleteRange(String rangeNameToDelete, Runnable deleteRange);
+    void getSortedSheet(String rangeToSortBy, List<String> columnsToSortBy, Consumer<SheetDTO> displaySheet);
+    void getFilteredSheet(String rangeToFilter, Map<String, List<String>> filterRequestValues, Consumer<SheetDTO> displayFiltered);
+    void getExpectedValue(Coordinate cellToCalculate, String newValueOfCell, Consumer<SheetDTO> updateValue);
+    void getAxis(String axisRange, Consumer<List<Coordinate>> listConsumer);
 }

@@ -1,6 +1,6 @@
 package dto;
 
-import engine.sheet.coordinate.*;
+import engine.sheet.coordinate.Coordinate;
 
 import java.util.List;
 import java.util.Map;
@@ -15,6 +15,7 @@ public record SheetDTO(
         Map<Coordinate, List<Coordinate>> cellDependents,
         Map<Coordinate, List<Coordinate>> cellReferences,
         List<CellDTO> lastModifiedCells,
-        int versionNumber
+        int versionNumber,
+        List<RangeDTO> ranges
 ) {
 }

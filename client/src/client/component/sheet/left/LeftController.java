@@ -1,9 +1,7 @@
 package client.component.sheet.left;
 
-import dto.CellDTO;
-import engine.sheet.cell.api.CellType;
-import engine.sheet.range.Range;
 import client.component.sheet.app.SheetController;
+import client.component.sheet.center.singlecell.SingleCellController;
 import client.component.sheet.common.ShticellResourcesConstants;
 import client.component.sheet.left.dialog.dimension.DimensionDialogController;
 import client.component.sheet.left.dialog.filter.FilterDialogController;
@@ -11,7 +9,11 @@ import client.component.sheet.left.dialog.graph.GraphController;
 import client.component.sheet.left.dialog.range.RangeDialogController;
 import client.component.sheet.left.dialog.sort.SortDialogController;
 import client.component.sheet.left.dialog.whatif.WhatIfDialogController;
+import client.component.sheet.left.model.SingleRange;
+import dto.RangeDTO;
+import engine.sheet.cell.api.CellType;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -40,7 +42,7 @@ public class LeftController {
     @FXML private ColorPicker backgroundColorPicker;
     @FXML private ColorPicker textColorPicker;
     @FXML private Button resetStylingButton;
-    @FXML private ListView<String> rangesListView;
+    @FXML private ListView<SingleRange> rangesListView;
     @FXML private Button addRangeButton;
     @FXML private Button deleteRangeButton;
     @FXML private Button viewRangeButton;
@@ -93,6 +95,46 @@ public class LeftController {
 
     }
 
+    public void loadRanges(List<RangeDTO> ranges) {
+        rangesListView.getItems().clear();
+
+        for(RangeDTO range : ranges) {
+            rangesListView.getItems().add(
+                    new SingleRange(
+                            range.name(),
+                            range.start(),
+                            range.end(),
+                            range.cellsInRange())
+            );
+        }
+    }
+
+    public void updateRanges(RangeDTO rangeDTO) {
+        rangesListView.getItems().add(
+                new SingleRange(
+                        rangeDTO.name(),
+                        rangeDTO.start(),
+                        rangeDTO.end(),
+                        rangeDTO.cellsInRange())
+        );
+    }
+
+    public void deleteRange(String rangeName) {
+        ObservableList<SingleRange> ranges = rangesListView.getItems();
+
+        SingleRange rangeToDelete = null;
+        for (SingleRange range : ranges) {
+            if (range.getName().equals(rangeName)) {
+                rangeToDelete = range;
+                break;
+            }
+        }
+
+        if (rangeToDelete != null) {
+            ranges.remove(rangeToDelete);
+        }
+    }
+
     @FXML
     void addRangeButtonAction(ActionEvent event) {
         try {
@@ -110,12 +152,6 @@ public class LeftController {
             dialogController.setDialogStage(dialogStage);
             dialogController.setMainController(mainController);
             dialogStage.showAndWait();
-
-            if (dialogController.isConfirmed()) {
-                rangesListView.getItems().add(dialogController.getRangeName());
-            }
-            dialogStage.close();
-
         } catch (IOException e) {
             throw new RuntimeException("IO Exception occurred...");
         }
@@ -123,18 +159,13 @@ public class LeftController {
 
     @FXML
     void deleteRangeButtonAction(ActionEvent event) {
-        boolean deleted = mainController.deleteRange(rangesListView.getSelectionModel().getSelectedItem());
-
-        if (deleted) {
-            rangesListView.getItems().remove(rangesListView.getSelectionModel().getSelectedItem());
-        }
+        mainController.deleteRange(rangesListView.getSelectionModel().getSelectedItem().getName());
     }
 
     @FXML
     void viewRangeButtonAction(ActionEvent event) {
-        mainController.viewRange(rangesListView.getSelectionModel().getSelectedItem());
+        mainController.viewRange(rangesListView.getSelectionModel().getSelectedItem().getCellsInRange());
     }
-
 
     @FXML
     void centerAlignToggleAction(ActionEvent event) {
@@ -272,14 +303,6 @@ public class LeftController {
         }
     }
 
-    public void loadRanges(List<Range> ranges) {
-        rangesListView.getItems().clear();
-
-        for(Range range : ranges) {
-            rangesListView.getItems().add(range.getName());
-        }
-    }
-
     private String toHexString(Color color) {
         return String.format("#%02X%02X%02X",
                 (int) (color.getRed() * 255),
@@ -308,8 +331,8 @@ public class LeftController {
 
     @FXML
     void whatIfButtonAction(ActionEvent event) {
-        CellDTO currentCell = mainController.getCurrentCell();
-        if(currentCell.effectiveValue().cellType() != CellType.NUMERIC || currentCell.containsFunction()) {
+        SingleCellController currentCell = mainController.getSelectedCell();
+        if(currentCell.getCellType() != CellType.NUMERIC || currentCell.isContainsFunction()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText(null);

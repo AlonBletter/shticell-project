@@ -1,8 +1,8 @@
 package server.utils;
 
-import server.constants.Constants;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import server.constants.Constants;
 
 public class SessionUtils {
 

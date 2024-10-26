@@ -15,6 +15,7 @@ public class Constants {
     public static final String USERNAME = "username";
     public static final String SHEET_NAME = "sheetName";
     public static final String VERSION = "version";
+    public static final String RANGE = "range";
     public static final String USER_NAME_ERROR = "username_error";
 
 

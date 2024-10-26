@@ -3,12 +3,14 @@ package dto.deserializer;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import dto.CellDTO;
+import dto.RangeDTO;
 import dto.SheetDTO;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateImpl;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -43,12 +45,13 @@ public class SheetDTODeserializer implements JsonDeserializer<SheetDTO> {
         List<CellDTO> lastModifiedCells = context.deserialize(
                 jsonObject.get("lastModifiedCells").getAsJsonArray(), listOfCellDTOType);
 
-//        Map<String, Range> ranges = new HashMap<>();
-//        JsonObject rangesJson = jsonObject.get("ranges").getAsJsonObject();
-//        for (Map.Entry<String, JsonElement> entry : rangesJson.entrySet()) {
-//            Range range = context.deserialize(entry.getValue(), RangeImpl.class);
-//            ranges.put(entry.getKey(), range);
-//        }
+        List<RangeDTO> ranges = new LinkedList<>();
+        JsonArray rangesJsonArray = jsonObject.get("ranges").getAsJsonArray();
+
+        for (JsonElement element : rangesJsonArray) {
+            RangeDTO range = context.deserialize(element, RangeDTO.class);
+            ranges.add(range);
+        }
 
         return new SheetDTO(
                 name,
@@ -60,7 +63,8 @@ public class SheetDTODeserializer implements JsonDeserializer<SheetDTO> {
                 cellDependents,
                 cellReferences,
                 lastModifiedCells,
-                version
+                version,
+                ranges
         );
     }
 

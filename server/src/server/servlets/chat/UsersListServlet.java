@@ -1,11 +1,11 @@
 package server.servlets.chat;
 
-import server.utils.ServletUtils;
 import com.google.gson.Gson;
 import engine.user.UserManager;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import server.utils.ServletUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;

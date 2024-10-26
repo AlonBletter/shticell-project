@@ -1,6 +1,8 @@
 package engine;
 
-import dto.*;
+import dto.CellDTO;
+import dto.RangeDTO;
+import dto.SheetDTO;
 import dto.converter.CellConverter;
 import dto.converter.SheetConverter;
 import engine.exception.InvalidCellBoundsException;
@@ -162,10 +164,10 @@ public class SheetManagerImpl implements SheetManager {
     }
 
     @Override
-    public List<Coordinate> getRange(String rangeNameToView) {
+    public RangeDTO getRange(String rangeNameToView) {
         validateLoadedSheet();
         Sheet currentVersion = versionManager.getCurrentVersionSheet();
-        return currentVersion.getRangeCellsCoordinates(rangeNameToView);
+        return RangeDTO.convertToRangeDTO(currentVersion.getRange(rangeNameToView));
     }
 
     @Override

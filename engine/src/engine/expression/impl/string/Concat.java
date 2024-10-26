@@ -2,9 +2,9 @@ package engine.expression.impl.string;
 
 import engine.expression.api.Expression;
 import engine.expression.type.BinaryExpression;
+import engine.sheet.api.SheetReadActions;
 import engine.sheet.cell.api.CellType;
 import engine.sheet.effectivevalue.EffectiveValue;
-import engine.sheet.api.SheetReadActions;
 import engine.sheet.effectivevalue.EffectiveValueImpl;
 
 public class Concat extends BinaryExpression {

@@ -55,12 +55,8 @@ public class RangeDialogController {
 
     @FXML
     void addButtonAction(ActionEvent event) {
-        boolean isAdded = mainController.addRange(rangeNameTextField.getText(), rangeCoordinatesTextField.getText());
-
-        if(isAdded) {
-            confirmed = true;
-            dialogStage.close();
-        }
+        mainController.addRange(rangeNameTextField.getText(), rangeCoordinatesTextField.getText());
+        dialogStage.close();
     }
 
     @FXML

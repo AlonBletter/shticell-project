@@ -1,8 +1,8 @@
 package engine;
 
 import dto.CellDTO;
+import dto.RangeDTO;
 import dto.SheetDTO;
-import dto.SheetInfoDTO;
 import engine.sheet.api.SheetReadActions;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.range.Range;
@@ -20,21 +20,18 @@ public interface SheetManager {
     SheetDTO updateCell(Coordinate cellToUpdateCoordinate, String newCellOriginalValue);
     void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor);
     void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor);
-
     int getCurrentVersionNumber();
     SheetDTO getSheetByVersion(int requestedVersionNumber);
     void writeSystemDataToFile(String filePath) throws IOException;
     void readSystemDataFromFile(String filePath) throws IOException, ClassNotFoundException;
     void addRange(String rangeName, String rangeCoordinates);
     void deleteRange(String rangeNameToDelete);
-    List<Coordinate> getRange(String rangeNameToView);
+    RangeDTO getRange(String rangeNameToView);
     List<Range> getRanges();
     SheetDTO getSortedSheet(String rangeToSortBy, List<String> columnsToSortBy);
     List<String> getColumnUniqueValue(String columnLetter);
     SheetDTO getFilteredSheet(String rangeToFilter, Map<String, List<String>> filterRequestValues);
     SheetDTO getExpectedValue(Coordinate cellToCalculate, String newValueOfCell);
-
     List<Coordinate> getAxis(String axisRange);
-
     SheetReadActions getSheetReadActions();
 }

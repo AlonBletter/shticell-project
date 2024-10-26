@@ -1,12 +1,12 @@
 package client.component.sheet.center.singlecell;
 
+import client.component.sheet.app.SheetController;
+import client.component.sheet.center.CenterController;
+import client.component.sheet.common.ShticellResourcesConstants;
 import dto.CellDTO;
 import engine.sheet.cell.api.CellType;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.effectivevalue.EffectiveValue;
-import client.component.sheet.app.SheetController;
-import client.component.sheet.center.CenterController;
-import client.component.sheet.common.ShticellResourcesConstants;
 import javafx.animation.*;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -146,6 +146,8 @@ public class SingleCellController extends CellModel {
             updateTextColor(cell.cellStyle().textColor());
             setDependsOn(cell.dependsOn());
             setInfluenceOn(cell.influenceOn());
+            setContainsFunction(cell.containsFunction());
+            setCellType(cell.effectiveValue().cellType());
         } else {
             setCellText("");
             setOriginalValue("");

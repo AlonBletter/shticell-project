@@ -1,8 +1,6 @@
 package engine.sheet.api;
 
-import engine.generated.STLSheet;
 import engine.sheet.cell.api.Cell;
-import engine.sheet.cell.api.CellReadActions;
 import engine.sheet.coordinate.Coordinate;
 
 import java.util.List;

@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class RangeImpl implements Range, Serializable {
-    private String name;
+    private final String name;
     private final Coordinate start;
     private final Coordinate end;
     private List<Coordinate> cellsInRange;
@@ -41,11 +41,23 @@ public class RangeImpl implements Range, Serializable {
         }
     }
 
+    @Override
     public List<Coordinate> getCellsInRange() {
         return new LinkedList<>(cellsInRange);
     }
 
+    @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public Coordinate getStart() {
+        return start;
+    }
+
+    @Override
+    public Coordinate getEnd() {
+        return end;
     }
 }

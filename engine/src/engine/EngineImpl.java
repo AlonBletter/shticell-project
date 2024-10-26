@@ -1,5 +1,6 @@
 package engine;
 
+import dto.RangeDTO;
 import dto.SheetDTO;
 import dto.SheetInfoDTO;
 import dto.permission.PermissionInfoDTO;
@@ -10,7 +11,10 @@ import engine.sheet.api.SheetReadActions;
 import engine.sheet.coordinate.Coordinate;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class EngineImpl implements Engine {
     Map<String, SheetManager> sheetsInSystem = new HashMap<>(); // Sheet Name -> SheetManager
@@ -98,4 +102,62 @@ public class EngineImpl implements Engine {
         permissionManager.validateReaderPermission(username, sheetName);
         return sheet.getSheetByVersion(version);
     }
+
+    @Override
+    public void updateCellBackgroundColor(String username, String sheetName, Coordinate coordinate, String value) {
+        SheetManager sheet = findSheet(sheetName);
+        permissionManager.validateWriterPermission(username, sheetName);
+        sheet.updateCellBackgroundColor(coordinate, value);
+    }
+
+    @Override
+    public void updateCellTextColor(String username, String sheetName, Coordinate coordinate, String value) {
+        SheetManager sheet = findSheet(sheetName);
+        permissionManager.validateWriterPermission(username, sheetName);
+        sheet.updateCellTextColor(coordinate, value);
+    }
+
+    @Override
+    public RangeDTO addRange(String username, String sheetName, String rangeName, String coordinates) {
+        SheetManager sheet = findSheet(sheetName);
+        permissionManager.validateWriterPermission(username, sheetName);
+        sheet.addRange(rangeName, coordinates);
+        return sheet.getRange(rangeName);
+    }
+
+    @Override
+    public void deleteRange(String username, String sheetName, String rangeName) {
+        SheetManager sheet = findSheet(sheetName);
+        permissionManager.validateReaderPermission(username, sheetName);
+        sheet.deleteRange(rangeName);
+    }
+
+    @Override
+    public SheetDTO getSortedSheet(String username, String sheetName, String range, List<String> columns) {
+        SheetManager sheet = findSheet(sheetName);
+        permissionManager.validateReaderPermission(username, sheetName);
+        return sheet.getSortedSheet(range, columns);
+    }
+
+    @Override
+    public SheetDTO getExpectedValue(String username, String sheetName, Coordinate coordinate, String value) {
+        SheetManager sheet = findSheet(sheetName);
+        permissionManager.validateReaderPermission(username, sheetName);
+        return sheet.getExpectedValue(coordinate, value);
+    }
+
+    @Override
+    public SheetDTO getFilteredSheet(String username, String sheetName, String rangeToFilter, Map<String, List<String>> filterRequestValues) {
+        SheetManager sheet = findSheet(sheetName);
+        permissionManager.validateReaderPermission(username, sheetName);
+        return sheet.getFilteredSheet(rangeToFilter, filterRequestValues);
+    }
+
+    @Override
+    public List<Coordinate> getAxis(String username, String sheetName, String axisRange) {
+        SheetManager sheet = findSheet(sheetName);
+        permissionManager.validateReaderPermission(username, sheetName);
+        return sheet.getAxis(axisRange);
+    }
 }
+

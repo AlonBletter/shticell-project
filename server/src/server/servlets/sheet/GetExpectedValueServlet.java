@@ -16,11 +16,11 @@ import java.io.PrintWriter;
 
 import static server.constants.Constants.GSON_INSTANCE;
 
-@WebServlet(name = "Update Cell Servlet", urlPatterns = "/sheet/update")
-public class UpdateCellServlet extends HttpServlet {
+@WebServlet(name = "Get Expected Value Servlet", urlPatterns = "/sheet/whatIf")
+public class GetExpectedValueServlet extends HttpServlet {
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         PrintWriter out = resp.getWriter();
 
@@ -35,14 +35,10 @@ public class UpdateCellServlet extends HttpServlet {
         CoordinateAndValue cav = GSON_INSTANCE.fromJson(req.getReader(), CoordinateAndValue.class);
 
         try {
-            SheetDTO sheetDTO = engine.updateCell(username, sheetName, cav.coordinate(), cav.value());
-            if (sheetDTO != null) {
-                String jsonSheet = GSON_INSTANCE.toJson(sheetDTO);
-                out.println(jsonSheet);
-                out.flush();
-            } else {
-                resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            }
+            SheetDTO sheetDTO = engine.getExpectedValue(username, sheetName, cav.coordinate(), cav.value());
+            String jsonSheet = GSON_INSTANCE.toJson(sheetDTO);
+            out.println(jsonSheet);
+            out.flush();
         } catch (Exception e) {
             ServletUtils.sendErrorResponse(resp, e.getMessage());
         }

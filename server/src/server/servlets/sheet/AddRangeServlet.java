@@ -1,7 +1,7 @@
 package server.servlets.sheet;
 
-import dto.CoordinateAndValue;
-import dto.SheetDTO;
+import com.google.gson.JsonObject;
+import dto.RangeDTO;
 import engine.Engine;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -12,17 +12,14 @@ import server.utils.ServletUtils;
 import server.utils.SessionUtils;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import static server.constants.Constants.GSON_INSTANCE;
 
-@WebServlet(name = "Update Cell Servlet", urlPatterns = "/sheet/update")
-public class UpdateCellServlet extends HttpServlet {
-
+@WebServlet(name = "Add Range Servlet", urlPatterns = "/sheet/range/add")
+public class AddRangeServlet extends HttpServlet {
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
-        PrintWriter out = resp.getWriter();
 
         String username = SessionUtils.getUsername(req);
         String sheetName = SessionUtils.getSheetName(req);
@@ -32,17 +29,16 @@ public class UpdateCellServlet extends HttpServlet {
         }
 
         Engine engine = ServletUtils.getEngine(getServletContext());
-        CoordinateAndValue cav = GSON_INSTANCE.fromJson(req.getReader(), CoordinateAndValue.class);
+        JsonObject jsonObject = GSON_INSTANCE.fromJson(req.getReader(), JsonObject.class);
+
+        String rangeName = jsonObject.get("rangeName").getAsString();
+        String coordinates = jsonObject.get("coordinates").getAsString();
 
         try {
-            SheetDTO sheetDTO = engine.updateCell(username, sheetName, cav.coordinate(), cav.value());
-            if (sheetDTO != null) {
-                String jsonSheet = GSON_INSTANCE.toJson(sheetDTO);
-                out.println(jsonSheet);
-                out.flush();
-            } else {
-                resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            }
+            RangeDTO rangeDTO = engine.addRange(username, sheetName, rangeName, coordinates);
+            String jsonResponse = GSON_INSTANCE.toJson(rangeDTO);
+            resp.getWriter().write(jsonResponse);
+            resp.getWriter().flush();
         } catch (Exception e) {
             ServletUtils.sendErrorResponse(resp, e.getMessage());
         }

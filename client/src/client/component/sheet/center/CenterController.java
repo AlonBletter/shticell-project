@@ -1,12 +1,13 @@
 package client.component.sheet.center;
 
+import client.component.sheet.app.SheetController;
+import client.component.sheet.center.singlecell.CellModel;
+import client.component.sheet.center.singlecell.SingleCellController;
+import client.component.sheet.common.ShticellResourcesConstants;
 import dto.CellDTO;
 import dto.SheetDTO;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateFactory;
-import client.component.sheet.app.SheetController;
-import client.component.sheet.center.singlecell.SingleCellController;
-import client.component.sheet.common.ShticellResourcesConstants;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;
@@ -384,5 +385,39 @@ public class CenterController {
                 cellController.restoreEffectiveValue();
             }
         }
+    }
+
+    public int getNumOfColumns() {
+        return numOfColumns;
+    }
+
+    public CellModel getCell(Coordinate coordinate) {
+        return gridCells.get(coordinate);
+    }
+
+    public List<String> getColumnUniqueValue(String columnLetter) {
+        int parsedColumn = parseSingleLetterColumn(columnLetter);
+        Set<String> uniqueValues = new HashSet<>();
+
+        for(int row = 1; row <= numOfRows; row++) {
+            Coordinate coordinate = CoordinateFactory.createCoordinate(row, parsedColumn);
+            String effectiveValue = gridCells.get(coordinate).getEffectiveValue();
+            String value = !effectiveValue.isEmpty() ? effectiveValue : "(Empty Cell/s)";
+            uniqueValues.add(value);
+        }
+
+        List<String> sortedUniqueValues = new ArrayList<>(uniqueValues);
+        Collections.sort(sortedUniqueValues);
+
+        if (sortedUniqueValues.remove("(Empty Cell/s)")) {
+            sortedUniqueValues.add("(Empty Cell/s)");
+        }
+
+        return sortedUniqueValues;
+    }
+
+    private int parseSingleLetterColumn(String column) {
+        char normalizedColumn = Character.toUpperCase(column.charAt(0));
+        return normalizedColumn - 'A' + 1;
     }
 }

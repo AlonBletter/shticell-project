@@ -1,12 +1,17 @@
 package dto.converter;
 
 import dto.CellDTO;
+import dto.RangeDTO;
 import dto.SheetDTO;
 import engine.sheet.api.Sheet;
 import engine.sheet.cell.api.Cell;
 import engine.sheet.coordinate.Coordinate;
+import engine.sheet.range.Range;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class SheetConverter {
     public static SheetDTO convertToDTO(Sheet sheet) {
@@ -20,7 +25,8 @@ public class SheetConverter {
                 copyRelations(sheet.getCellInfluenceOn()),
                 copyRelations(sheet.getCellDependsOn()),
                 convertLastModifiedCellsToDTO(sheet.getLastModifiedCells()),
-                sheet.getVersionNumber()
+                sheet.getVersionNumber(),
+                copyRanges(sheet.getRanges())
         );
     }
 
@@ -57,5 +63,16 @@ public class SheetConverter {
         }
 
         return copy;
+    }
+
+    private static List<RangeDTO> copyRanges(List<Range> ranges) {
+        List<RangeDTO> rangeDTOs = new LinkedList<>();
+
+        for(Range range : ranges) {
+            RangeDTO rangeDTO = RangeDTO.convertToRangeDTO(range);
+            rangeDTOs.add(rangeDTO);
+        }
+
+        return rangeDTOs;
     }
 }

@@ -1,7 +1,6 @@
 package dto;
 
 import dto.permission.PermissionType;
-import engine.sheet.api.Sheet;
 
 public record SheetInfoDTO(String uploadedByUser, String name, int numOfRows, int numOfColumns,
                            PermissionType currentUserPermissionForSheet) {

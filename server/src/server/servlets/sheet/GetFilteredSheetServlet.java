@@ -1,5 +1,6 @@
 package server.servlets.sheet;
 
+import dto.FilterParams;
 import dto.SheetDTO;
 import engine.Engine;
 import jakarta.servlet.ServletException;
@@ -13,34 +14,31 @@ import server.utils.SessionUtils;
 import java.io.IOException;
 
 import static server.constants.Constants.GSON_INSTANCE;
-import static server.constants.Constants.SHEET_NAME;
 
-@WebServlet(name = "Get Sheet Servlet", urlPatterns = "/getSheet")
-public class GetSheetServlet extends HttpServlet {
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String sheetName = ServletUtils.validateRequiredParameter(request, SHEET_NAME, response);
-
-        if (sheetName == null) {
-            return;
-        }
-
+@WebServlet(name = "Get Filtered Sheet Servlet", urlPatterns = "/sheet/filter")
+public class GetFilteredSheetServlet extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        String sheetName = SessionUtils.getSheetName(request);
         String username = SessionUtils.getUsername(request);
-        if (username == null) {
+        if (username == null || sheetName == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
         Engine engine = ServletUtils.getEngine(getServletContext());
+
+        FilterParams filterParams = GSON_INSTANCE.fromJson(request.getReader(), FilterParams.class);
+
         response.setContentType("application/json");
 
         try {
-            SheetDTO sheet = engine.getSheet(username, sheetName); //TODO synchronized
-            request.getSession(true).setAttribute(SHEET_NAME, sheetName);
+            SheetDTO sheet = engine.getFilteredSheet(username, sheetName, filterParams.rangeToFilter(), filterParams.filterRequestValues()); //TODO synchronized
             String jsonResponse = GSON_INSTANCE.toJson(sheet);
             response.getWriter().println(jsonResponse);
+            response.getWriter().flush();
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("{\"error\":\"" + e.getMessage() + "\"}");
+            ServletUtils.sendErrorResponse(response, e.getMessage());
         }
     }
 }

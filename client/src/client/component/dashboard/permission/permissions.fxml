@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.VBox?>
-
 <VBox fx:id="permissionsComponent" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="217.0" prefWidth="371.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.component.dashboard.permission.PermissionsController">
    <children>
       <Label fx:id="permissionsListView" text="Permission Requests" />

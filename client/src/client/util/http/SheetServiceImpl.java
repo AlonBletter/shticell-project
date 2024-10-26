@@ -1,49 +1,30 @@
 package client.util.http;
 
-import client.component.sheet.app.SheetController;
 import client.util.Constants;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dto.CellDTO;
+import com.google.gson.reflect.TypeToken;
 import dto.CoordinateAndValue;
+import dto.FilterParams;
+import dto.RangeDTO;
 import dto.SheetDTO;
 import engine.sheet.coordinate.Coordinate;
-import engine.sheet.range.Range;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.control.Alert;
-import okhttp3.*;
-import org.jetbrains.annotations.NotNull;
+import okhttp3.HttpUrl;
+import okhttp3.RequestBody;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static client.util.Constants.ADAPTED_GSON;
 import static client.util.Constants.GSON_INSTANCE;
 
 public class SheetServiceImpl implements SheetService {
-    private SheetController sheetController;
-
-    public SheetServiceImpl(SheetController sheetController) {
-        this.sheetController = sheetController;
-    }
-
-    @Override
-    public SheetDTO getSpreadsheet() {
-        return null;
-    }
-
-    @Override
-    public CellDTO getCell(Coordinate cellToGetCoordinate) {
-        return null;
-    }
-
     @Override
     public void updateCell(Coordinate cellToUpdateCoordinate, String newCellOriginalValue, Consumer<SheetDTO> updateSheet) {
 
         CoordinateAndValue coordinateAndValue = new CoordinateAndValue(cellToUpdateCoordinate, newCellOriginalValue);
-        String jsonObject = ADAPTED_GSON.toJson(coordinateAndValue);
+        String jsonObject = GSON_INSTANCE.toJson(coordinateAndValue);
 
         RequestBody requestBody = RequestBody.create(
                 jsonObject,
@@ -52,7 +33,7 @@ public class SheetServiceImpl implements SheetService {
 
         Consumer<String> responseHandler = response -> {
             if (response != null) {
-                SheetDTO sheetDTO = ADAPTED_GSON.fromJson(response, SheetDTO.class);
+                SheetDTO sheetDTO = GSON_INSTANCE.fromJson(response, SheetDTO.class);
                 Platform.runLater(() -> updateSheet.accept(sheetDTO));
             }
         };
@@ -61,18 +42,41 @@ public class SheetServiceImpl implements SheetService {
     }
 
     @Override
-    public void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor) {
+    public void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor, Runnable updateView) {
+        CoordinateAndValue coordinateAndValue = new CoordinateAndValue(cellToUpdateCoordinate, backgroundColor);
+        String jsonObject = GSON_INSTANCE.toJson(coordinateAndValue);
 
+        RequestBody requestBody = RequestBody.create(
+                jsonObject,
+                okhttp3.MediaType.parse("application/json")
+        );
+
+        Consumer<String> responseHandler = response -> {
+            if (response != null) {
+                Platform.runLater(updateView);
+            }
+        };
+
+        HttpClientUtil.runReqAsyncWithJson(Constants.UPDATE_CELL_BACKGROUND_COLOR_PATH, HttpMethod.PUT, requestBody, responseHandler);
     }
 
     @Override
-    public void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor) {
+    public void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor, Runnable updateView) {
+        CoordinateAndValue coordinateAndValue = new CoordinateAndValue(cellToUpdateCoordinate, textColor);
+        String jsonObject = GSON_INSTANCE.toJson(coordinateAndValue);
 
-    }
+        RequestBody requestBody = RequestBody.create(
+                jsonObject,
+                okhttp3.MediaType.parse("application/json")
+        );
 
-    @Override
-    public int getCurrentVersionNumber() {
-        return 0;
+        Consumer<String> responseHandler = response -> {
+            if (response != null) {
+                Platform.runLater(updateView);
+            }
+        };
+
+        HttpClientUtil.runReqAsyncWithJson(Constants.UPDATE_CELL_TEXT_COLOR_PATH, HttpMethod.PUT, requestBody, responseHandler);
     }
 
     @Override
@@ -87,7 +91,7 @@ public class SheetServiceImpl implements SheetService {
 
         Consumer<String> responseHandler = response -> {
             if (response != null) {
-                SheetDTO sheetDTO = ADAPTED_GSON.fromJson(response, SheetDTO.class);
+                SheetDTO sheetDTO = GSON_INSTANCE.fromJson(response, SheetDTO.class);
                 Platform.runLater(() -> displaySheet.accept(sheetDTO));
             }
         };
@@ -96,47 +100,128 @@ public class SheetServiceImpl implements SheetService {
     }
 
     @Override
-    public void addRange(String rangeName, String rangeCoordinates) {
+    public void addRange(String rangeName, String rangeCoordinates, Consumer<RangeDTO> updateRanges) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("rangeName", rangeName);
+        jsonObject.addProperty("coordinates", rangeCoordinates);
 
+        RequestBody requestBody = RequestBody.create(
+                jsonObject.toString(),
+                okhttp3.MediaType.parse("application/json")
+        );
+
+        Consumer<String> responseHandler = response -> {
+            if (response != null) {
+                RangeDTO rangeDTO = GSON_INSTANCE.fromJson(response, RangeDTO.class);
+                Platform.runLater(() -> updateRanges.accept(rangeDTO));
+            }
+        };
+
+        HttpClientUtil.runReqAsyncWithJson(Constants.ADD_RANGE_PATH, HttpMethod.POST, requestBody, responseHandler);
     }
 
     @Override
-    public void deleteRange(String rangeNameToDelete) {
+    public void deleteRange(String rangeNameToDelete, Runnable deleteRange) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("rangeName", rangeNameToDelete);
 
+        RequestBody requestBody = RequestBody.create(
+                jsonObject.toString(),
+                okhttp3.MediaType.parse("application/json")
+        );
+
+        Consumer<String> responseHandler = response -> {
+            if (response != null) {
+                Platform.runLater(deleteRange);
+            }
+        };
+
+        HttpClientUtil.runReqAsyncWithJson(Constants.DELETE_RANGE_PATH, HttpMethod.DELETE, requestBody, responseHandler);
     }
 
     @Override
-    public List<Coordinate> getRange(String rangeNameToView) {
-        return List.of();
+    public void getSortedSheet(String rangeToSortBy, List<String> columnsToSortBy, Consumer<SheetDTO> displaySheet) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("range", rangeToSortBy);
+        JsonArray columnsArray = new JsonArray();
+        for (String column : columnsToSortBy) {
+            columnsArray.add(column);
+        }
+
+        jsonObject.add("columns", columnsArray);
+
+        RequestBody requestBody = RequestBody.create(
+                jsonObject.toString(),
+                okhttp3.MediaType.parse("application/json")
+        );
+
+        Consumer<String> responseHandler = response -> {
+            if (response != null) {
+                SheetDTO sheetDTO = GSON_INSTANCE.fromJson(response, SheetDTO.class);
+                Platform.runLater(() -> displaySheet.accept(sheetDTO));
+            }
+        };
+
+        HttpClientUtil.runReqAsyncWithJson(Constants.GET_SORTED_SHEET_PATH, HttpMethod.POST, requestBody, responseHandler);
     }
 
     @Override
-    public List<Range> getRanges() {
-        return List.of();
+    public void getFilteredSheet(String rangeToFilter, Map<String, List<String>> filterRequestValues, Consumer<SheetDTO> displayFiltered) {
+        FilterParams filterParams = new FilterParams(rangeToFilter, filterRequestValues);
+        String jsonObject = GSON_INSTANCE.toJson(filterParams);
+
+        RequestBody requestBody = RequestBody.create(
+                jsonObject,
+                okhttp3.MediaType.parse("application/json")
+        );
+
+        Consumer<String> responseHandler = response -> {
+            if (response != null) {
+                SheetDTO sheetDTO = GSON_INSTANCE.fromJson(response, SheetDTO.class);
+                Platform.runLater(() -> displayFiltered.accept(sheetDTO));
+            }
+        };
+
+        HttpClientUtil.runReqAsyncWithJson(Constants.GET_FILTERED_SHEET_PATH, HttpMethod.POST, requestBody, responseHandler);
     }
 
     @Override
-    public SheetDTO getSortedSheet(String rangeToSortBy, List<String> columnsToSortBy) {
-        return null;
+    public void getExpectedValue(Coordinate cellToCalculate, String newValueOfCell, Consumer<SheetDTO> updateView) {
+        CoordinateAndValue coordinateAndValue = new CoordinateAndValue(cellToCalculate, newValueOfCell);
+        String jsonObject = GSON_INSTANCE.toJson(coordinateAndValue);
+
+        RequestBody requestBody = RequestBody.create(
+                jsonObject,
+                okhttp3.MediaType.parse("application/json")
+        );
+
+        Consumer<String> responseHandler = response -> {
+            if (response != null) {
+                SheetDTO sheetDTO = GSON_INSTANCE.fromJson(response, SheetDTO.class);
+                Platform.runLater(() -> updateView.accept(sheetDTO));
+            }
+        };
+
+        HttpClientUtil.runReqAsyncWithJson(Constants.GET_EXPECTED_VALUE_PATH, HttpMethod.POST, requestBody, responseHandler);
     }
 
     @Override
-    public List<String> getColumnUniqueValue(String columnLetter) {
-        return List.of();
-    }
+    public void getAxis(String axisRange, Consumer<List<Coordinate>> listConsumer) {
+        String finalUrl = HttpUrl
+                .parse(Constants.GET_AXIS_PATH)
+                .newBuilder()
+                .addQueryParameter("axisRange", axisRange)
+                .build()
+                .toString();
 
-    @Override
-    public SheetDTO getFilteredSheet(String rangeToFilter, Map<String, List<String>> filterRequestValues) {
-        return null;
-    }
 
-    @Override
-    public SheetDTO getExpectedValue(Coordinate cellToCalculate, String newValueOfCell) {
-        return null;
-    }
+        Consumer<String> responseHandler = response -> {
+            if (response != null) {
+                List<Coordinate> coordinates = GSON_INSTANCE.fromJson(response, new TypeToken<List<Coordinate>>() {}.getType());
+                Platform.runLater(() -> listConsumer.accept(coordinates));
+            }
+        };
 
-    @Override
-    public List<Coordinate> getAxis(String axisRange) {
-        return List.of();
+        HttpClientUtil.runReqAsyncWithJson(finalUrl, HttpMethod.GET, null, responseHandler);
     }
 }

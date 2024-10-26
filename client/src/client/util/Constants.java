@@ -12,7 +12,6 @@ import engine.sheet.coordinate.Coordinate;
 import engine.sheet.effectivevalue.EffectiveValue;
 
 public class Constants {
-
     public final static int REFRESH_RATE = 1000;
 
     // FXML resources locations
@@ -37,10 +36,17 @@ public class Constants {
     public final static String PERMISSION_REQUEST_DECISION = FULL_SERVER_PATH + "/permission/request/decision";
     public final static String UPDATE_CELL_PATH = FULL_SERVER_PATH + "/sheet/update";
     public final static String GET_SHEET_BY_VERSION_PATH = FULL_SERVER_PATH + "/sheet/version/get";
+    public final static String UPDATE_CELL_BACKGROUND_COLOR_PATH = FULL_SERVER_PATH + "/sheet/cell/background/color";
+    public final static String UPDATE_CELL_TEXT_COLOR_PATH = FULL_SERVER_PATH + "/sheet/cell/text/color";
+    public final static String GET_SORTED_SHEET_PATH = FULL_SERVER_PATH + "/sheet/sort";
+    public final static String ADD_RANGE_PATH = FULL_SERVER_PATH + "/sheet/range/add";
+    public final static String DELETE_RANGE_PATH = FULL_SERVER_PATH + "/sheet/range/delete";
+    public final static String GET_EXPECTED_VALUE_PATH = FULL_SERVER_PATH + "/sheet/whatIf";
+    public final static String GET_FILTERED_SHEET_PATH = FULL_SERVER_PATH + "/sheet/filter";
+    public final static String GET_AXIS_PATH = FULL_SERVER_PATH + "/sheet/axis";
 
     // Gson instance
-    public final static Gson GSON_INSTANCE = new Gson(); //TODO redundant, can use the adapted only
-    public final static Gson ADAPTED_GSON = new GsonBuilder()
+    public final static Gson GSON_INSTANCE = new GsonBuilder()
             .registerTypeAdapter(SheetDTO.class, new SheetDTODeserializer())
             .registerTypeAdapter(CellStyleDTO.class, new CellStyleDTOAdapter())
             .registerTypeAdapter(Coordinate.class, new CoordinateTypeAdapter())

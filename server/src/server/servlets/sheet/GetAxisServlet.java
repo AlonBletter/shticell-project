@@ -1,8 +1,7 @@
 package server.servlets.sheet;
 
-import dto.CoordinateAndValue;
-import dto.SheetDTO;
 import engine.Engine;
+import engine.sheet.coordinate.Coordinate;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,17 +11,15 @@ import server.utils.ServletUtils;
 import server.utils.SessionUtils;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.List;
 
 import static server.constants.Constants.GSON_INSTANCE;
 
-@WebServlet(name = "Update Cell Servlet", urlPatterns = "/sheet/update")
-public class UpdateCellServlet extends HttpServlet {
-
+@WebServlet(name = "Get Axis Servlet", urlPatterns = "/sheet/axis")
+public class GetAxisServlet extends HttpServlet {
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
-        PrintWriter out = resp.getWriter();
 
         String username = SessionUtils.getUsername(req);
         String sheetName = SessionUtils.getSheetName(req);
@@ -32,17 +29,13 @@ public class UpdateCellServlet extends HttpServlet {
         }
 
         Engine engine = ServletUtils.getEngine(getServletContext());
-        CoordinateAndValue cav = GSON_INSTANCE.fromJson(req.getReader(), CoordinateAndValue.class);
+        String axisRange = ServletUtils.validateRequiredParameter(req, "axisRange", resp);
 
         try {
-            SheetDTO sheetDTO = engine.updateCell(username, sheetName, cav.coordinate(), cav.value());
-            if (sheetDTO != null) {
-                String jsonSheet = GSON_INSTANCE.toJson(sheetDTO);
-                out.println(jsonSheet);
-                out.flush();
-            } else {
-                resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            }
+            List<Coordinate> coordinateList = engine.getAxis(username, sheetName, axisRange);
+            String jsonResponse = GSON_INSTANCE.toJson(coordinateList);
+            resp.getWriter().write(jsonResponse);
+            resp.getWriter().flush();
         } catch (Exception e) {
             ServletUtils.sendErrorResponse(resp, e.getMessage());
         }

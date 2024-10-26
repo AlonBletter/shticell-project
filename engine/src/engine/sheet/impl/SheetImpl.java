@@ -160,6 +160,17 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     @Override
+    public Range getRange(String rangeNameToView) {
+        Range range = ranges.get(rangeNameToView);
+
+        if(range == null) {
+            throw new IllegalArgumentException("Range with the name [" + rangeNameToView + "] does not exist.");
+        }
+
+        return range;
+    }
+
+    @Override
     public void init(STLSheet sheetToInitFrom) {
         setName(sheetToInitFrom.getName());
         setNumberOfRows(sheetToInitFrom.getSTLLayout().getRows());

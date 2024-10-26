@@ -2,7 +2,6 @@
 
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.BorderPane?>
-
 <ScrollPane fx:id="mainScrollPane" fitToHeight="true" fitToWidth="true" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="930.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.component.sheet.app.SheetController">
    <content>
       <BorderPane fx:id="borderPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="785.0" minWidth="928.0" prefHeight="785.0" prefWidth="928.0">

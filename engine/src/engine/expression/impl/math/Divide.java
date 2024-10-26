@@ -1,10 +1,10 @@
 package engine.expression.impl.math;
 
-import engine.sheet.cell.api.CellType;
-import engine.sheet.effectivevalue.EffectiveValue;
 import engine.expression.api.Expression;
 import engine.expression.type.BinaryExpression;
 import engine.sheet.api.SheetReadActions;
+import engine.sheet.cell.api.CellType;
+import engine.sheet.effectivevalue.EffectiveValue;
 import engine.sheet.effectivevalue.EffectiveValueImpl;
 
 public class Divide extends BinaryExpression {

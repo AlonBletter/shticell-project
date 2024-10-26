@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.function.Consumer;
 
-import static client.util.Constants.ADAPTED_GSON;
+import static client.util.Constants.GSON_INSTANCE;
 
 public class CommandsController {
 
@@ -70,7 +70,7 @@ public class CommandsController {
                     Platform.runLater(() -> dashboardController.handleError(
                             "Error", null, responseContent.get("error").getAsString()));
                 } else {
-                    SheetDTO requestedSheet = ADAPTED_GSON.fromJson(responseBody, SheetDTO.class);
+                    SheetDTO requestedSheet = GSON_INSTANCE.fromJson(responseBody, SheetDTO.class);
                     Platform.runLater(() -> dashboardController.handleViewSheet(requestedSheet));
                 }
             }

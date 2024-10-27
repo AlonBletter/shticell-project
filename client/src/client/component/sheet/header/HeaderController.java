@@ -60,8 +60,8 @@ public class HeaderController implements Closeable {
 
     public void setMainController(SheetController mainController) {
         this.mainController = mainController;
-        actionLineTextField.disableProperty().bind(mainController.readonlyPresentationProperty());
-        updateValueButton.disableProperty().bind(mainController.readonlyPresentationProperty());
+        actionLineTextField.disableProperty().bind(mainController.readonlyPresentationProperty().or(shouldRefresh.not()));
+        updateValueButton.disableProperty().bind(mainController.readonlyPresentationProperty().or(shouldRefresh.not()));
     }
 
     @FXML
@@ -244,7 +244,7 @@ public class HeaderController implements Closeable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         if (versionRefresher != null && timer != null) {
             versionRefresher.cancel();
             timer.cancel();

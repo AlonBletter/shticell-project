@@ -13,12 +13,15 @@ import engine.sheet.cell.api.CellType;
 import engine.sheet.coordinate.Coordinate;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -43,6 +46,8 @@ public class SheetController implements Closeable {
 
     @FXML private BorderPane borderPane;
     @FXML private ScrollPane mainScrollPane;
+
+    @FXML private Button backButton;
 
     private Stage primaryStage;
     private AppController mainController;
@@ -426,7 +431,18 @@ public class SheetController implements Closeable {
     }
 
     @Override
-    public void close() throws IOException{
+    public void close() {
         headerComponentController.close();
+    }
+
+    @FXML
+    public void backButtonOnClicked(ActionEvent event) {
+        close();
+        mainController.loadDashboardScreen();
+    }
+
+    public void setStageDimension(Stage primaryStage) {
+        primaryStage.setWidth(borderPane.getPrefWidth() + 50);
+        primaryStage.setMinHeight(borderPane.getPrefHeight() + 50);
     }
 }

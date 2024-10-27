@@ -31,9 +31,9 @@ public class AppController implements Closeable {
     private SheetController sheetController;
 
     private Stage primaryStage;
-    private final Alert alert = new Alert(Alert.AlertType.ERROR);
 
     private final SimpleStringProperty username = new SimpleStringProperty();
+    private boolean loadedOnce = false;
 
     @FXML
     void initialize() {
@@ -64,7 +64,10 @@ public class AppController implements Closeable {
             dashboardController = fxmlLoader.getController();
             dashboardController.setMainController(this);
             dashboardController.setStageDimension(primaryStage);
-            primaryStage.centerOnScreen();
+            if (!loadedOnce) {
+                primaryStage.centerOnScreen();
+                loadedOnce = true;
+            }
             setMainPanelTo(dashboardComponent);
             dashboardController.setActive();
         } catch (IOException e) {
@@ -82,8 +85,7 @@ public class AppController implements Closeable {
             sheetController = fxmlLoader.getController();
             sheetController.setMainController(this);
             sheetController.setSheetToView(sheetToView, readonly);
-            primaryStage.setWidth(sheetComponent.getPrefWidth());
-            primaryStage.setHeight(sheetComponent.getPrefHeight());
+            sheetController.setStageDimension(primaryStage);
             setMainPanelTo(sheetComponent);
             sheetController.setActive();
         } catch (IOException e) {
@@ -114,17 +116,11 @@ public class AppController implements Closeable {
         return this.username;
     }
 
-    public void showErrorAlert(String title, String headerText, String contentText) {
-        alert.setTitle(title);
-        alert.setHeaderText(headerText);
-        alert.setContentText(contentText);
-        alert.showAndWait();
-    }
-
     @Override
     public void close() {
         if (dashboardController != null) {
             dashboardController.close();
+            sheetController.close();
         }
     }
 }

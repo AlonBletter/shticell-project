@@ -3,19 +3,34 @@ package client.component.sheet.header;
 import client.component.sheet.app.SheetController;
 import client.component.sheet.center.singlecell.CellModel;
 import client.component.sheet.common.ShticellResourcesConstants;
+import client.util.Constants;
+import client.util.http.HttpClientUtil;
+import client.util.http.HttpMethod;
+import dto.SheetDTO;
 import engine.sheet.coordinate.Coordinate;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.net.URL;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.function.Consumer;
 
-public class HeaderController {
+import static client.util.Constants.GSON_INSTANCE;
+import static client.util.Constants.REFRESH_RATE;
+
+public class HeaderController implements Closeable {
     private SheetController mainController;
 
     @FXML private TextField actionLineTextField;
@@ -29,14 +44,17 @@ public class HeaderController {
     @FXML private ChoiceBox<String> skinSelectorChoiceBox;
     @FXML private ChoiceBox<String> animationButton;
     @FXML private Tooltip originalValueToolTip;
+    @FXML private Button loadLatestVersionButton;
+    @FXML private Label latestVersionLabel;
 
-    private final SimpleBooleanProperty isFileLoaded;
     private final ObservableList<String> versionNumberList;
     private Coordinate selectedCellCoordinate;
     private Stage primaryStage;
+    private Timer timer;
+    private TimerTask versionRefresher;
+    private SimpleBooleanProperty shouldRefresh = new SimpleBooleanProperty(true);
 
     public HeaderController() {
-        isFileLoaded = new SimpleBooleanProperty(false);
         versionNumberList = FXCollections.observableArrayList();
     }
 
@@ -186,5 +204,50 @@ public class HeaderController {
     private void applyCSS(URL cssURL) {
         headerGridPane.getStylesheets().clear();
         headerGridPane.getStylesheets().add(cssURL.toExternalForm());
+    }
+
+
+    @FXML
+    void loadLatestVersionButtonAction(ActionEvent event) {
+        latestVersionLabel.setVisible(false);
+        loadLatestVersionButton.setVisible(false);
+
+        Consumer<String> responseHandler = (response) -> {
+            if(response != null) {
+                SheetDTO sheet = GSON_INSTANCE.fromJson(response, SheetDTO.class);
+                Platform.runLater(() -> {
+                    mainController.setSheetToView(sheet, mainController.readonlyPresentationProperty().get());
+                    shouldRefresh.set(true);
+                });
+            }
+        };
+
+        HttpClientUtil.runReqAsyncWithJson(Constants.GET_LATEST_SHEET_VERSION_PATH, HttpMethod.GET, null, responseHandler);
+    }
+
+    private void updateUserOnNewVersion() {
+        Platform.runLater(() -> {
+            latestVersionLabel.setVisible(true);
+            loadLatestVersionButton.setVisible(true);
+            shouldRefresh.set(false);
+        });
+    }
+
+    public void startVersionRefresher() {
+        versionRefresher = new VersionRefresher(
+                mainController.versionProperty(),
+                this::updateUserOnNewVersion,
+                this.shouldRefresh
+        );
+        timer = new Timer();
+        timer.schedule(versionRefresher, 0, REFRESH_RATE);
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (versionRefresher != null && timer != null) {
+            versionRefresher.cancel();
+            timer.cancel();
+        }
     }
 }

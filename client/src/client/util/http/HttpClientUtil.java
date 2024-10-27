@@ -27,34 +27,6 @@ public class HttpClientUtil {
         simpleCookieManager.removeCookiesOf(domain);
     }
 
-    // TODO consumer<>
-    public static void runAsync(String finalUrl, Callback callback) {
-        Request request = new Request.Builder()
-                .url(finalUrl)
-                .build();
-
-        Call call = HttpClientUtil.HTTP_CLIENT.newCall(request);
-        call.enqueue(callback);
-    }
-
-    //TODO testing
-    public static void runGetAsyncWithJson(String finalUrl, Consumer<String> responseConsumer) {
-        Request request = new Request.Builder()
-                .url(finalUrl)
-                .build();
-
-        processTheRequest(responseConsumer, request);
-    }
-
-    public static void runPostAsyncWithJson(String finalUrl, RequestBody requestBody, Consumer<String> responseConsumer) {
-        Request request = new Request.Builder()
-                .url(finalUrl)
-                .post(requestBody)
-                .build();
-
-        processTheRequest(responseConsumer, request);
-    }
-
     public static void runReqAsyncWithJson(String finalUrl, HttpMethod methodType, RequestBody requestBody, Consumer<String> responseConsumer) {
         Request.Builder requestBuilder = new Request.Builder()
                 .url(finalUrl);
@@ -127,16 +99,6 @@ public class HttpClientUtil {
         };
 
         Call call = HttpClientUtil.HTTP_CLIENT.newCall(request);
-        call.enqueue(callback);
-    }
-
-    public static void runAsyncPost(String finalUrl, RequestBody requestBody, Callback callback) {
-        Request request = new Request.Builder()
-                .url(finalUrl)
-                .post(requestBody)
-                .build();
-
-        Call call = HTTP_CLIENT.newCall(request);
         call.enqueue(callback);
     }
 

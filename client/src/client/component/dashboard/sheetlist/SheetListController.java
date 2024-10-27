@@ -119,11 +119,7 @@ public class SheetListController implements Closeable {
     }
 
     public void startListRefresher() {
-        listRefresher = new SheetListRefresher(
-                this::updateSheetsList,
-                numberOfSheets,
-                sheetsTableView
-        );
+        listRefresher = new SheetListRefresher(this::updateSheetsList);
 
         timer = new Timer();
         timer.schedule(listRefresher, 0, REFRESH_RATE);

@@ -66,11 +66,6 @@ public class SheetController implements Closeable {
         version = new SimpleIntegerProperty(1);
     }
 
-    @Override
-    public void close() throws IOException {
-
-    }
-
     public int getVersion() {
         return version.get();
     }
@@ -424,5 +419,14 @@ public class SheetController implements Closeable {
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
+    }
+
+    public void setActive() {
+        headerComponentController.startVersionRefresher();
+    }
+
+    @Override
+    public void close() throws IOException{
+        headerComponentController.close();
     }
 }

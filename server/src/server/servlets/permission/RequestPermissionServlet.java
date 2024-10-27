@@ -1,5 +1,7 @@
 package server.servlets.permission;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import dto.permission.PermissionType;
 import engine.Engine;
 import jakarta.servlet.ServletException;
@@ -10,14 +12,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import server.utils.ServletUtils;
 import server.utils.SessionUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+
+import static server.constants.Constants.GSON_INSTANCE;
 
 @WebServlet(name = "Request Permission Servlet", urlPatterns = "/requestPermission")
 public class RequestPermissionServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-        String sheetName = ServletUtils.validateRequiredParameter(request, "sheetName", response);
-        String permission = ServletUtils.validateRequiredParameter(request, "permissionType", response);
+        JsonObject jsonObject = GSON_INSTANCE.fromJson(request.getReader(), JsonObject.class);
+
+        String sheetName = jsonObject.get("sheetName").getAsString();
+        String permission = jsonObject.get("permissionType").getAsString();
 
         if (sheetName == null || permission == null) {
             return;
@@ -30,7 +37,6 @@ public class RequestPermissionServlet extends HttpServlet {
         }
 
         Engine engine = ServletUtils.getEngine(getServletContext());
-        // TODO check if permission is none, maybe dont return the sheet dto
 
         response.setContentType("application/json");
 

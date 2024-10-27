@@ -11,8 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.io.Closeable;
@@ -20,9 +19,9 @@ import java.io.IOException;
 import java.net.URL;
 
 public class AppController implements Closeable {
-    @FXML StackPane mainPane;
+    @FXML BorderPane mainPane;
 
-    private GridPane loginComponent;
+    private ScrollPane loginComponent;
     private LoginController loginController;
 
     private ScrollPane dashboardComponent;
@@ -64,9 +63,8 @@ public class AppController implements Closeable {
             dashboardComponent = fxmlLoader.load();
             dashboardController = fxmlLoader.getController();
             dashboardController.setMainController(this);
+            dashboardController.setStageDimension(primaryStage);
             primaryStage.centerOnScreen();
-            primaryStage.setWidth(dashboardComponent.getPrefWidth());
-            primaryStage.setHeight(dashboardComponent.getPrefHeight());
             setMainPanelTo(dashboardComponent);
             dashboardController.setActive();
         } catch (IOException e) {
@@ -87,15 +85,17 @@ public class AppController implements Closeable {
             primaryStage.setWidth(sheetComponent.getPrefWidth());
             primaryStage.setHeight(sheetComponent.getPrefHeight());
             setMainPanelTo(sheetComponent);
-            // sheetController.setActive(); //TODO timer for fetching new version available
+            sheetController.setActive();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private void setMainPanelTo(Parent paneToSet) {
-        mainPane.getChildren().clear();
-        mainPane.getChildren().add(paneToSet);
+        //mainPane.getChildren().clear();
+        //mainPane.getChildren().add(paneToSet);
+
+        mainPane.setCenter(paneToSet);
     }
 
     public void setPrimaryStage(Stage primaryStage) {

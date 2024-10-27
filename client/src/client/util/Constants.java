@@ -44,6 +44,10 @@ public class Constants {
     public final static String GET_EXPECTED_VALUE_PATH = FULL_SERVER_PATH + "/sheet/whatIf";
     public final static String GET_FILTERED_SHEET_PATH = FULL_SERVER_PATH + "/sheet/filter";
     public final static String GET_AXIS_PATH = FULL_SERVER_PATH + "/sheet/axis";
+    public final static String GET_LATEST_SHEET_VERSION_PATH = FULL_SERVER_PATH + "/sheet/version/last";
+    public final static String GET_VERSION_OF_SHEET_PATH = FULL_SERVER_PATH + "/sheet/version/last/number";
+
+
 
     // Gson instance
     public final static Gson GSON_INSTANCE = new GsonBuilder()

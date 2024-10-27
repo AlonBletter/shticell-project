@@ -4,6 +4,7 @@ import client.component.dashboard.DashboardController;
 import client.component.dashboard.permission.model.PermissionRequest;
 import client.util.Constants;
 import client.util.http.HttpClientUtil;
+import client.util.http.HttpMethod;
 import dto.permission.PermissionInfoDTO;
 import dto.permission.PermissionType;
 import dto.permission.RequestStatus;
@@ -25,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static client.util.Constants.GSON_INSTANCE;
 
@@ -79,24 +81,18 @@ public class PermissionsController {
                 .build()
                 .toString();
 
-        HttpClientUtil.runAsync(finalUrl, new Callback() {
-
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                System.err.println(e.getMessage());
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                String jsonArrayOfSheets = response.body().string();
-                PermissionInfoDTO[] permissionInfoDTOS = GSON_INSTANCE.fromJson(jsonArrayOfSheets, PermissionInfoDTO[].class);
+        Consumer<String> responseHandler = (response) -> {
+            if (response != null) {
+                PermissionInfoDTO[] permissionInfoDTOS = GSON_INSTANCE.fromJson(response, PermissionInfoDTO[].class);
 
                 if (permissionInfoDTOS != null) {
                     List<PermissionRequest> permissionRequests = convertToPermissionRequest(Arrays.asList(permissionInfoDTOS));
                     updatePermissionsTable(permissionRequests);
                 }
             }
-        });
+        };
+
+        HttpClientUtil.runReqAsyncWithJson(finalUrl, HttpMethod.GET, null, responseHandler);
     }
 
     private void updatePermissionsTable(List<PermissionRequest> permissionRequests) {

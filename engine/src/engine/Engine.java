@@ -40,4 +40,6 @@ public interface Engine {
     SheetDTO getFilteredSheet(String username, String sheetName, String rangeToFilter, Map<String, List<String>> filterRequestValues);
 
     List<Coordinate> getAxis(String username, String sheetName, String axisRange);
+
+    int getLatestVersion(String username, String sheetName);
 }

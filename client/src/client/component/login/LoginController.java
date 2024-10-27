@@ -3,6 +3,7 @@ package client.component.login;
 import client.component.main.AppController;
 import client.util.Constants;
 import client.util.http.HttpClientUtil;
+import client.util.http.HttpMethod;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
@@ -18,6 +19,7 @@ import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 public class LoginController {
 
@@ -54,30 +56,15 @@ public class LoginController {
                 .build()
                 .toString();
 
-        HttpClientUtil.runAsync(finalUrl, new Callback() {
-
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() ->
-                        errorMessageProperty.set("Something went wrong: " + e.getMessage())
-                );
+        Consumer<String> responseHandler = response -> {
+            if (response != null) {
+                Platform.runLater(() -> {
+                    mainController.updateUsername(username);
+                    mainController.loadDashboardScreen();
+                });
             }
+        };
 
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                String responseBody = response.body().string();
-
-                if (response.code() != 200) {
-                    Platform.runLater(() ->
-                            errorMessageProperty.set("Something went wrong: " + responseBody)
-                    );
-                } else {
-                    Platform.runLater(() -> {
-                        mainController.updateUsername(username);
-                        mainController.loadDashboardScreen();
-                    });
-                }
-            }
-        });
+        HttpClientUtil.runReqAsyncWithJson(finalUrl, HttpMethod.GET, null, responseHandler);
     }
 }

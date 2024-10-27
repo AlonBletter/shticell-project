@@ -159,5 +159,12 @@ public class EngineImpl implements Engine {
         permissionManager.validateReaderPermission(username, sheetName);
         return sheet.getAxis(axisRange);
     }
+
+    @Override
+    public int getLatestVersion(String username, String sheetName) {
+        SheetManager sheet = findSheet(sheetName);
+        permissionManager.validateReaderPermission(username, sheetName);
+        return sheet.getCurrentVersionNumber();
+    }
 }
 

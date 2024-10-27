@@ -15,8 +15,9 @@ import java.io.IOException;
 import static server.constants.Constants.GSON_INSTANCE;
 import static server.constants.Constants.SHEET_NAME;
 
-@WebServlet(name = "Get Sheet Servlet", urlPatterns = "/getSheet")
-public class GetSheetServlet extends HttpServlet {
+
+@WebServlet(name = "Get Latest Sheet Version Servlet", urlPatterns = "/sheet/version/last")
+public class GetLatestSheetVersionServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
 
@@ -26,8 +27,9 @@ public class GetSheetServlet extends HttpServlet {
             return;
         }
 
-        String sheetName = ServletUtils.validateRequiredParameter(request, SHEET_NAME, response);
+        String sheetName = SessionUtils.getSheetName(request);
         if (sheetName == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
@@ -36,7 +38,7 @@ public class GetSheetServlet extends HttpServlet {
 
         try {
             SheetDTO sheet = engine.getSheet(username, sheetName); //TODO synchronized
-            request.getSession(true).setAttribute(SHEET_NAME, sheetName);
+
             String jsonResponse = GSON_INSTANCE.toJson(sheet);
             response.getWriter().println(jsonResponse);
         } catch (Exception e) {
@@ -45,3 +47,4 @@ public class GetSheetServlet extends HttpServlet {
         }
     }
 }
+

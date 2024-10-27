@@ -3,6 +3,7 @@ package client.component.dashboard.load;
 import client.component.main.AppController;
 import client.util.Constants;
 import client.util.http.HttpClientUtil;
+import client.util.http.HttpMethod;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
@@ -16,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Consumer;
 
 public class LoadController {
 
@@ -41,12 +43,6 @@ public class LoadController {
             return;
         }
 
-        String finalUrl = HttpUrl
-                .parse(Constants.LOAD_SHEET_PATH)
-                .newBuilder()
-                .build()
-                .toString();
-
         RequestBody fileBody = RequestBody.create(selectedFile, MediaType.parse("application/xml"));
 
         MultipartBody requestBody = new MultipartBody.Builder()
@@ -54,32 +50,11 @@ public class LoadController {
                 .addFormDataPart("file", selectedFile.getName(), fileBody)
                 .build();
 
-        HttpClientUtil.runAsyncPost(finalUrl, requestBody, new Callback() {
+        Consumer<String> responseHandler = (response) -> {
+            //TODO need something? print successful
+        };
 
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Platform.runLater(() -> //TODO setDashboard and not mainController! and then preset the error
-                        mainController.showErrorAlert("HTTP request error",
-                                "An error occurred while trying to send a load sheet HTTP request.", e.getMessage())
-                );
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                String responseBody = response.body().string();
-
-                if (response.code() != 200) {
-                    Platform.runLater(() ->
-                            mainController.showErrorAlert("File Loading Error",
-                                    "An error occurred while opening the file dialog", responseBody)
-                    );
-                } else {
-                    Platform.runLater(() -> {
-                        //TODO need something? print successful
-                    });
-                }
-            }
-        });
+        HttpClientUtil.runReqAsyncWithJson(Constants.LOAD_SHEET_PATH, HttpMethod.POST, requestBody, responseHandler);
     }
 
     public void setMainController(AppController mainController) {

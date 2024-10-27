@@ -4,6 +4,7 @@ import client.component.dashboard.DashboardController;
 import client.component.dashboard.command.dialog.PermissionRequestController;
 import client.util.Constants;
 import client.util.http.HttpClientUtil;
+import client.util.http.HttpMethod;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dto.SheetDTO;
@@ -54,27 +55,12 @@ public class CommandsController {
                 .build()
                 .toString();
 
-        HttpClientUtil.runAsync(finalUrl, new Callback() {
+        Consumer<String> responseHandler = (response) -> {
+            SheetDTO requestedSheet = GSON_INSTANCE.fromJson(response, SheetDTO.class);
+            Platform.runLater(() -> dashboardController.handleViewSheet(requestedSheet));
+        };
 
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                System.err.println(e.getMessage());
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                String responseBody = response.body().string();
-
-                if (response.code() != 200) {
-                    JsonObject responseContent = JsonParser.parseString(responseBody).getAsJsonObject();
-                    Platform.runLater(() -> dashboardController.handleError(
-                            "Error", null, responseContent.get("error").getAsString()));
-                } else {
-                    SheetDTO requestedSheet = GSON_INSTANCE.fromJson(responseBody, SheetDTO.class);
-                    Platform.runLater(() -> dashboardController.handleViewSheet(requestedSheet));
-                }
-            }
-        });
+        HttpClientUtil.runReqAsyncWithJson(finalUrl, HttpMethod.GET, null, responseHandler);
     }
 
     @FXML
@@ -109,34 +95,20 @@ public class CommandsController {
     private void handlePermissionRequestToOwner(PermissionType requestedPermission) {
         String currentSheetName = dashboardController.selectedSheetNameProperty().getValue();
 
-        String finalUrl = HttpUrl
-                .parse(Constants.REQUEST_PERMISSION)
-                .newBuilder()
-                .addQueryParameter("sheetName", currentSheetName)
-                .addQueryParameter("permissionType", requestedPermission.toString())
-                .build()
-                .toString();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("sheetName", currentSheetName);
+        jsonObject.addProperty("permissionType", requestedPermission.toString());
 
-        HttpClientUtil.runAsyncPost(finalUrl, RequestBody.create("", null), new Callback() {
+        RequestBody requestBody = RequestBody.create(
+                GSON_INSTANCE.toJson(jsonObject),
+                MediaType.parse("application/json")
+        );
 
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                System.err.println(e.getMessage());
-            }
+        Consumer<String> responseHandler = (response) -> {
+            Platform.runLater(() -> refreshPermissionRequestsButtonAction(null));
+        };
 
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                String responseBody = response.body().string();
-
-                if (response.code() != 200) {
-                    JsonObject responseContent = JsonParser.parseString(responseBody).getAsJsonObject();
-                    Platform.runLater(() -> dashboardController.handleError(
-                            "Error", null, responseContent.get("error").getAsString()));
-                } else {
-                    Platform.runLater(() -> refreshPermissionRequestsButtonAction(null));
-                }
-            }
-        });
+        HttpClientUtil.runReqAsyncWithJson(Constants.REQUEST_PERMISSION, HttpMethod.POST, requestBody, responseHandler);
     }
 
     @FXML
@@ -166,7 +138,7 @@ public class CommandsController {
             Platform.runLater(() -> refreshPermissionRequestsButtonAction(null));
         };
 
-        HttpClientUtil.runPostAsyncWithJson(Constants.PERMISSION_REQUEST_DECISION, requestBody, responseHandler);
+        HttpClientUtil.runReqAsyncWithJson(Constants.PERMISSION_REQUEST_DECISION, HttpMethod.POST, requestBody, responseHandler);
     }
 
 

@@ -123,15 +123,16 @@ public class DashboardController implements Closeable {
         mainController.loadSheetView(requestedSheet, isUserHasReaderPermission.getValue());
     }
 
-    public void handleError(String title, String headerText, String contentText) {
-        mainController.showErrorAlert(title, headerText, contentText);
-    }
-
     public Stage getPrimaryStage() {
         return mainController.getPrimaryStage();
     }
 
     public void refreshPermissions() {
         permissionsComponentController.refreshView();
+    }
+
+    public void setStageDimension(Stage stage) {
+        stage.setWidth(borderPane.getPrefWidth() + 50);
+        stage.setMinHeight(borderPane.getPrefHeight() + 50);
     }
 }

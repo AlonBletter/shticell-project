@@ -3,7 +3,7 @@ package client.component.sheet.center.singlecell;
 import client.component.sheet.app.SheetController;
 import client.component.sheet.center.CenterController;
 import client.component.sheet.common.ShticellResourcesConstants;
-import dto.CellDTO;
+import dto.sheet.cell.CellDTO;
 import engine.sheet.cell.api.CellType;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.effectivevalue.EffectiveValue;
@@ -142,6 +142,7 @@ public class SingleCellController extends CellModel {
             setCellText(formatEffectiveValue(cell.effectiveValue()));
             setOriginalValue(cell.originalValue());
             setLastModifiedVersion(String.valueOf(cell.lastModifiedVersion()));
+            setModifiedBy(cell.modifiedBy());
             updateBackgroundColor(cell.cellStyle().backgroundColor());
             updateTextColor(cell.cellStyle().textColor());
             setDependsOn(cell.dependsOn());
@@ -151,7 +152,8 @@ public class SingleCellController extends CellModel {
         } else {
             setCellText("");
             setOriginalValue("");
-            setLastModifiedVersion("1");
+            setLastModifiedVersion("");
+            setModifiedBy("");
         }
     }
 

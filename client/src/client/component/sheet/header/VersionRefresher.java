@@ -3,11 +3,9 @@ package client.component.sheet.header;
 import client.util.Constants;
 import client.util.http.HttpClientUtil;
 import client.util.http.HttpMethod;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
 
 import java.util.TimerTask;
 import java.util.function.Consumer;

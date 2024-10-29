@@ -6,11 +6,11 @@ import client.component.sheet.common.ShticellResourcesConstants;
 import client.util.Constants;
 import client.util.http.HttpClientUtil;
 import client.util.http.HttpMethod;
-import dto.SheetDTO;
+import dto.sheet.SheetDTO;
 import engine.sheet.coordinate.Coordinate;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -21,7 +21,6 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -38,6 +37,7 @@ public class HeaderController implements Closeable {
     @FXML private Label originalCellValueLabel;
     @FXML private Label selectedCellIDLabel;
     @FXML private Label titleLabel;
+    @FXML private Label usernameLabel;
     @FXML private Button updateValueButton;
     @FXML private ComboBox<String> versionSelectorComboBox;
     @FXML private GridPane headerGridPane;
@@ -60,8 +60,8 @@ public class HeaderController implements Closeable {
 
     public void setMainController(SheetController mainController) {
         this.mainController = mainController;
-        actionLineTextField.disableProperty().bind(mainController.readonlyPresentationProperty().or(shouldRefresh.not()));
-        updateValueButton.disableProperty().bind(mainController.readonlyPresentationProperty().or(shouldRefresh.not()));
+        actionLineTextField.disableProperty().bind(mainController.readonlyPresentationProperty());
+        updateValueButton.disableProperty().bind(mainController.readonlyPresentationProperty());
     }
 
     @FXML
@@ -139,10 +139,11 @@ public class HeaderController implements Closeable {
         originalCellValueLabel.setText("");
     }
     // maybe unite the both ^ V
-    public void initializeHeaderAfterLoad() {
+    public void initializeHeaderAfterLoad(String username) {
         clearDataFromHeader();
         versionNumberList.clear();
         versionNumberList.addFirst("");
+        usernameLabel.setText("Logged As: " + username);
         addVersionNumbers();
         versionSelectorComboBox.getSelectionModel().selectFirst();
     }
@@ -158,9 +159,6 @@ public class HeaderController implements Closeable {
     public void updateHeader() {
         actionLineTextField.setText("");
         versionNumberList.add(String.valueOf(mainController.getVersion()));
-
-//        if (mainController.getVersion() != 1) {
-//        }
     }
 
     public void setPrimaryStage(Stage primaryStage) {
@@ -180,7 +178,13 @@ public class HeaderController implements Closeable {
         selectedCellCoordinate = selectedCell.getCoordinate();
         selectedCellIDLabel.setText(selectedCellCoordinate.toString());
         originalCellValueLabel.textProperty().bind(selectedCell.originalValueProperty());
-        lastUpdatedCellVersionLabel.textProperty().bind(selectedCell.lastModifiedVersionProperty());
+        lastUpdatedCellVersionLabel.textProperty().bind(
+                Bindings.when(Bindings.and(
+                                Bindings.isNotEmpty(selectedCell.lastModifiedVersionProperty()),
+                                Bindings.isNotEmpty(selectedCell.modifiedByProperty())))
+                        .then(Bindings.concat(selectedCell.lastModifiedVersionProperty(), " & ", selectedCell.modifiedByProperty()))
+                        .otherwise("")
+        );
     }
 
     public void requestActionLineFocus() {

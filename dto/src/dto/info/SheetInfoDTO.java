@@ -1,4 +1,4 @@
-package dto;
+package dto.info;
 
 import dto.permission.PermissionType;
 

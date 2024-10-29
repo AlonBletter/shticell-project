@@ -1,6 +1,6 @@
 package server.servlets.sheet;
 
-import dto.SheetDTO;
+import dto.sheet.SheetDTO;
 import engine.Engine;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,7 +13,6 @@ import server.utils.SessionUtils;
 import java.io.IOException;
 
 import static server.constants.Constants.GSON_INSTANCE;
-import static server.constants.Constants.SHEET_NAME;
 
 
 @WebServlet(name = "Get Latest Sheet Version Servlet", urlPatterns = "/sheet/version/last")

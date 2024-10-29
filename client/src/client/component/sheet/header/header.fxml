@@ -27,11 +27,16 @@
     <RowConstraints maxHeight="60.0" minHeight="10.0" prefHeight="48.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Label fx:id="titleLabel" prefHeight="35.0" styleClass="shticell-title" text="Shticell" GridPane.valignment="CENTER">
-         <font>
-            <Font size="24.0" />
-         </font>
-      </Label>
+      <VBox alignment="CENTER" spacing="5.0" GridPane.valignment="CENTER">
+         <children>
+            <Label fx:id="titleLabel" prefHeight="35.0" styleClass="shticell-title" text="Shticell">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+            <Label fx:id="usernameLabel" textAlignment="CENTER" wrapText="true" />
+         </children>
+      </VBox>
       <TextField fx:id="actionLineTextField" alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="25.0" prefWidth="170.0" promptText="Input Line" styleClass="actionLineTextField" GridPane.columnIndex="2" GridPane.rowIndex="1" />
       <Button fx:id="updateValueButton" mnemonicParsing="false" onAction="#updateValueButtonAction" prefHeight="25.0" prefWidth="150.0" text="Update Value" GridPane.columnIndex="3" GridPane.rowIndex="1" />
       <VBox alignment="TOP_CENTER" maxWidth="200.0" prefWidth="83.0" styleClass="header-label" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">

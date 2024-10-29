@@ -1,8 +1,8 @@
 package dto.converter;
 
-import dto.CellDTO;
-import dto.RangeDTO;
-import dto.SheetDTO;
+import dto.sheet.cell.CellDTO;
+import dto.sheet.range.RangeDTO;
+import dto.sheet.SheetDTO;
 import engine.sheet.api.Sheet;
 import engine.sheet.cell.api.Cell;
 import engine.sheet.coordinate.Coordinate;

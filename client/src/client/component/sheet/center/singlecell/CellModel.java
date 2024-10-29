@@ -13,6 +13,7 @@ public class CellModel {
     protected SimpleStringProperty originalValue;
     protected SimpleStringProperty effectiveValue;
     protected SimpleStringProperty lastModifiedVersion;
+    protected SimpleStringProperty modifiedBy;
     protected List<Coordinate> dependsOn;
     protected List<Coordinate> influenceOn;
     protected boolean containsFunction;
@@ -22,10 +23,23 @@ public class CellModel {
         this.effectiveValue = new SimpleStringProperty();
         this.originalValue = new SimpleStringProperty();
         this.lastModifiedVersion = new SimpleStringProperty();
+        this.modifiedBy = new SimpleStringProperty();
         this.dependsOn = new LinkedList<>();
         this.influenceOn = new LinkedList<>();
         this.containsFunction = false;
         this.cellType = CellType.EMPTY;
+    }
+
+    public String getModifiedBy() {
+        return modifiedBy.get();
+    }
+
+    public SimpleStringProperty modifiedByProperty() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy.set(modifiedBy);
     }
 
     public String getEffectiveValue() {

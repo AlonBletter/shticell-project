@@ -1,4 +1,4 @@
-package dto.deserializer;
+package dto.adapter;
 
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;

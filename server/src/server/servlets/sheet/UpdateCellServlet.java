@@ -1,7 +1,7 @@
 package server.servlets.sheet;
 
-import dto.CoordinateAndValue;
-import dto.SheetDTO;
+import dto.info.UpdateInformation;
+import dto.sheet.SheetDTO;
 import engine.Engine;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -32,10 +32,17 @@ public class UpdateCellServlet extends HttpServlet {
         }
 
         Engine engine = ServletUtils.getEngine(getServletContext());
-        CoordinateAndValue cav = GSON_INSTANCE.fromJson(req.getReader(), CoordinateAndValue.class);
+        UpdateInformation updateInformation = GSON_INSTANCE.fromJson(req.getReader(), UpdateInformation.class);
 
         try {
-            SheetDTO sheetDTO = engine.updateCell(username, sheetName, cav.coordinate(), cav.value());
+            SheetDTO sheetDTO = engine.updateCell(
+                    username,
+                    sheetName,
+                    updateInformation.coordinate(),
+                    updateInformation.value(),
+                    updateInformation.version()
+            );
+
             if (sheetDTO != null) {
                 String jsonSheet = GSON_INSTANCE.toJson(sheetDTO);
                 out.println(jsonSheet);

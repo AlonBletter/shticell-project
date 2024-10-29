@@ -1,8 +1,8 @@
 package engine;
 
-import dto.CellDTO;
-import dto.RangeDTO;
-import dto.SheetDTO;
+import dto.sheet.cell.CellDTO;
+import dto.sheet.range.RangeDTO;
+import dto.sheet.SheetDTO;
 import dto.converter.CellConverter;
 import dto.converter.SheetConverter;
 import engine.exception.InvalidCellBoundsException;
@@ -37,7 +37,7 @@ public class SheetManagerImpl implements SheetManager {
             validateXMLFile(filePath);
             STLSheet sheetFromFile = readSheetFromXMLFile(filePath);
             validateXMLSheetLayout(sheetFromFile);
-            Sheet loadedSheet = convertXMLSheetToMySheetObject(sheetFromFile);
+            Sheet loadedSheet = convertXMLSheetToMySheetObject(null, sheetFromFile); // old version
             versionManager.addNewVersion(loadedSheet);
         } catch (InvalidCellBoundsException e) {
             String message = e.getMessage() != null ? e.getMessage() : "";
@@ -48,11 +48,11 @@ public class SheetManagerImpl implements SheetManager {
     }
 
     @Override
-    public void loadSystemSettingsFromFile(InputStream fileInputStream) {
+    public void loadSystemSettingsFromFile(String uploadedBy, InputStream fileInputStream) {
         try {
             STLSheet sheetFromFile = readSheetFromXMLFile(fileInputStream);
             validateXMLSheetLayout(sheetFromFile);
-            Sheet loadedSheet = convertXMLSheetToMySheetObject(sheetFromFile);
+            Sheet loadedSheet = convertXMLSheetToMySheetObject(uploadedBy, sheetFromFile);
             versionManager.addNewVersion(loadedSheet);
         } catch (InvalidCellBoundsException e) {
             String message = e.getMessage() != null ? e.getMessage() : "";
@@ -103,11 +103,12 @@ public class SheetManagerImpl implements SheetManager {
     }
 
     @Override
-    public SheetDTO updateCell(Coordinate cellToUpdateCoordinate, String newCellOriginalValue) {
+    public SheetDTO updateCell(String modifiedBy, Coordinate cellToUpdateCoordinate, String newCellOriginalValue, int sheetVersionFromUser) {
         validateLoadedSheet();
+        validateVersion(sheetVersionFromUser);
         Sheet copyOfCurrentVersion = versionManager.getCurrentVersionSheet().copySheet();
 
-        boolean updated = copyOfCurrentVersion.updateCell(cellToUpdateCoordinate, newCellOriginalValue);
+        boolean updated = copyOfCurrentVersion.updateCell(cellToUpdateCoordinate, newCellOriginalValue, modifiedBy);
 
         if (updated) {
             versionManager.addNewVersion(copyOfCurrentVersion);
@@ -136,29 +137,44 @@ public class SheetManagerImpl implements SheetManager {
     }
 
     @Override
-    public void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor) {
+    public void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor, int sheetVersionFromUser) {
         validateLoadedSheet();
+        validateVersion(sheetVersionFromUser);
         Sheet currentVersion = versionManager.getCurrentVersionSheet();
         currentVersion.updateCellBackgroundColor(cellToUpdateCoordinate, backgroundColor);
     }
 
     @Override
-    public void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor) {
+    public void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor, int sheetVersionFromUser) {
         validateLoadedSheet();
+        validateVersion(sheetVersionFromUser);
         Sheet currentVersion = versionManager.getCurrentVersionSheet();
         currentVersion.updateCellTextColor(cellToUpdateCoordinate, textColor);
     }
 
     @Override
-    public void addRange(String rangeName, String rangeCoordinates) {
+    public void addRange(String rangeName, String rangeCoordinates, int sheetVersionFromUser) {
         validateLoadedSheet();
+        validateVersion(sheetVersionFromUser);
+
         Sheet currentVersion = versionManager.getCurrentVersionSheet();
+
         currentVersion.addRange(rangeName, rangeCoordinates);
     }
 
+    private void validateVersion(int version) {
+        int currentSheetVersion = versionManager.getCurrentVersionNumber();
+
+        if(currentSheetVersion != version) {
+            throw new IllegalStateException("Sheet version [" + version + "] does not match latest version number [" + currentSheetVersion + "]\n" +
+                    "If you'd like to update, please load the latest version first.");
+        }
+    }
+
     @Override
-    public void deleteRange(String rangeNameToDelete) {
+    public void deleteRange(String rangeNameToDelete, int sheetVersionFromUser) {
         validateLoadedSheet();
+        validateVersion(sheetVersionFromUser);
         Sheet currentVersion = versionManager.getCurrentVersionSheet();
         currentVersion.deleteRange(rangeNameToDelete);
     }
@@ -194,12 +210,13 @@ public class SheetManagerImpl implements SheetManager {
     }
 
     @Override
-    public SheetDTO getExpectedValue(Coordinate cellToCalculate, String newValueOfCell) {
+    public SheetDTO getExpectedValue(Coordinate cellToCalculate, String newValueOfCell, int sheetVersionFromUser) {
         validateLoadedSheet();
+        validateVersion(sheetVersionFromUser);
         if (whatIfCopy == null || whatIfCopy.getVersionNumber() != versionManager.getCurrentVersionNumber()) {
             whatIfCopy = versionManager.getCurrentVersionSheet().copySheet();
         }
-        whatIfCopy.updateCell(cellToCalculate, newValueOfCell);
+        whatIfCopy.updateCell(cellToCalculate, newValueOfCell, null);
 
         return SheetConverter.convertToDTO(whatIfCopy);
     }
@@ -210,13 +227,6 @@ public class SheetManagerImpl implements SheetManager {
         List<Coordinate> axis = ExpressionUtils.parseRange(axisRange);
         Range range = new RangeImpl("axis", axis.getFirst(), axis.getLast());
         return range.getCellsInRange();
-    }
-
-    @Override
-    public List<String> getColumnUniqueValue(String columnLetter) {
-        validateLoadedSheet();
-        Sheet currentVersion = versionManager.getCurrentVersionSheet();
-        return currentVersion.getColumnUniqueValues(columnLetter);
     }
 
     private void validateXMLFile(String filePath) {
@@ -246,9 +256,9 @@ public class SheetManagerImpl implements SheetManager {
         }
     }
 
-    private Sheet convertXMLSheetToMySheetObject(STLSheet sheetFromFile) {
+    private Sheet convertXMLSheetToMySheetObject(String uploadedBy, STLSheet sheetFromFile) {
         Sheet sheet = new SheetImpl();
-        sheet.init(sheetFromFile);
+        sheet.init(uploadedBy, sheetFromFile);
         return sheet;
     }
 

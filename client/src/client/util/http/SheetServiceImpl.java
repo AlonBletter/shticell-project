@@ -4,10 +4,10 @@ import client.util.Constants;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import dto.CoordinateAndValue;
-import dto.FilterParams;
-import dto.RangeDTO;
-import dto.SheetDTO;
+import dto.info.UpdateInformation;
+import dto.info.FilterParams;
+import dto.sheet.range.RangeDTO;
+import dto.sheet.SheetDTO;
 import engine.sheet.coordinate.Coordinate;
 import javafx.application.Platform;
 import okhttp3.HttpUrl;
@@ -21,10 +21,8 @@ import static client.util.Constants.GSON_INSTANCE;
 
 public class SheetServiceImpl implements SheetService {
     @Override
-    public void updateCell(Coordinate cellToUpdateCoordinate, String newCellOriginalValue, Consumer<SheetDTO> updateSheet) {
-
-        CoordinateAndValue coordinateAndValue = new CoordinateAndValue(cellToUpdateCoordinate, newCellOriginalValue);
-        String jsonObject = GSON_INSTANCE.toJson(coordinateAndValue);
+    public void updateCell(UpdateInformation updateInformation, Consumer<SheetDTO> updateSheet) {
+        String jsonObject = GSON_INSTANCE.toJson(updateInformation);
 
         RequestBody requestBody = RequestBody.create(
                 jsonObject,
@@ -42,9 +40,8 @@ public class SheetServiceImpl implements SheetService {
     }
 
     @Override
-    public void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor, Runnable updateView) {
-        CoordinateAndValue coordinateAndValue = new CoordinateAndValue(cellToUpdateCoordinate, backgroundColor);
-        String jsonObject = GSON_INSTANCE.toJson(coordinateAndValue);
+    public void updateCellBackgroundColor(UpdateInformation updateInformation, Runnable updateView) {
+        String jsonObject = GSON_INSTANCE.toJson(updateInformation);
 
         RequestBody requestBody = RequestBody.create(
                 jsonObject,
@@ -61,9 +58,8 @@ public class SheetServiceImpl implements SheetService {
     }
 
     @Override
-    public void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor, Runnable updateView) {
-        CoordinateAndValue coordinateAndValue = new CoordinateAndValue(cellToUpdateCoordinate, textColor);
-        String jsonObject = GSON_INSTANCE.toJson(coordinateAndValue);
+    public void updateCellTextColor(UpdateInformation updateInformation, Runnable updateView) {
+        String jsonObject = GSON_INSTANCE.toJson(updateInformation);
 
         RequestBody requestBody = RequestBody.create(
                 jsonObject,
@@ -100,10 +96,11 @@ public class SheetServiceImpl implements SheetService {
     }
 
     @Override
-    public void addRange(String rangeName, String rangeCoordinates, Consumer<RangeDTO> updateRanges) {
+    public void addRange(String rangeName, String rangeCoordinates, int version, Consumer<RangeDTO> updateRanges) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("rangeName", rangeName);
         jsonObject.addProperty("coordinates", rangeCoordinates);
+        jsonObject.addProperty("version", version);
 
         RequestBody requestBody = RequestBody.create(
                 jsonObject.toString(),
@@ -121,9 +118,10 @@ public class SheetServiceImpl implements SheetService {
     }
 
     @Override
-    public void deleteRange(String rangeNameToDelete, Runnable deleteRange) {
+    public void deleteRange(String rangeNameToDelete, int version, Runnable deleteRange) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("rangeName", rangeNameToDelete);
+        jsonObject.addProperty("version", version);
 
         RequestBody requestBody = RequestBody.create(
                 jsonObject.toString(),
@@ -186,9 +184,8 @@ public class SheetServiceImpl implements SheetService {
     }
 
     @Override
-    public void getExpectedValue(Coordinate cellToCalculate, String newValueOfCell, Consumer<SheetDTO> updateView) {
-        CoordinateAndValue coordinateAndValue = new CoordinateAndValue(cellToCalculate, newValueOfCell);
-        String jsonObject = GSON_INSTANCE.toJson(coordinateAndValue);
+    public void getExpectedValue(UpdateInformation updateInformation, Consumer<SheetDTO> updateView) {
+        String jsonObject = GSON_INSTANCE.toJson(updateInformation);
 
         RequestBody requestBody = RequestBody.create(
                 jsonObject,

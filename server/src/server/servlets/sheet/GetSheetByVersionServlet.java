@@ -1,6 +1,6 @@
 package server.servlets.sheet;
 
-import dto.SheetDTO;
+import dto.sheet.SheetDTO;
 import engine.Engine;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

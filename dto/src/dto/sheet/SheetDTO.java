@@ -1,5 +1,7 @@
-package dto;
+package dto.sheet;
 
+import dto.sheet.cell.CellDTO;
+import dto.sheet.range.RangeDTO;
 import engine.sheet.coordinate.Coordinate;
 
 import java.util.List;

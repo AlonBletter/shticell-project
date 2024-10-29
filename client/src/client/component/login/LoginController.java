@@ -12,13 +12,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
-import okhttp3.Call;
-import okhttp3.Callback;
+import javafx.scene.input.KeyCode;
 import okhttp3.HttpUrl;
-import okhttp3.Response;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.util.function.Consumer;
 
 public class LoginController {
@@ -35,6 +31,12 @@ public class LoginController {
     @FXML
     void initialize() {
         errorMessageLabel.textProperty().bind(errorMessageProperty);
+
+        userNameTextField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                loginButton.fire();
+            }
+        });
     }
 
     public void setMainController(AppController mainController) {

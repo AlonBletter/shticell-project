@@ -1,4 +1,4 @@
-package dto;
+package dto.sheet.range;
 
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.range.Range;

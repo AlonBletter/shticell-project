@@ -31,9 +31,10 @@ public class DeleteRangeServlet extends HttpServlet {
         JsonObject jsonObject = GSON_INSTANCE.fromJson(req.getReader(), JsonObject.class);
 
         String rangeName = jsonObject.get("rangeName").getAsString();
+        int version = jsonObject.get("version").getAsInt();
 
         try {
-            engine.deleteRange(username, sheetName, rangeName);
+            engine.deleteRange(username, sheetName, rangeName, version);
         } catch (Exception e) {
             ServletUtils.sendErrorResponse(resp, e.getMessage());
         }

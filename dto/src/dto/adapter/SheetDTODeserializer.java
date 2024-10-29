@@ -1,10 +1,10 @@
-package dto.deserializer;
+package dto.adapter;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import dto.CellDTO;
-import dto.RangeDTO;
-import dto.SheetDTO;
+import dto.sheet.cell.CellDTO;
+import dto.sheet.range.RangeDTO;
+import dto.sheet.SheetDTO;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.coordinate.CoordinateImpl;
 

@@ -4,7 +4,6 @@ import client.component.main.AppController;
 import client.util.Constants;
 import client.util.http.HttpClientUtil;
 import client.util.http.HttpMethod;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,11 +11,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
-import okhttp3.*;
-import org.jetbrains.annotations.NotNull;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.function.Consumer;
 
 public class LoadController {

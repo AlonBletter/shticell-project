@@ -1,7 +1,7 @@
 package server.servlets.sheet;
 
 import com.google.gson.JsonObject;
-import dto.RangeDTO;
+import dto.sheet.range.RangeDTO;
 import engine.Engine;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -33,9 +33,10 @@ public class AddRangeServlet extends HttpServlet {
 
         String rangeName = jsonObject.get("rangeName").getAsString();
         String coordinates = jsonObject.get("coordinates").getAsString();
+        int version = jsonObject.get("version").getAsInt();
 
         try {
-            RangeDTO rangeDTO = engine.addRange(username, sheetName, rangeName, coordinates);
+            RangeDTO rangeDTO = engine.addRange(username, sheetName, rangeName, coordinates, version);
             String jsonResponse = GSON_INSTANCE.toJson(rangeDTO);
             resp.getWriter().write(jsonResponse);
             resp.getWriter().flush();

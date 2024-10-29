@@ -19,6 +19,5 @@ public interface SheetReadActions {
     int getVersionNumber();
     List<Coordinate> getRangeCellsCoordinates(String rangeNameToView);
     List<Range> getRanges();
-    List<String> getColumnUniqueValues(String columnLetter);
     Range getRange(String rangeNameToView);
 }

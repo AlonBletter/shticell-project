@@ -1,9 +1,9 @@
-package dto.deserializer;
+package dto.adapter;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import dto.CellStyleDTO;
+import dto.sheet.cell.CellStyleDTO;
 
 import java.io.IOException;
 

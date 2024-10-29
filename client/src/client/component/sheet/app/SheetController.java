@@ -8,7 +8,8 @@ import client.component.sheet.header.HeaderController;
 import client.component.sheet.left.LeftController;
 import client.util.http.SheetService;
 import client.util.http.SheetServiceImpl;
-import dto.SheetDTO;
+import dto.sheet.SheetDTO;
+import dto.info.UpdateInformation;
 import engine.sheet.cell.api.CellType;
 import engine.sheet.coordinate.Coordinate;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -21,7 +22,6 @@ import javafx.scene.chart.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -29,7 +29,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -154,17 +153,17 @@ public class SheetController implements Closeable {
     public void setSheetToView(SheetDTO sheet, boolean readonly) {
         centerComponentController.initializeGrid(sheet, true);
         centerScrollPane.setContent(centerComponentController.getCenterGrid());
-//                centerScrollPane.setFitToWidth(true);
-//                centerScrollPane.setFitToHeight(true);
         borderPane.setCenter(centerScrollPane);
         setVersion(sheet.versionNumber());
-        headerComponentController.initializeHeaderAfterLoad();
+        headerComponentController.initializeHeaderAfterLoad(mainController.usernameProperty().get());
         leftComponentController.loadRanges(sheet.ranges());
         readonlyPresentation.set(readonly);
     }
 
     public void updateCell(Coordinate cellToUpdateCoordinate, String newCellValue) {
-        sheetService.updateCell(cellToUpdateCoordinate, newCellValue, (newSheet) -> {
+        UpdateInformation updateInformation = new UpdateInformation(cellToUpdateCoordinate, newCellValue, getVersion());
+
+        sheetService.updateCell(updateInformation, (newSheet) -> {
             setVersion(version.get() + 1);
             centerComponentController.updateCells(newSheet);
             headerComponentController.updateHeader();
@@ -232,27 +231,29 @@ public class SheetController implements Closeable {
 
     public void updateCellBackgroundColor(String newColor) {
         Coordinate currentCellCoordinate = selectedCell.getCoordinate();
+        UpdateInformation updateInformation = new UpdateInformation(currentCellCoordinate, newColor, getVersion());
 
-        sheetService.updateCellBackgroundColor(currentCellCoordinate, newColor, () ->
+        sheetService.updateCellBackgroundColor(updateInformation, () ->
                 centerComponentController.updateCellBackgroundColor(currentCellCoordinate, newColor)
         );
     }
 
     public void updateCellTextColor(String newColor) {
         Coordinate currentCellCoordinate = selectedCell.getCoordinate();
+        UpdateInformation updateInformation = new UpdateInformation(currentCellCoordinate, newColor, getVersion());
 
-        sheetService.updateCellTextColor(currentCellCoordinate, newColor, () ->
+        sheetService.updateCellTextColor(updateInformation, () ->
                 centerComponentController.updateCellTextColor(currentCellCoordinate, newColor)
         );
     }
 
     public void addRange(String rangeName, String rangeCoordinates) {
-        sheetService.addRange(rangeName, rangeCoordinates, (newRange) ->
+        sheetService.addRange(rangeName, rangeCoordinates, getVersion(), (newRange) ->
                 leftComponentController.updateRanges(newRange));
     }
 
     public void deleteRange(String rangeNameToDelete) {
-        sheetService.deleteRange(rangeNameToDelete, () -> {
+        sheetService.deleteRange(rangeNameToDelete, getVersion(), () -> {
                     centerComponentController.unmarkRange();
                     leftComponentController.deleteRange(rangeNameToDelete);
         });
@@ -303,7 +304,8 @@ public class SheetController implements Closeable {
 
     public void displayExpectedValue(Number newValue) {
 //            Map<Coordinate, EffectiveValue> modifiedCells = sheetService.getExpectedValue(selectedCell.getCoordinate(), String.valueOf(newValue.doubleValue()));
-        sheetService.getExpectedValue(selectedCell.getCoordinate(), String.valueOf(newValue.doubleValue()), (expectedSheet) ->
+        UpdateInformation updateInformation = new UpdateInformation(selectedCell.getCoordinate(), String.valueOf(newValue.doubleValue()), getVersion());
+        sheetService.getExpectedValue(updateInformation, (expectedSheet) ->
                 centerComponentController.refreshExpectedValues(expectedSheet));
     }
 

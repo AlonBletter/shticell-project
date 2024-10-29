@@ -1,7 +1,7 @@
 package dto.converter;
 
-import dto.CellDTO;
-import dto.CellStyleDTO;
+import dto.sheet.cell.CellDTO;
+import dto.sheet.cell.CellStyleDTO;
 import engine.sheet.cell.api.CellReadActions;
 
 public class CellConverter {
@@ -12,6 +12,7 @@ public class CellConverter {
                 cell.getOriginalValue(),
                 cell.getEffectiveValue(),
                 cell.getLastModifiedVersion(),
+                cell.getLastModifiedBy(),
                 cell.getDependsOn(),
                 cell.getInfluenceOn(),
                 new CellStyleDTO(cell.getStyle()),

@@ -1,18 +1,10 @@
 package client.component.dashboard.sheetlist;
 
-import client.component.dashboard.sheetlist.model.SingleSheetInformation;
 import client.util.Constants;
 import client.util.http.HttpClientUtil;
 import client.util.http.HttpMethod;
-import dto.SheetInfoDTO;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.scene.control.TableView;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
-import org.jetbrains.annotations.NotNull;
+import dto.info.SheetInfoDTO;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TimerTask;

@@ -5,7 +5,7 @@ import client.component.dashboard.load.LoadController;
 import client.component.dashboard.permission.PermissionsController;
 import client.component.dashboard.sheetlist.SheetListController;
 import client.component.main.AppController;
-import dto.SheetDTO;
+import dto.sheet.SheetDTO;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -104,9 +104,7 @@ public class DashboardController implements Closeable {
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
-        sheetListComponentController.setMainController(mainController);
         loadComponentController.setMainController(mainController);
-        // TODO remove those three ^^
     }
 
     public void setActive() {

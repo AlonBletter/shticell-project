@@ -2,12 +2,12 @@ package server.constants;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dto.CellStyleDTO;
-import dto.SheetDTO;
-import dto.deserializer.CellStyleDTOAdapter;
-import dto.deserializer.CoordinateTypeAdapter;
-import dto.deserializer.EffectiveValueTypeAdapter;
-import dto.deserializer.SheetDTODeserializer;
+import dto.sheet.cell.CellStyleDTO;
+import dto.sheet.SheetDTO;
+import dto.adapter.CellStyleDTOAdapter;
+import dto.adapter.CoordinateTypeAdapter;
+import dto.adapter.EffectiveValueTypeAdapter;
+import dto.adapter.SheetDTODeserializer;
 import engine.sheet.coordinate.Coordinate;
 import engine.sheet.effectivevalue.EffectiveValue;
 

@@ -1,8 +1,8 @@
 package engine;
 
-import dto.RangeDTO;
-import dto.SheetDTO;
-import dto.SheetInfoDTO;
+import dto.sheet.range.RangeDTO;
+import dto.sheet.SheetDTO;
+import dto.info.SheetInfoDTO;
 import dto.permission.PermissionInfoDTO;
 import dto.permission.PermissionType;
 import engine.permission.PermissionManager;
@@ -27,7 +27,7 @@ public class EngineImpl implements Engine {
         }
 
         SheetManager sheetManager = new SheetManagerImpl();
-        sheetManager.loadSystemSettingsFromFile(fileToLoadInputStream);
+        sheetManager.loadSystemSettingsFromFile(username, fileToLoadInputStream);
         SheetReadActions sheetReadActions = sheetManager.getSheetReadActions();
         String sheetName = sheetReadActions.getName();
 
@@ -90,10 +90,10 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public SheetDTO updateCell(String username, String sheetName, Coordinate coordinate, String newValue) {
+    public SheetDTO updateCell(String username, String sheetName, Coordinate coordinate, String newValue, int sheetVersionFromUser) {
         SheetManager sheet = findSheet(sheetName);
         permissionManager.validateWriterPermission(username, sheetName);
-        return sheet.updateCell(coordinate, newValue);
+        return sheet.updateCell(username, coordinate, newValue, sheetVersionFromUser);
     }
 
     @Override
@@ -104,32 +104,32 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public void updateCellBackgroundColor(String username, String sheetName, Coordinate coordinate, String value) {
+    public void updateCellBackgroundColor(String username, String sheetName, Coordinate coordinate, String value, int sheetVersionFromUser) {
         SheetManager sheet = findSheet(sheetName);
         permissionManager.validateWriterPermission(username, sheetName);
-        sheet.updateCellBackgroundColor(coordinate, value);
+        sheet.updateCellBackgroundColor(coordinate, value, sheetVersionFromUser);
     }
 
     @Override
-    public void updateCellTextColor(String username, String sheetName, Coordinate coordinate, String value) {
+    public void updateCellTextColor(String username, String sheetName, Coordinate coordinate, String value, int sheetVersionFromUser) {
         SheetManager sheet = findSheet(sheetName);
         permissionManager.validateWriterPermission(username, sheetName);
-        sheet.updateCellTextColor(coordinate, value);
+        sheet.updateCellTextColor(coordinate, value, sheetVersionFromUser);
     }
 
     @Override
-    public RangeDTO addRange(String username, String sheetName, String rangeName, String coordinates) {
+    public RangeDTO addRange(String username, String sheetName, String rangeName, String coordinates, int sheetVersionFromUser) {
         SheetManager sheet = findSheet(sheetName);
         permissionManager.validateWriterPermission(username, sheetName);
-        sheet.addRange(rangeName, coordinates);
+        sheet.addRange(rangeName, coordinates, sheetVersionFromUser);
         return sheet.getRange(rangeName);
     }
 
     @Override
-    public void deleteRange(String username, String sheetName, String rangeName) {
+    public void deleteRange(String username, String sheetName, String rangeName, int sheetVersionFromUser) {
         SheetManager sheet = findSheet(sheetName);
         permissionManager.validateReaderPermission(username, sheetName);
-        sheet.deleteRange(rangeName);
+        sheet.deleteRange(rangeName, sheetVersionFromUser);
     }
 
     @Override
@@ -140,10 +140,10 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public SheetDTO getExpectedValue(String username, String sheetName, Coordinate coordinate, String value) {
+    public SheetDTO getExpectedValue(String username, String sheetName, Coordinate coordinate, String value, int sheetVersionFromUser) {
         SheetManager sheet = findSheet(sheetName);
         permissionManager.validateReaderPermission(username, sheetName);
-        return sheet.getExpectedValue(coordinate, value);
+        return sheet.getExpectedValue(coordinate, value, sheetVersionFromUser);
     }
 
     @Override

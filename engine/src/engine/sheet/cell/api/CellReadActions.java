@@ -9,6 +9,7 @@ public interface CellReadActions {
     String getOriginalValue();
     EffectiveValue getEffectiveValue();
     int getLastModifiedVersion();
+    String getLastModifiedBy();
     Coordinate getCoordinate();
     CellStyle getStyle();
     List<Coordinate> getDependsOn();

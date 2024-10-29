@@ -1,6 +1,6 @@
 package server.servlets.sheet;
 
-import dto.CoordinateAndValue;
+import dto.info.UpdateInformation;
 import engine.Engine;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -28,10 +28,17 @@ public class UpdateCellTextColorServlet extends HttpServlet {
         }
 
         Engine engine = ServletUtils.getEngine(getServletContext());
-        CoordinateAndValue cav = GSON_INSTANCE.fromJson(req.getReader(), CoordinateAndValue.class);
+        UpdateInformation updateInformation = GSON_INSTANCE.fromJson(req.getReader(), UpdateInformation.class);
 
         try {
-            engine.updateCellTextColor(username, sheetName, cav.coordinate(), cav.value());
+            engine.updateCellTextColor(
+                    username,
+                    sheetName,
+                    updateInformation.coordinate(),
+                    updateInformation.value(),
+                    updateInformation.version()
+            );
+
             resp.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception e) {
             ServletUtils.sendErrorResponse(resp, e.getMessage());

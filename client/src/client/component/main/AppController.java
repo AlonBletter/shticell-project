@@ -4,12 +4,11 @@ import client.component.dashboard.DashboardController;
 import client.component.login.LoginController;
 import client.component.sheet.app.SheetController;
 import client.util.Constants;
-import dto.SheetDTO;
+import dto.sheet.SheetDTO;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -94,9 +93,6 @@ public class AppController implements Closeable {
     }
 
     private void setMainPanelTo(Parent paneToSet) {
-        //mainPane.getChildren().clear();
-        //mainPane.getChildren().add(paneToSet);
-
         mainPane.setCenter(paneToSet);
     }
 
@@ -120,6 +116,9 @@ public class AppController implements Closeable {
     public void close() {
         if (dashboardController != null) {
             dashboardController.close();
+        }
+
+        if (sheetController != null) {
             sheetController.close();
         }
     }

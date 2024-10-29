@@ -1,4 +1,4 @@
-package dto;
+package dto.sheet.cell;
 
 import engine.sheet.cell.api.CellStyle;
 

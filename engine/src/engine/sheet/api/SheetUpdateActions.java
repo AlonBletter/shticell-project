@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Map;
 
 public interface SheetUpdateActions {
-    boolean updateCell(Coordinate coordinate, String value);
+    boolean updateCell(Coordinate coordinate, String value, String modifiedBy);
     void setName(String name);
     void setNumberOfRows(int numberOfRows);
     void setNumberOfColumns(int numberOfColumns);
     void setRowHeightUnits(int rowHeightUnits);
     void setColumnWidthUnits(int columnWidthUnits);
-    void init(STLSheet sheetToInitFrom);
+    void init(String uploadedBy, STLSheet sheetToInitFrom);
     void updateCellBackgroundColor(Coordinate cellToUpdateCoordinate, String backgroundColor);
     void updateCellTextColor(Coordinate cellToUpdateCoordinate, String textColor);
     void addRange(String rangeName, String rangeCoordinates);

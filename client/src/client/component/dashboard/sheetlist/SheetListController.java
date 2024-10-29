@@ -3,7 +3,7 @@ package client.component.dashboard.sheetlist;
 import client.component.dashboard.DashboardController;
 import client.component.dashboard.sheetlist.model.SingleSheetInformation;
 import client.component.main.AppController;
-import dto.SheetInfoDTO;
+import dto.info.SheetInfoDTO;
 import dto.permission.PermissionType;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -33,8 +33,6 @@ public class SheetListController implements Closeable {
     @FXML private TableColumn<SingleSheetInformation, String> dimensionsColumn;
     @FXML private TableColumn<SingleSheetInformation, PermissionType> permissionColumn;
     private SimpleIntegerProperty numberOfSheets = new SimpleIntegerProperty();
-    private SimpleStringProperty currentSelectedSheetName = new SimpleStringProperty();
-    private AppController mainController;
     private DashboardController dashboardController;
 
     @FXML
@@ -123,10 +121,6 @@ public class SheetListController implements Closeable {
 
         timer = new Timer();
         timer.schedule(listRefresher, 0, REFRESH_RATE);
-    }
-
-    public void setMainController(AppController mainController) {
-        this.mainController = mainController;
     }
 
     public void setDashboardController(DashboardController dashboardController) {

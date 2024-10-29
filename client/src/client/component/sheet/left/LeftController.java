@@ -10,7 +10,7 @@ import client.component.sheet.left.dialog.range.RangeDialogController;
 import client.component.sheet.left.dialog.sort.SortDialogController;
 import client.component.sheet.left.dialog.whatif.WhatIfDialogController;
 import client.component.sheet.left.model.SingleRange;
-import dto.RangeDTO;
+import dto.sheet.range.RangeDTO;
 import engine.sheet.cell.api.CellType;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;

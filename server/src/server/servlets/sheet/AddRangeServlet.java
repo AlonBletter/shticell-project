@@ -1,7 +1,7 @@
 package server.servlets.sheet;
 
 import com.google.gson.JsonObject;
-import dto.sheet.range.RangeDTO;
+import dto.range.RangeDTO;
 import engine.Engine;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

@@ -1,8 +1,8 @@
 package dto.sheet;
 
-import dto.sheet.cell.CellDTO;
-import dto.sheet.range.RangeDTO;
-import engine.sheet.coordinate.Coordinate;
+import dto.cell.CellDTO;
+import dto.range.RangeDTO;
+import dto.coordinate.Coordinate;
 
 import java.util.List;
 import java.util.Map;

@@ -3,7 +3,7 @@ package client.component.dashboard.sheetlist;
 import client.util.Constants;
 import client.util.http.HttpClientUtil;
 import client.util.http.HttpMethod;
-import dto.info.SheetInfoDTO;
+import dto.requestinfo.SheetInfoDTO;
 
 import java.util.Arrays;
 import java.util.List;

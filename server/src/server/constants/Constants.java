@@ -2,14 +2,14 @@ package server.constants;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dto.sheet.cell.CellStyleDTO;
+import dto.cell.CellStyleDTO;
 import dto.sheet.SheetDTO;
 import dto.adapter.CellStyleDTOAdapter;
 import dto.adapter.CoordinateTypeAdapter;
 import dto.adapter.EffectiveValueTypeAdapter;
 import dto.adapter.SheetDTODeserializer;
-import engine.sheet.coordinate.Coordinate;
-import engine.sheet.effectivevalue.EffectiveValue;
+import dto.coordinate.Coordinate;
+import dto.effectivevalue.EffectiveValue;
 
 public class Constants {
     public static final String USERNAME = "username";

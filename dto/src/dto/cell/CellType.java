@@ -1,4 +1,4 @@
-package engine.sheet.cell.api;
+package dto.cell;
 
 public enum CellType {
     NUMERIC(Double.class),

@@ -1,7 +1,7 @@
 package engine.sheet.range;
 
-import engine.sheet.coordinate.Coordinate;
-import engine.sheet.coordinate.CoordinateFactory;
+import dto.coordinate.Coordinate;
+import dto.coordinate.CoordinateFactory;
 
 import java.io.Serializable;
 import java.util.LinkedList;

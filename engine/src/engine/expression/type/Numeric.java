@@ -1,10 +1,10 @@
 package engine.expression.type;
 
 import engine.expression.api.Expression;
-import engine.sheet.cell.api.CellType;
-import engine.sheet.effectivevalue.EffectiveValue;
+import dto.cell.CellType;
+import dto.effectivevalue.EffectiveValue;
 import engine.sheet.api.SheetReadActions;
-import engine.sheet.effectivevalue.EffectiveValueImpl;
+import dto.effectivevalue.EffectiveValueImpl;
 
 import java.util.Objects;
 

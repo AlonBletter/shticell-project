@@ -1,6 +1,6 @@
-package engine.sheet.effectivevalue;
+package dto.effectivevalue;
 
-import engine.sheet.cell.api.CellType;
+import dto.cell.CellType;
 
 public interface EffectiveValue {
     CellType cellType();

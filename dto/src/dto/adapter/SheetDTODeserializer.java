@@ -2,11 +2,11 @@ package dto.adapter;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import dto.sheet.cell.CellDTO;
-import dto.sheet.range.RangeDTO;
+import dto.cell.CellDTO;
+import dto.range.RangeDTO;
 import dto.sheet.SheetDTO;
-import engine.sheet.coordinate.Coordinate;
-import engine.sheet.coordinate.CoordinateImpl;
+import dto.coordinate.Coordinate;
+import dto.coordinate.CoordinateImpl;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;

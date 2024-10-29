@@ -1,4 +1,4 @@
-package engine.sheet.coordinate;
+package dto.coordinate;
 
 import java.io.Serializable;
 

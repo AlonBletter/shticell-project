@@ -1,6 +1,6 @@
 package server.servlets.sheet;
 
-import dto.info.UpdateInformation;
+import dto.requestinfo.UpdateInformation;
 import engine.Engine;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

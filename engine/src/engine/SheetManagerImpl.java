@@ -1,7 +1,7 @@
 package engine;
 
-import dto.sheet.cell.CellDTO;
-import dto.sheet.range.RangeDTO;
+import dto.cell.CellDTO;
+import dto.range.RangeDTO;
 import dto.sheet.SheetDTO;
 import dto.converter.CellConverter;
 import dto.converter.SheetConverter;
@@ -10,7 +10,7 @@ import engine.expression.ExpressionUtils;
 import engine.generated.STLSheet;
 import engine.sheet.api.Sheet;
 import engine.sheet.api.SheetReadActions;
-import engine.sheet.coordinate.Coordinate;
+import dto.coordinate.Coordinate;
 import engine.sheet.impl.SheetImpl;
 import engine.sheet.range.Range;
 import engine.sheet.range.RangeImpl;

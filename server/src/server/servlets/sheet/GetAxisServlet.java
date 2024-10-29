@@ -1,7 +1,7 @@
 package server.servlets.sheet;
 
 import engine.Engine;
-import engine.sheet.coordinate.Coordinate;
+import dto.coordinate.Coordinate;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

@@ -1,6 +1,5 @@
 package server.servlets.permission;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import dto.permission.PermissionType;
 import engine.Engine;
@@ -12,7 +11,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import server.utils.ServletUtils;
 import server.utils.SessionUtils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 
 import static server.constants.Constants.GSON_INSTANCE;

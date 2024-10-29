@@ -4,10 +4,10 @@ import engine.expression.api.Expression;
 import engine.expression.type.UnaryExpression;
 import engine.sheet.api.SheetReadActions;
 import engine.sheet.cell.api.CellReadActions;
-import engine.sheet.cell.api.CellType;
-import engine.sheet.coordinate.Coordinate;
-import engine.sheet.effectivevalue.EffectiveValue;
-import engine.sheet.effectivevalue.EffectiveValueImpl;
+import dto.cell.CellType;
+import dto.coordinate.Coordinate;
+import dto.effectivevalue.EffectiveValue;
+import dto.effectivevalue.EffectiveValueImpl;
 
 import java.util.List;
 

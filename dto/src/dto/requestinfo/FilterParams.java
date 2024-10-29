@@ -1,4 +1,4 @@
-package dto.info;
+package dto.requestinfo;
 
 import java.util.List;
 import java.util.Map;

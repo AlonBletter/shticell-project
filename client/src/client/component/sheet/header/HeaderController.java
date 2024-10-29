@@ -7,7 +7,7 @@ import client.util.Constants;
 import client.util.http.HttpClientUtil;
 import client.util.http.HttpMethod;
 import dto.sheet.SheetDTO;
-import engine.sheet.coordinate.Coordinate;
+import dto.coordinate.Coordinate;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;

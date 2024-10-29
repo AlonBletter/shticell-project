@@ -1,6 +1,6 @@
 package client.component.sheet.left.model;
 
-import engine.sheet.coordinate.Coordinate;
+import dto.coordinate.Coordinate;
 
 import java.util.List;
 

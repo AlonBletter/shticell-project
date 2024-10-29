@@ -1,7 +1,7 @@
 package client.component.sheet.center.singlecell;
 
-import engine.sheet.cell.api.CellType;
-import engine.sheet.coordinate.Coordinate;
+import dto.cell.CellType;
+import dto.coordinate.Coordinate;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 

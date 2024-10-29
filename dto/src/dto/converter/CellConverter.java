@@ -1,7 +1,7 @@
 package dto.converter;
 
-import dto.sheet.cell.CellDTO;
-import dto.sheet.cell.CellStyleDTO;
+import dto.cell.CellDTO;
+import dto.cell.CellStyleDTO;
 import engine.sheet.cell.api.CellReadActions;
 
 public class CellConverter {

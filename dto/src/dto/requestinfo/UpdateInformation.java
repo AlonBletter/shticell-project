@@ -1,6 +1,6 @@
-package dto.info;
+package dto.requestinfo;
 
-import engine.sheet.coordinate.Coordinate;
+import dto.coordinate.Coordinate;
 
 public record UpdateInformation(Coordinate coordinate, String value, int version) {
 }

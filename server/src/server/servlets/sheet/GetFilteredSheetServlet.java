@@ -1,6 +1,6 @@
 package server.servlets.sheet;
 
-import dto.info.FilterParams;
+import dto.requestinfo.FilterParams;
 import dto.sheet.SheetDTO;
 import engine.Engine;
 import jakarta.servlet.ServletException;

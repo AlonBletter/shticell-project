@@ -3,7 +3,7 @@ package dto.adapter;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import dto.sheet.cell.CellStyleDTO;
+import dto.cell.CellStyleDTO;
 
 import java.io.IOException;
 

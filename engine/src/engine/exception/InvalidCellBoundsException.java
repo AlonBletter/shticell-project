@@ -1,6 +1,6 @@
 package engine.exception;
 
-import engine.sheet.coordinate.Coordinate;
+import dto.coordinate.Coordinate;
 
 public class InvalidCellBoundsException extends RuntimeException {
     private final Coordinate actualCoordinate;

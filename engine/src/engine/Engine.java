@@ -1,11 +1,11 @@
 package engine;
 
-import dto.sheet.range.RangeDTO;
+import dto.range.RangeDTO;
 import dto.sheet.SheetDTO;
-import dto.info.SheetInfoDTO;
+import dto.requestinfo.SheetInfoDTO;
 import dto.permission.PermissionInfoDTO;
 import dto.permission.PermissionType;
-import engine.sheet.coordinate.Coordinate;
+import dto.coordinate.Coordinate;
 
 import java.io.InputStream;
 import java.util.List;

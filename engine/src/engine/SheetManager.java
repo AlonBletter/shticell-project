@@ -1,10 +1,10 @@
 package engine;
 
-import dto.sheet.cell.CellDTO;
-import dto.sheet.range.RangeDTO;
+import dto.cell.CellDTO;
+import dto.range.RangeDTO;
 import dto.sheet.SheetDTO;
 import engine.sheet.api.SheetReadActions;
-import engine.sheet.coordinate.Coordinate;
+import dto.coordinate.Coordinate;
 import engine.sheet.range.Range;
 
 import java.io.IOException;

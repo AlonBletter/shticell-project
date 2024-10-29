@@ -1,6 +1,6 @@
-package dto.sheet.range;
+package dto.range;
 
-import engine.sheet.coordinate.Coordinate;
+import dto.coordinate.Coordinate;
 import engine.sheet.range.Range;
 
 import java.util.LinkedList;

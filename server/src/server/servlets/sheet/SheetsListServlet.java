@@ -1,7 +1,7 @@
 package server.servlets.sheet;
 
 import com.google.gson.Gson;
-import dto.info.SheetInfoDTO;
+import dto.requestinfo.SheetInfoDTO;
 import engine.Engine;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

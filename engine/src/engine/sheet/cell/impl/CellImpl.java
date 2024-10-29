@@ -2,10 +2,10 @@ package engine.sheet.cell.impl;
 
 import engine.sheet.cell.api.Cell;
 import engine.sheet.cell.api.CellStyle;
-import engine.sheet.cell.api.CellType;
-import engine.sheet.coordinate.Coordinate;
-import engine.sheet.effectivevalue.EffectiveValue;
-import engine.sheet.effectivevalue.EffectiveValueImpl;
+import dto.cell.CellType;
+import dto.coordinate.Coordinate;
+import dto.effectivevalue.EffectiveValue;
+import dto.effectivevalue.EffectiveValueImpl;
 
 import java.io.Serializable;
 import java.util.LinkedList;

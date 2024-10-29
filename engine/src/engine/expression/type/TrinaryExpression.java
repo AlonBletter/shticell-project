@@ -1,7 +1,7 @@
 package engine.expression.type;
 
 import engine.expression.api.Expression;
-import engine.sheet.effectivevalue.EffectiveValue;
+import dto.effectivevalue.EffectiveValue;
 import engine.sheet.api.SheetReadActions;
 
 public abstract class TrinaryExpression implements Expression {

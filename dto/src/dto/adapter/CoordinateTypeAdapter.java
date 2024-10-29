@@ -3,8 +3,8 @@ package dto.adapter;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import engine.sheet.coordinate.Coordinate;
-import engine.sheet.coordinate.CoordinateImpl;
+import dto.coordinate.Coordinate;
+import dto.coordinate.CoordinateImpl;
 
 import java.io.IOException;
 

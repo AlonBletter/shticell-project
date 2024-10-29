@@ -1,9 +1,9 @@
 package client.util.http;
 
-import dto.sheet.range.RangeDTO;
+import dto.range.RangeDTO;
 import dto.sheet.SheetDTO;
-import dto.info.UpdateInformation;
-import engine.sheet.coordinate.Coordinate;
+import dto.requestinfo.UpdateInformation;
+import dto.coordinate.Coordinate;
 
 import java.util.List;
 import java.util.Map;

@@ -2,8 +2,7 @@ package client.component.dashboard.sheetlist;
 
 import client.component.dashboard.DashboardController;
 import client.component.dashboard.sheetlist.model.SingleSheetInformation;
-import client.component.main.AppController;
-import dto.info.SheetInfoDTO;
+import dto.requestinfo.SheetInfoDTO;
 import dto.permission.PermissionType;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

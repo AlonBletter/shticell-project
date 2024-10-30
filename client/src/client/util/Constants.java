@@ -47,6 +47,14 @@ public class Constants {
     public final static String GET_LATEST_SHEET_VERSION_PATH = FULL_SERVER_PATH + "/sheet/version/last";
     public final static String GET_VERSION_OF_SHEET_PATH = FULL_SERVER_PATH + "/sheet/version/last/number";
 
+    // Chat
+    public final static String MAIN_PAGE_FXML_RESOURCE_LOCATION = "/client/component/dashboard/chat/main/chat-app-main.fxml";
+    public final static String CHAT_ROOM_FXML_RESOURCE_LOCATION = "/client/component/dashboard/chat/chatroom/chat-room-main.fxml";
+    public final static String USERS_LIST = FULL_SERVER_PATH + "/userslist";
+    public final static String SEND_CHAT_LINE = FULL_SERVER_PATH + "/chatroom/sendChat";
+    public final static String CHAT_LINES_LIST = FULL_SERVER_PATH + "/chat";
+    public final static String CHAT_LINE_FORMATTING = "%tH:%tM:%tS | %.10s: %s%n";
+
     // Gson instance
     public final static Gson GSON_INSTANCE = new GsonBuilder()
             .registerTypeAdapter(SheetDTO.class, new SheetDTODeserializer())

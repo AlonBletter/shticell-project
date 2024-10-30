@@ -3,6 +3,7 @@ package server.utils;
 import com.google.gson.JsonObject;
 import engine.Engine;
 import engine.EngineImpl;
+import engine.chat.ChatManager;
 import engine.user.UserManager;
 import engine.user.UserManagerImpl;
 import jakarta.servlet.ServletContext;
@@ -54,14 +55,14 @@ public class ServletUtils {
 		return engine;
 	}
 
-//	public static ChatManager getChatManager(ServletContext servletContext) {
-//		synchronized (chatManagerLock) {
-//			if (servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME) == null) {
-//				servletContext.setAttribute(CHAT_MANAGER_ATTRIBUTE_NAME, new ChatManager());
-//			}
-//		}
-//		return (ChatManager) servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME);
-//	} //TODO when doing bonus
+	public static ChatManager getChatManager(ServletContext servletContext) {
+		synchronized (chatManagerLock) {
+			if (servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME) == null) {
+				servletContext.setAttribute(CHAT_MANAGER_ATTRIBUTE_NAME, new ChatManager());
+			}
+		}
+		return (ChatManager) servletContext.getAttribute(CHAT_MANAGER_ATTRIBUTE_NAME);
+	}
 
 	public static int getIntParameter(HttpServletRequest request, String name, HttpServletResponse response) throws IOException {
 		String value = request.getParameter(name);

@@ -114,6 +114,7 @@ public class DashboardController implements Closeable {
     @Override
     public void close() {
         sheetListComponentController.close();
+        commandsComponentController.close();
     }
 
     public void handleViewSheet(SheetDTO requestedSheet) {
@@ -132,5 +133,9 @@ public class DashboardController implements Closeable {
     public void setStageDimension(Stage stage) {
         stage.setWidth(borderPane.getPrefWidth() + 50);
         stage.setMinHeight(borderPane.getPrefHeight() + 50);
+    }
+
+    public SimpleStringProperty usernameProperty() {
+        return mainController.usernameProperty();
     }
 }

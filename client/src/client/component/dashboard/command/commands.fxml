@@ -22,6 +22,7 @@
             <Button fx:id="refreshPermissionRequestsButton" mnemonicParsing="false" onAction="#refreshPermissionRequestsButtonAction" prefHeight="50.0" prefWidth="174.0" text="Refresh Permission Requests" />
          </children>
       </VBox>
+      <Button fx:id="openChatButton" mnemonicParsing="false" onAction="#openChatButtonOnClicked" prefHeight="50.0" prefWidth="174.0" text="Open Chat" />
    </children>
    <padding>
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

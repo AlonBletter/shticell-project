@@ -1,23 +1,23 @@
 package engine;
 
-import dto.range.RangeDTO;
-import dto.sheet.SheetDTO;
-import dto.requestinfo.SheetInfoDTO;
+import dto.coordinate.Coordinate;
 import dto.permission.PermissionInfoDTO;
 import dto.permission.PermissionType;
+import dto.range.RangeDTO;
+import dto.requestinfo.SheetInfoDTO;
+import dto.sheet.SheetDTO;
 import engine.permission.PermissionManager;
 import engine.permission.PermissionManagerImpl;
 import engine.sheet.api.SheetReadActions;
-import dto.coordinate.Coordinate;
 
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class EngineImpl implements Engine {
-    Map<String, SheetManager> sheetsInSystem = new HashMap<>(); // Sheet Name -> SheetManager
+    Map<String, SheetManager> sheetsInSystem = new ConcurrentHashMap<>(); // Sheet Name -> SheetManager
     PermissionManager permissionManager = new PermissionManagerImpl();
 
     @Override

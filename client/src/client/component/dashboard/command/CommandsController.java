@@ -1,6 +1,7 @@
 package client.component.dashboard.command;
 
 import client.component.dashboard.DashboardController;
+import client.component.dashboard.chat.main.ChatAppMainController;
 import client.component.dashboard.command.dialog.PermissionRequestController;
 import client.util.Constants;
 import client.util.http.HttpClientUtil;
@@ -22,13 +23,16 @@ import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.URL;
 import java.util.function.Consumer;
 
 import static client.util.Constants.GSON_INSTANCE;
 
-public class CommandsController {
+public class CommandsController implements Closeable {
+
+    ChatAppMainController chatAppMainController;
 
     @FXML private VBox commandsComponent;
     @FXML private Button requestPermissionButton;
@@ -36,6 +40,8 @@ public class CommandsController {
     @FXML private Button refreshPermissionRequestsButton;
     @FXML private Button rejectButton;
     @FXML private Button approveButton;
+    @FXML private Button openChatButton;
+
 
     private DashboardController dashboardController;
 
@@ -173,5 +179,32 @@ public class CommandsController {
         );
 
         refreshPermissionRequestsButton.disableProperty().bind(dashboardController.isSelectedSheetProperty().not());
+    }
+
+    @FXML
+    void openChatButtonOnClicked(ActionEvent event) {
+        URL chatUrl = getClass().getResource(Constants.MAIN_PAGE_FXML_RESOURCE_LOCATION);
+
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation(chatUrl);
+            Parent root = fxmlLoader.load();
+
+            chatAppMainController = fxmlLoader.getController();
+            chatAppMainController.updateUserName(dashboardController.usernameProperty().get());
+
+            Stage chatStage = new Stage();
+            Scene scene = new Scene(root, 700, 600);
+            chatStage.setScene(scene);
+            chatStage.show();
+
+        } catch (IOException e) {
+            throw new RuntimeException("IO Exception occurred...");
+        }
+    }
+
+    @Override
+    public void close() {
+        chatAppMainController.close();
     }
 }

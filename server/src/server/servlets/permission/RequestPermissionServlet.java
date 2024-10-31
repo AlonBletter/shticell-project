@@ -17,7 +17,7 @@ import static server.constants.Constants.GSON_INSTANCE;
 
 @WebServlet(name = "Request Permission Servlet", urlPatterns = "/requestPermission")
 public class RequestPermissionServlet extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         JsonObject jsonObject = GSON_INSTANCE.fromJson(request.getReader(), JsonObject.class);
 
@@ -39,7 +39,7 @@ public class RequestPermissionServlet extends HttpServlet {
         response.setContentType("application/json");
 
         try {
-            engine.requestPermission(sheetName, username, PermissionType.valueOf(permission.toUpperCase())); //TODO synchronized
+            engine.requestPermission(sheetName, username, PermissionType.valueOf(permission.toUpperCase()));
 
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().write("{\"status\":\"success\"}");

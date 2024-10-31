@@ -18,8 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class EngineImpl implements Engine {
-    private Map<String, SheetManager> sheetsInSystem = new ConcurrentHashMap<>(); // Sheet Name -> SheetManager
-    private PermissionManager permissionManager = new PermissionManagerImpl();
+    private final Map<String, SheetManager> sheetsInSystem = new ConcurrentHashMap<>(); // Sheet Name -> SheetManager
+    private final PermissionManager permissionManager = new PermissionManagerImpl();
     private final ReentrantReadWriteLock sheetsLock = new ReentrantReadWriteLock();
 
     @Override
@@ -183,7 +183,7 @@ public class EngineImpl implements Engine {
         SheetManager sheet = findSheet(sheetName);
         permissionManager.validateReaderPermission(username, sheetName);
 
-        synchronized (sheet) { //TODO ask aviad about this
+        synchronized (sheet) {
             return sheet.getExpectedValue(coordinate, value, sheetVersionFromUser);
         }
     }

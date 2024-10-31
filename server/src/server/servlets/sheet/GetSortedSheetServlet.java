@@ -23,7 +23,7 @@ import static server.constants.Constants.GSON_INSTANCE;
 @WebServlet(name = "Get Sorted Sheet Servlet", urlPatterns = "/sheet/sort")
 public class GetSortedSheetServlet extends HttpServlet {
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String sheetName = SessionUtils.getSheetName(request);
         String username = SessionUtils.getUsername(request);
         if (username == null || sheetName == null) {
@@ -45,7 +45,7 @@ public class GetSortedSheetServlet extends HttpServlet {
         response.setContentType("application/json");
 
         try {
-            SheetDTO sheet = engine.getSortedSheet(username, sheetName, range, columns); //TODO synchronized
+            SheetDTO sheet = engine.getSortedSheet(username, sheetName, range, columns);
             String jsonResponse = GSON_INSTANCE.toJson(sheet);
             response.getWriter().println(jsonResponse);
             response.getWriter().flush();

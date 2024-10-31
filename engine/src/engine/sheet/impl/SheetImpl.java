@@ -116,7 +116,7 @@ public class SheetImpl implements Sheet, Serializable {
         }
 
         ranges.remove(rangeNameToDelete);
-        updateSheetEffectiveValues(); // TODO in order to update the graphs?
+        updateSheetEffectiveValues();
     }
 
     @Override

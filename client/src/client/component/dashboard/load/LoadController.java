@@ -1,15 +1,14 @@
 package client.component.dashboard.load;
 
-import client.component.main.AppController;
+import client.component.dashboard.DashboardController;
 import client.util.Constants;
 import client.util.http.HttpClientUtil;
 import client.util.http.HttpMethod;
-import javafx.beans.binding.Bindings;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -20,12 +19,10 @@ import java.util.function.Consumer;
 
 public class LoadController {
 
-    @FXML private GridPane loadComponent;
-    @FXML private Button loadFileButton;
-    @FXML private Label loadedFilePathLabel;
+
     @FXML private Label usernameLabel;
 
-    private AppController mainController;
+    private DashboardController dashboardController;
 
     @FXML
     void initialize() {
@@ -37,7 +34,7 @@ public class LoadController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select XML file");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML files", "*.xml"));
-        File selectedFile = fileChooser.showOpenDialog(mainController.getPrimaryStage());
+        File selectedFile = fileChooser.showOpenDialog(dashboardController.getPrimaryStage());
         if (selectedFile == null) {
             return;
         }
@@ -49,16 +46,22 @@ public class LoadController {
                 .addFormDataPart("file", selectedFile.getName(), fileBody)
                 .build();
 
-        Consumer<String> responseHandler = (response) -> {
-            //TODO need something? print successful
-        };
+        Consumer<String> responseHandler = (response) -> Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Load File");
+            alert.setHeaderText(null);
+            alert.setContentText("The sheet was loaded successfully.");
+            alert.showAndWait();
+        });
 
         HttpClientUtil.runReqAsyncWithJson(Constants.LOAD_SHEET_PATH, HttpMethod.POST, requestBody, responseHandler);
     }
 
-    public void setMainController(AppController mainController) {
-        this.mainController = mainController;
-        //TODO maybe pass the name label to the header border in the main app
-        usernameLabel.textProperty().bind(Bindings.concat("Logged As ", mainController.usernameProperty()));
+    public void setDashboardController(DashboardController dashboardController) {
+        this.dashboardController = dashboardController;
+    }
+
+    public void updateUsernameLabel(String username) {
+        usernameLabel.setText(username);
     }
 }

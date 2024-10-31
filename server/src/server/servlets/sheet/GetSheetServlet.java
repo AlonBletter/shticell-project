@@ -35,7 +35,7 @@ public class GetSheetServlet extends HttpServlet {
         response.setContentType("application/json");
 
         try {
-            SheetDTO sheet = engine.getSheet(username, sheetName); //TODO synchronized
+            SheetDTO sheet = engine.getSheet(username, sheetName);
             request.getSession(true).setAttribute(SHEET_NAME, sheetName);
             String jsonResponse = GSON_INSTANCE.toJson(sheet);
             response.getWriter().println(jsonResponse);

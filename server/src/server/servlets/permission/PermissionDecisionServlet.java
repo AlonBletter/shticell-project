@@ -16,7 +16,7 @@ import java.io.IOException;
 
 @WebServlet(name = "Permission Decision Servlet", urlPatterns = "/permission/request/decision")
 public class PermissionDecisionServlet extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         BufferedReader reader = request.getReader();
         Gson gson = new Gson();
@@ -33,12 +33,11 @@ public class PermissionDecisionServlet extends HttpServlet {
         }
 
         Engine engine = ServletUtils.getEngine(getServletContext());
-        // TODO check if permission is none, maybe dont return the sheet dto
 
         response.setContentType("application/json");
 
         try {
-            engine.handlePermissionRequest(requestId, sheetName, username, decision); //TODO synchronized
+            engine.handlePermissionRequest(requestId, sheetName, username, decision);
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().write("{\"status\":\"success\"}");
         } catch (Exception e) {

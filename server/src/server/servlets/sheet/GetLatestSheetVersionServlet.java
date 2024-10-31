@@ -36,7 +36,7 @@ public class GetLatestSheetVersionServlet extends HttpServlet {
         response.setContentType("application/json");
 
         try {
-            SheetDTO sheet = engine.getSheet(username, sheetName); //TODO synchronized
+            SheetDTO sheet = engine.getSheet(username, sheetName);
 
             String jsonResponse = GSON_INSTANCE.toJson(sheet);
             response.getWriter().println(jsonResponse);

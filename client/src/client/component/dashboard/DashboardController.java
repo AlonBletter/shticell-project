@@ -33,20 +33,21 @@ public class DashboardController implements Closeable {
     @FXML private CommandsController commandsComponentController;
     private AppController mainController;
 
-    private SimpleStringProperty selectedSheetName = new SimpleStringProperty();
-    private SimpleBooleanProperty isSelectedSheet = new SimpleBooleanProperty();
-    private SimpleBooleanProperty isUserOwnerOfSelectedSheet = new SimpleBooleanProperty();
-    private SimpleBooleanProperty isUserHasNoPermissions = new SimpleBooleanProperty();
-    private SimpleBooleanProperty isPermissionRequestSelected = new SimpleBooleanProperty();
-    private SimpleIntegerProperty requestID = new SimpleIntegerProperty();
-    private SimpleBooleanProperty isUserHasReaderPermission = new SimpleBooleanProperty();
+    private final SimpleStringProperty selectedSheetName = new SimpleStringProperty();
+    private final SimpleBooleanProperty isSelectedSheet = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty isUserOwnerOfSelectedSheet = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty isUserHasNoPermissions = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty isPermissionRequestSelected = new SimpleBooleanProperty();
+    private final SimpleIntegerProperty requestID = new SimpleIntegerProperty();
+    private final SimpleBooleanProperty isUserHasReaderPermission = new SimpleBooleanProperty();
 
     @FXML
     void initialize() {
-        if(sheetListComponentController != null && commandsComponentController != null && permissionsComponentController != null) {
+        if(sheetListComponentController != null && commandsComponentController != null && permissionsComponentController != null && loadComponentController != null) {
             sheetListComponentController.setDashboardController(this);
             commandsComponentController.setDashboardController(this);
             permissionsComponentController.setDashboardController(this);
+            loadComponentController.setDashboardController(this);
         }
     }
 
@@ -104,7 +105,8 @@ public class DashboardController implements Closeable {
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
-        loadComponentController.setMainController(mainController);
+
+        loadComponentController.updateUsernameLabel("Logged As: " + mainController.usernameProperty().get());
     }
 
     public void setActive() {

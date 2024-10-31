@@ -8,19 +8,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import okhttp3.OkHttpClient;
 
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Main extends Application {
     private AppController appMainController;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
-        Logger.getLogger(OkHttpClient.class.getName()).setLevel(Level.FINE); //TODO remove when submitting
 
         URL mainPage = getClass().getResource(Constants.MAIN_SCREEN_FXML_RESOURCE_LOCATION);
 
@@ -39,7 +34,7 @@ public class Main extends Application {
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         HttpClientUtil.shutdown();
         appMainController.close();
     }

@@ -18,7 +18,7 @@ import static server.constants.Constants.GSON_INSTANCE;
 @WebServlet(name = "Get Filtered Sheet Servlet", urlPatterns = "/sheet/filter")
 public class GetFilteredSheetServlet extends HttpServlet {
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String sheetName = SessionUtils.getSheetName(request);
         String username = SessionUtils.getUsername(request);
         if (username == null || sheetName == null) {
@@ -33,7 +33,7 @@ public class GetFilteredSheetServlet extends HttpServlet {
         response.setContentType("application/json");
 
         try {
-            SheetDTO sheet = engine.getFilteredSheet(username, sheetName, filterParams.rangeToFilter(), filterParams.filterRequestValues()); //TODO synchronized
+            SheetDTO sheet = engine.getFilteredSheet(username, sheetName, filterParams.rangeToFilter(), filterParams.filterRequestValues());
             String jsonResponse = GSON_INSTANCE.toJson(sheet);
             response.getWriter().println(jsonResponse);
             response.getWriter().flush();

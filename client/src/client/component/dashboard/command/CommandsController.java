@@ -205,6 +205,8 @@ public class CommandsController implements Closeable {
 
     @Override
     public void close() {
-        chatAppMainController.close();
+        if (chatAppMainController != null) {
+            chatAppMainController.close();
+        }
     }
 }

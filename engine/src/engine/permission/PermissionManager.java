@@ -6,8 +6,6 @@ import dto.permission.PermissionType;
 import java.util.List;
 
 public interface PermissionManager {
-    void assignPermission(String sheetName, String username, PermissionType permission);
-
     void initializeSheetPermission(String sheetName, String username);
 
     String getOwner(String sheetName);

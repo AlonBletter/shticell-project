@@ -35,6 +35,6 @@ public class UserListRefresher extends TimerTask {
             usersListConsumer.accept(Arrays.asList(usersNames));
         };
 
-        HttpClientUtil.runReqAsyncWithJson(Constants.USERS_LIST, HttpMethod.GET, null, responseHandler);
+        HttpClientUtil.runReqSyncWithJson(Constants.USERS_LIST, HttpMethod.GET, null, responseHandler);
     }
 }

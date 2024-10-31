@@ -30,7 +30,6 @@ public class WhatIfDialogController {
         fromLimitTextField.disableProperty().bind(isSliderCreated);
         toLimitTextField.disableProperty().bind(isSliderCreated);
         stepSizeTextField.disableProperty().bind(isSliderCreated);
-
     }
 
     @FXML

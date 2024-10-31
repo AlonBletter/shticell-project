@@ -29,6 +29,6 @@ public class SheetListRefresher extends TimerTask {
             }
         };
 
-        HttpClientUtil.runReqAsyncWithJson(Constants.SHEET_LIST_PATH, HttpMethod.GET, null, responseHandler);
+        HttpClientUtil.runReqSyncWithJson(Constants.SHEET_LIST_PATH, HttpMethod.GET, null, responseHandler);
     }
 }

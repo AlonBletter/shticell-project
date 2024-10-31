@@ -213,6 +213,7 @@ public class SheetManagerImpl implements SheetManager {
     public SheetDTO getExpectedValue(Coordinate cellToCalculate, String newValueOfCell, int sheetVersionFromUser) {
         validateLoadedSheet();
         validateVersion(sheetVersionFromUser);
+
         if (whatIfCopy == null || whatIfCopy.getVersionNumber() != versionManager.getCurrentVersionNumber()) {
             whatIfCopy = versionManager.getCurrentVersionSheet().copySheet();
         }

@@ -22,14 +22,14 @@
     <RowConstraints vgrow="NEVER" />
   </rowConstraints>
    <children>
-      <Button id="send-button" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#sendButtonClicked" text="SEND" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <Button id="send-button" fx:id="sendButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#sendButtonClicked" text="SEND" GridPane.columnIndex="1" GridPane.rowIndex="2" />
       <AnchorPane maxWidth="1.7976931348623157E308" GridPane.columnSpan="2">
          <children>
             <ToggleButton fx:id="autoScrollButton" mnemonicParsing="false" selected="true" styleClass="toggle-action-button" text="Auto Scroll" AnchorPane.leftAnchor="0.0" />
             <Label id="chat-version-label" fx:id="chatVersionLabel" layoutX="285.0" layoutY="6.0" text="Chat version" AnchorPane.rightAnchor="0.0" />
          </children>
       </AnchorPane>
-      <TextArea fx:id="mainChatLinesTextArea" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
+      <TextArea fx:id="mainChatLinesTextArea" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnSpan="2147483647" GridPane.rowIndex="1">
          <font>
             <Font size="16.0" />
          </font>

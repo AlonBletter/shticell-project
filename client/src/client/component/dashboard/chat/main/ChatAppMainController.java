@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -44,6 +45,8 @@ public class ChatAppMainController implements Closeable {
     @Override
     public void close() {
         chatRoomComponentController.close();
+        Stage stage = (Stage) mainPanel.getScene().getWindow();
+        stage.close();
     }
 
     private void loadChatRoomPage() {

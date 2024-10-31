@@ -37,6 +37,6 @@ public class VersionRefresher extends TimerTask {
             }
         };
 
-        HttpClientUtil.runReqAsyncWithJson(Constants.GET_VERSION_OF_SHEET_PATH, HttpMethod.GET, null, responseHandler);
+        HttpClientUtil.runReqSyncWithJson(Constants.GET_VERSION_OF_SHEET_PATH, HttpMethod.GET, null, responseHandler);
     }
 }

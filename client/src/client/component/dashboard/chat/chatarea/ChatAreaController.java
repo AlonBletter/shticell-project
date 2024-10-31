@@ -12,9 +12,11 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.KeyCode;
 import okhttp3.HttpUrl;
 
 import java.io.Closeable;
@@ -37,6 +39,7 @@ public class ChatAreaController implements Closeable {
     @FXML private TextArea chatLineTextArea;
     @FXML private TextArea mainChatLinesTextArea;
     @FXML private Label chatVersionLabel;
+    @FXML private Button sendButton;
 
     public ChatAreaController() {
         chatVersion = new SimpleIntegerProperty();
@@ -48,6 +51,11 @@ public class ChatAreaController implements Closeable {
     public void initialize() {
         autoScroll.bind(autoScrollButton.selectedProperty());
         chatVersionLabel.textProperty().bind(Bindings.concat("Chat Version: ", chatVersion.asString()));
+        chatLineTextArea.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                sendButton.fire();
+            }
+        });
     }
 
     public BooleanProperty autoUpdatesProperty() {

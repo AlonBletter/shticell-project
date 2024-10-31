@@ -46,7 +46,7 @@ public class ChatAreaRefresher extends TimerTask {
             chatlinesConsumer.accept(chatLinesWithVersion);
         };
 
-        HttpClientUtil.runReqAsyncWithJson(finalUrl, HttpMethod.GET, null, responseHandler);
+        HttpClientUtil.runReqSyncWithJson(finalUrl, HttpMethod.GET, null, responseHandler);
     }
 
 }

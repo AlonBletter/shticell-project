@@ -19,6 +19,10 @@ public class HttpClientUtil {
                     .followRedirects(false)
                     .build();
 
+    public static OkHttpClient getClient() {
+        return HTTP_CLIENT;
+    }
+
     public static void setCookieManagerLoggingFacility(Consumer<String> logConsumer) {
         simpleCookieManager.setLogData(logConsumer);
     }
@@ -35,7 +39,7 @@ public class HttpClientUtil {
 
         Request request = requestBuilder.build();
 
-        processTheRequest(responseConsumer, request);
+        sendAsyncRequest(responseConsumer, request);
     }
 
     private static void getRequestType(HttpMethod methodType, RequestBody requestBody, Request.Builder requestBuilder) {
@@ -60,23 +64,12 @@ public class HttpClientUtil {
         }
     }
 
-    private static void processTheRequest(Consumer<String> responseConsumer, Request request) {
+    private static void sendAsyncRequest(Consumer<String> responseConsumer, Request request) {
         Callback callback = new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 try {
-                    if (response.code() == 204) {
-                        responseConsumer.accept(null);
-                    } else {
-                        String json = response.body().string();
-                        if (response.isSuccessful() && json != null) {
-                            responseConsumer.accept(json);
-                        } else {
-                            JsonObject errorObject = JsonParser.parseString(json).getAsJsonObject();
-                            String errorMessage = errorObject.get("error").getAsString();
-                            handleFailure(new IOException(errorMessage));
-                        }
-                    }
+                    handleResponse(responseConsumer, response);
                 } finally {
                     response.close();
                 }
@@ -86,20 +79,57 @@ public class HttpClientUtil {
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 handleFailure(e);
             }
-
-            private void handleFailure(IOException e) {
-                Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("HTTP Request Error");
-                    alert.setHeaderText("An error occurred during the HTTP request.");
-                    alert.setContentText(e.getMessage());
-                    alert.showAndWait();
-                });
-            }
         };
 
         Call call = HttpClientUtil.HTTP_CLIENT.newCall(request);
         call.enqueue(callback);
+    }
+
+    private static void handleFailure(IOException e) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("HTTP Request Error");
+            alert.setHeaderText("An error occurred during the HTTP request.");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        });
+    }
+
+    public static void runReqSyncWithJson(String finalUrl, HttpMethod methodType, RequestBody requestBody, Consumer<String> responseConsumer) {
+        Request.Builder requestBuilder = new Request.Builder()
+                .url(finalUrl);
+
+        getRequestType(methodType, requestBody, requestBuilder);
+
+        Request request = requestBuilder.build();
+
+        runSyncRequest(responseConsumer, request);
+    }
+
+    private static void runSyncRequest(Consumer<String> responseConsumer, Request request) {
+        try {
+            Call call = HTTP_CLIENT.newCall(request);
+            Response response = call.execute();
+
+            handleResponse(responseConsumer, response);
+        } catch (IOException e) {
+            handleFailure(e);
+        }
+    }
+
+    private static void handleResponse(Consumer<String> responseConsumer, Response response) throws IOException {
+        if (response.code() == 204) {
+            responseConsumer.accept(null);
+        } else {
+            String json = response.body().string();
+            if (response.isSuccessful() && json != null) {
+                responseConsumer.accept(json);
+            } else {
+                JsonObject errorObject = JsonParser.parseString(json).getAsJsonObject();
+                String errorMessage = errorObject.get("error").getAsString();
+                handleFailure(new IOException(errorMessage));
+            }
+        }
     }
 
     public static void shutdown() {

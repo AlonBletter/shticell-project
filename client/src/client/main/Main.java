@@ -16,6 +16,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+
         URL mainPage = getClass().getResource(Constants.MAIN_SCREEN_FXML_RESOURCE_LOCATION);
 
         FXMLLoader fxmlLoader = new FXMLLoader();
@@ -33,7 +34,7 @@ public class Main extends Application {
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         HttpClientUtil.shutdown();
         appMainController.close();
     }

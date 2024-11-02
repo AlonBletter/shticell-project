@@ -2,10 +2,10 @@ package engine.sheet.cell.impl;
 
 import engine.sheet.cell.api.Cell;
 import engine.sheet.cell.api.CellStyle;
-import engine.sheet.cell.api.CellType;
-import engine.sheet.coordinate.Coordinate;
-import engine.sheet.effectivevalue.EffectiveValue;
-import engine.sheet.effectivevalue.EffectiveValueImpl;
+import dto.cell.CellType;
+import dto.coordinate.Coordinate;
+import dto.effectivevalue.EffectiveValue;
+import dto.effectivevalue.EffectiveValueImpl;
 
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -16,6 +16,7 @@ public class CellImpl implements Cell, Serializable {
     private String originalValue;
     private EffectiveValue effectiveValue;
     private int lastModifiedVersion;
+    private String lastModifiedBy;
     private List<Coordinate> dependsOn;
     private List<Coordinate> influenceOn;
     private final CellStyle cellStyle;
@@ -98,6 +99,16 @@ public class CellImpl implements Cell, Serializable {
     @Override
     public void setTextColor(String textColor) {
         cellStyle.setTextColor(textColor);
+    }
+
+    @Override
+    public String getLastModifiedBy() {
+        return lastModifiedBy;
+    }
+
+    @Override
+    public void setLastModifiedBy(String lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
     }
 
     @Override

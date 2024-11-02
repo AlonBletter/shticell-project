@@ -1,65 +1,71 @@
 package client.component.sheet.header;
 
-import engine.sheet.coordinate.Coordinate;
 import client.component.sheet.app.SheetController;
-import client.component.sheet.common.ShticellResourcesConstants;
 import client.component.sheet.center.singlecell.CellModel;
+import client.component.sheet.common.ShticellResourcesConstants;
+import client.util.Constants;
+import client.util.http.HttpClientUtil;
+import client.util.http.HttpMethod;
+import dto.sheet.SheetDTO;
+import dto.coordinate.Coordinate;
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.File;
+import java.io.Closeable;
 import java.net.URL;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.function.Consumer;
 
-public class HeaderController {
+import static client.util.Constants.GSON_INSTANCE;
+import static client.util.Constants.REFRESH_RATE;
+
+public class HeaderController implements Closeable {
     private SheetController mainController;
 
     @FXML private TextField actionLineTextField;
     @FXML private Label lastUpdatedCellVersionLabel;
-    @FXML private Button loadFileButton;
-    @FXML private Label loadedFilePathLabel;
     @FXML private Label originalCellValueLabel;
     @FXML private Label selectedCellIDLabel;
     @FXML private Label titleLabel;
+    @FXML private Label usernameLabel;
     @FXML private Button updateValueButton;
     @FXML private ComboBox<String> versionSelectorComboBox;
     @FXML private GridPane headerGridPane;
     @FXML private ChoiceBox<String> skinSelectorChoiceBox;
     @FXML private ChoiceBox<String> animationButton;
     @FXML private Tooltip originalValueToolTip;
+    @FXML private Button loadLatestVersionButton;
+    @FXML private Label latestVersionLabel;
 
-    private final SimpleStringProperty filePath;
-    private final SimpleBooleanProperty isFileLoaded;
     private final ObservableList<String> versionNumberList;
     private Coordinate selectedCellCoordinate;
     private Stage primaryStage;
+    private Timer timer;
+    private TimerTask versionRefresher;
+    private SimpleBooleanProperty shouldRefresh = new SimpleBooleanProperty(true);
 
     public HeaderController() {
-        filePath = new SimpleStringProperty("File Path");
-        isFileLoaded = new SimpleBooleanProperty(false);
         versionNumberList = FXCollections.observableArrayList();
     }
 
     public void setMainController(SheetController mainController) {
         this.mainController = mainController;
-        isFileLoaded.bind(mainController.isFileLoadedProperty());
+        actionLineTextField.disableProperty().bind(mainController.readonlyPresentationProperty());
+        updateValueButton.disableProperty().bind(mainController.readonlyPresentationProperty());
     }
 
     @FXML
     private void initialize() {
-        loadedFilePathLabel.textProperty().bind(filePath);
-        actionLineTextField.disableProperty().bind(isFileLoaded.not());
-        updateValueButton.disableProperty().bind(isFileLoaded.not());
-        skinSelectorChoiceBox.disableProperty().bind(isFileLoaded.not());
-        animationButton.disableProperty().bind(isFileLoaded.not());
-
         originalValueToolTip.textProperty().bind(originalCellValueLabel.textProperty());
         originalCellValueLabel.setOnMouseEntered(event -> {
             if (isTextTruncated(originalCellValueLabel)) {
@@ -99,7 +105,6 @@ public class HeaderController {
 
     private void initializeVersionSelectorComboBox() {
         versionSelectorComboBox.setItems(versionNumberList);
-        versionSelectorComboBox.disableProperty().bind(isFileLoaded.not());
 
         versionSelectorComboBox.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*") || !newValue.matches("")) {
@@ -133,40 +138,31 @@ public class HeaderController {
         selectedCellIDLabel.setText("");
         originalCellValueLabel.setText("");
     }
-
-
-    public void initializeHeaderAfterLoad(String loadedFilePath) {
-        actionLineTextField.setText("");
-        filePath.setValue(loadedFilePath);
-        versionSelectorComboBox.getItems().clear();
+    // maybe unite the both ^ V
+    public void initializeHeaderAfterLoad(String username) {
+        clearDataFromHeader();
+        versionNumberList.clear();
         versionNumberList.addFirst("");
+        usernameLabel.setText("Logged As: " + username);
+        addVersionNumbers();
         versionSelectorComboBox.getSelectionModel().selectFirst();
-        refreshComboBoxVersion();
     }
 
-    public void refreshComboBoxVersion() {
-        if (mainController.getSheetCurrentVersion() != 1) {
-            versionNumberList.add(String.valueOf(mainController.getSheetCurrentVersion() - 1));
+    private void addVersionNumbers() {
+        int currentVersion = mainController.getVersion();
+
+        for(int i = 1 ; i <= currentVersion ; i++) {
+            versionNumberList.add(String.valueOf(i));
         }
+    }
+
+    public void updateHeader() {
+        actionLineTextField.setText("");
+        versionNumberList.add(String.valueOf(mainController.getVersion()));
     }
 
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
-    }
-
-    @FXML
-    public void loadFileButtonAction() {
-        clearDataFromHeader();
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select XML file");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML files", "*.xml"));
-        File selectedFile = fileChooser.showOpenDialog(primaryStage);
-        if (selectedFile == null) {
-            return;
-        }
-
-        String absolutePath = selectedFile.getAbsolutePath();
-        mainController.loadFile(absolutePath);
     }
 
     @FXML
@@ -175,18 +171,20 @@ public class HeaderController {
             throw new IllegalArgumentException("Please select a cell before updating value.");
         }
 
-        boolean updated = mainController.updateCell(selectedCellCoordinate, actionLineTextField.getText());
-
-        if (updated) {
-            actionLineTextField.setText("");
-        }
+        mainController.updateCell(selectedCellCoordinate, actionLineTextField.getText());
     }
 
     public void updateHeaderCellData(CellModel selectedCell) {
         selectedCellCoordinate = selectedCell.getCoordinate();
         selectedCellIDLabel.setText(selectedCellCoordinate.toString());
         originalCellValueLabel.textProperty().bind(selectedCell.originalValueProperty());
-        lastUpdatedCellVersionLabel.textProperty().bind(selectedCell.lastModifiedVersionProperty());
+        lastUpdatedCellVersionLabel.textProperty().bind(
+                Bindings.when(Bindings.and(
+                                Bindings.isNotEmpty(selectedCell.lastModifiedVersionProperty()),
+                                Bindings.isNotEmpty(selectedCell.modifiedByProperty())))
+                        .then(Bindings.concat(selectedCell.lastModifiedVersionProperty(), " & ", selectedCell.modifiedByProperty()))
+                        .otherwise("")
+        );
     }
 
     public void requestActionLineFocus() {
@@ -210,5 +208,50 @@ public class HeaderController {
     private void applyCSS(URL cssURL) {
         headerGridPane.getStylesheets().clear();
         headerGridPane.getStylesheets().add(cssURL.toExternalForm());
+    }
+
+
+    @FXML
+    void loadLatestVersionButtonAction(ActionEvent event) {
+        latestVersionLabel.setVisible(false);
+        loadLatestVersionButton.setVisible(false);
+
+        Consumer<String> responseHandler = (response) -> {
+            if(response != null) {
+                SheetDTO sheet = GSON_INSTANCE.fromJson(response, SheetDTO.class);
+                Platform.runLater(() -> {
+                    mainController.setSheetToView(sheet, mainController.readonlyPresentationProperty().get());
+                    shouldRefresh.set(true);
+                });
+            }
+        };
+
+        HttpClientUtil.runReqAsyncWithJson(Constants.GET_LATEST_SHEET_VERSION_PATH, HttpMethod.GET, null, responseHandler);
+    }
+
+    private void updateUserOnNewVersion() {
+        Platform.runLater(() -> {
+            latestVersionLabel.setVisible(true);
+            loadLatestVersionButton.setVisible(true);
+            shouldRefresh.set(false);
+        });
+    }
+
+    public void startVersionRefresher() {
+        versionRefresher = new VersionRefresher(
+                mainController.versionProperty(),
+                this::updateUserOnNewVersion,
+                this.shouldRefresh
+        );
+        timer = new Timer();
+        timer.schedule(versionRefresher, 0, REFRESH_RATE);
+    }
+
+    @Override
+    public void close() {
+        if (versionRefresher != null && timer != null) {
+            versionRefresher.cancel();
+            timer.cancel();
+        }
     }
 }

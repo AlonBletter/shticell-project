@@ -1,7 +1,7 @@
 package engine.sheet.api;
 
 import engine.sheet.cell.api.CellReadActions;
-import engine.sheet.coordinate.Coordinate;
+import dto.coordinate.Coordinate;
 import engine.sheet.range.Range;
 
 import java.util.List;
@@ -19,5 +19,5 @@ public interface SheetReadActions {
     int getVersionNumber();
     List<Coordinate> getRangeCellsCoordinates(String rangeNameToView);
     List<Range> getRanges();
-    List<String> getColumnUniqueValues(String columnLetter);
+    Range getRange(String rangeNameToView);
 }

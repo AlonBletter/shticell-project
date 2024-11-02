@@ -5,8 +5,8 @@ import engine.expression.api.Operation;
 import engine.expression.type.BooleanWrapper;
 import engine.expression.type.Numeric;
 import engine.expression.type.Text;
-import engine.sheet.coordinate.Coordinate;
-import engine.sheet.coordinate.CoordinateFactory;
+import dto.coordinate.Coordinate;
+import dto.coordinate.CoordinateFactory;
 
 import java.util.*;
 import java.util.regex.Matcher;

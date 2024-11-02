@@ -1,6 +1,6 @@
 package client.component.dashboard.sheetlist.model;
 
-import engine.permission.PermissionType;
+import dto.permission.PermissionType;
 import javafx.beans.property.SimpleStringProperty;
 
 public class SingleSheetInformation {

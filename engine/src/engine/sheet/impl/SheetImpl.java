@@ -7,9 +7,9 @@ import engine.sheet.api.Sheet;
 import engine.sheet.cell.api.Cell;
 import engine.sheet.cell.api.CellReadActions;
 import engine.sheet.cell.impl.CellImpl;
-import engine.sheet.coordinate.Coordinate;
-import engine.sheet.coordinate.CoordinateFactory;
-import engine.sheet.effectivevalue.EffectiveValue;
+import dto.coordinate.Coordinate;
+import dto.coordinate.CoordinateFactory;
+import dto.effectivevalue.EffectiveValue;
 import engine.sheet.range.Range;
 import engine.sheet.range.RangeImpl;
 import engine.sheet.row.SortableRow;
@@ -62,7 +62,7 @@ public class SheetImpl implements Sheet, Serializable {
      }
 
     @Override
-    public boolean updateCell(Coordinate coordinate, String newOriginalValue) {
+    public boolean updateCell(Coordinate coordinate, String newOriginalValue, String modifiedBy) {
         Cell cellToUpdate = addNewCellIfEmptyCell(coordinate);
 
         lastModifiedCells.clear();
@@ -71,6 +71,10 @@ public class SheetImpl implements Sheet, Serializable {
 
         if(!lastModifiedCells.isEmpty()) {
             versionNumber++;
+
+            for(Cell cell : lastModifiedCells) {
+                cell.setLastModifiedBy(modifiedBy);
+            }
         }
 
         return !lastModifiedCells.isEmpty();
@@ -132,35 +136,18 @@ public class SheetImpl implements Sheet, Serializable {
     }
 
     @Override
-    public List<String> getColumnUniqueValues(String columnLetter) {
-        int parsedColumn = parseSingleLetterColumn(columnLetter);
-        Set<String> uniqueValues = new HashSet<>();
+    public Range getRange(String rangeNameToView) {
+        Range range = ranges.get(rangeNameToView);
 
-        if(parsedColumn < 0 || parsedColumn > numberOfColumns) {
-            throw new IllegalArgumentException("Invalid column letter: [" + columnLetter + "].\n" +
-                    "Expected a column between A - " + convertIntegerColumnToLetter(numberOfColumns));
+        if(range == null) {
+            throw new IllegalArgumentException("Range with the name [" + rangeNameToView + "] does not exist.");
         }
 
-        for(int row = 1; row <= numberOfRows; row++) {
-            Coordinate coordinate = CoordinateFactory.createCoordinate(row, parsedColumn);
-            // Best practice here is to return effective values, consider changing in the next app version.
-            String effectiveValue = addNewCellIfEmptyCell(coordinate).getEffectiveValue().extractStringValue();
-            String value = !effectiveValue.isEmpty() ? effectiveValue : "(Empty Cell/s)";
-            uniqueValues.add(value);
-        }
-
-        List<String> sortedUniqueValues = new ArrayList<>(uniqueValues);
-        Collections.sort(sortedUniqueValues);
-
-        if (sortedUniqueValues.remove("(Empty Cell/s)")) {
-            sortedUniqueValues.add("(Empty Cell/s)");
-        }
-
-        return sortedUniqueValues;
+        return range;
     }
 
     @Override
-    public void init(STLSheet sheetToInitFrom) {
+    public void init(String uploadedBy, STLSheet sheetToInitFrom) {
         setName(sheetToInitFrom.getName());
         setNumberOfRows(sheetToInitFrom.getSTLLayout().getRows());
         setNumberOfColumns(sheetToInitFrom.getSTLLayout().getColumns());
@@ -186,6 +173,7 @@ public class SheetImpl implements Sheet, Serializable {
             Coordinate cellCoordinate = CoordinateFactory.createCoordinate(stlCell.getRow(), stlCell.getColumn());
             Cell cell = addNewCellIfEmptyCell(cellCoordinate);
             cell.setOriginalValue(stlCell.getSTLOriginalValue());
+            cell.setLastModifiedBy(uploadedBy);
             activeCells.put(cellCoordinate, cell);
         }
 
@@ -548,6 +536,7 @@ public class SheetImpl implements Sheet, Serializable {
             throw new InvalidCellBoundsException(coordinate, numberOfRows, numberOfColumns);
         }
     }
+
     @Override
     public void setName(String name) {
         this.name = name;

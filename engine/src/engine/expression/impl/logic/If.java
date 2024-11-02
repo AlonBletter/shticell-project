@@ -3,9 +3,9 @@ package engine.expression.impl.logic;
 import engine.expression.api.Expression;
 import engine.expression.type.TrinaryExpression;
 import engine.sheet.api.SheetReadActions;
-import engine.sheet.cell.api.CellType;
-import engine.sheet.effectivevalue.EffectiveValue;
-import engine.sheet.effectivevalue.EffectiveValueImpl;
+import dto.cell.CellType;
+import dto.effectivevalue.EffectiveValue;
+import dto.effectivevalue.EffectiveValueImpl;
 
 public class If extends TrinaryExpression {
     public If(Expression expression1, Expression expression2, Expression expression3) {

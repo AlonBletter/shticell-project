@@ -5,9 +5,7 @@ import engine.expression.impl.math.*;
 import engine.expression.impl.string.Concat;
 import engine.expression.impl.string.Sub;
 import engine.expression.impl.system.Ref;
-import engine.sheet.cell.api.CellType;
 
-import javax.naming.NoPermissionException;
 import java.lang.reflect.Constructor;
 import java.util.List;
 

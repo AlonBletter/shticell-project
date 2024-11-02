@@ -2,29 +2,25 @@ package client.component.sheet.app;
 
 import client.component.main.AppController;
 import client.component.sheet.center.CenterController;
+import client.component.sheet.center.singlecell.CellModel;
 import client.component.sheet.center.singlecell.SingleCellController;
-import client.component.sheet.common.ShticellResourcesConstants;
 import client.component.sheet.header.HeaderController;
 import client.component.sheet.left.LeftController;
-import client.component.sheet.task.LoadFileTask;
-import client.component.sheet.task.LoadingDialogController;
-import dto.CellDTO;
-import dto.SheetDTO;
-import engine.SheetManager;
-import engine.SheetManagerImpl;
-import engine.exception.InvalidCellBoundsException;
-import engine.sheet.cell.api.CellType;
-import engine.sheet.coordinate.Coordinate;
-import engine.sheet.effectivevalue.EffectiveValue;
+import client.util.sheetservice.SheetService;
+import client.util.sheetservice.SheetServiceImpl;
+import dto.sheet.SheetDTO;
+import dto.requestinfo.UpdateInformation;
+import dto.cell.CellType;
+import dto.coordinate.Coordinate;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.concurrent.Task;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -33,49 +29,61 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 public class SheetController implements Closeable {
     @FXML private GridPane headerComponent;
     @FXML private HeaderController headerComponentController;
+
     @FXML private VBox leftComponent;
     @FXML private LeftController leftComponentController;
+
+    private ScrollPane centerScrollPane;
+    private CenterController centerComponentController;
+
     @FXML private BorderPane borderPane;
     @FXML private ScrollPane mainScrollPane;
 
-    private final SheetManager engine;
-    private CenterController centerComponentController;
-    private ScrollPane centerScrollPane;
+    @FXML private Button backButton;
+
     private Stage primaryStage;
-    private Task<Boolean> currentRunningTask;
+    private AppController mainController;
+
+    private final SheetService sheetService;
     private SingleCellController selectedCell;
     private List<SingleCellController> selectedRow;
     private List<SingleCellController> selectedColumn;
-    private final SimpleBooleanProperty isFileLoaded;
+    private final SimpleBooleanProperty readonlyPresentation;
     private final SimpleBooleanProperty textSpinAnimation;
     private final SimpleBooleanProperty textFadeAnimation;
-    private AppController mainController;
+    private final SimpleIntegerProperty version;
 
     public SheetController() {
-        engine = new SheetManagerImpl(null);
+        sheetService = new SheetServiceImpl();
         centerScrollPane = new ScrollPane();
         centerComponentController = new CenterController();
-        this.isFileLoaded = new SimpleBooleanProperty(false);
-        this.textSpinAnimation = new SimpleBooleanProperty(false);
-        this.textFadeAnimation = new SimpleBooleanProperty(false);
+        readonlyPresentation = new SimpleBooleanProperty(false);
+        textSpinAnimation = new SimpleBooleanProperty(false);
+        textFadeAnimation = new SimpleBooleanProperty(false);
+        version = new SimpleIntegerProperty(1);
     }
 
-    @Override
-    public void close() throws IOException {
-
+    public int getVersion() {
+        return version.get();
     }
 
-    public SimpleBooleanProperty isFileLoadedProperty() {
-        return isFileLoaded;
+    public SimpleIntegerProperty versionProperty() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version.set(version);
+    }
+
+    public SimpleBooleanProperty readonlyPresentationProperty() {
+        return readonlyPresentation;
     }
 
     public SimpleBooleanProperty getTextSpinAnimationProperty() {
@@ -142,103 +150,31 @@ public class SheetController implements Closeable {
         }
     }
 
-    public void loadFile(String filePath) {
-        try {
-            FXMLLoader loader = new FXMLLoader(ShticellResourcesConstants.LOADING_DIALOG_URL);
-            Parent root = loader.load();
-            LoadingDialogController loadingDialogController = loader.getController();
-
-            Stage loadingDialogStage = new Stage();
-            Consumer<Void> onSuccess = getLoadFileConsumerSuccess(filePath, loadingDialogStage);
-            Consumer<Exception> onFailure = getLoadFileConsumerFailure(loadingDialogStage);
-            currentRunningTask = new LoadFileTask(engine, filePath, onSuccess, onFailure);
-            loadingDialogController.bindTaskToUIComponents(currentRunningTask, null);
-            loadingDialogController.setLoadingFileTitleLabel(filePath);
-
-            loadingDialogStage.initModality(Modality.APPLICATION_MODAL);
-            loadingDialogStage.setTitle("Loading file");
-            loadingDialogStage.setResizable(false);
-            loadingDialogStage.setScene(new Scene(root));
-            loadingDialogStage.show();
-
-            new Thread(currentRunningTask).start();
-        } catch (IOException e) {
-            showErrorAlert("File Loading Error", "An error occurred while opening the file dialog", e.getMessage());
-        }
+    public void setSheetToView(SheetDTO sheet, boolean readonly) {
+        centerComponentController.initializeGrid(sheet, true);
+        centerScrollPane.setContent(centerComponentController.getCenterGrid());
+        borderPane.setCenter(centerScrollPane);
+        setVersion(sheet.versionNumber());
+        headerComponentController.initializeHeaderAfterLoad(mainController.usernameProperty().get());
+        leftComponentController.loadRanges(sheet.ranges());
+        readonlyPresentation.set(readonly);
     }
 
-    private Consumer<Exception> getLoadFileConsumerFailure(Stage dialogStage) {
-        return (exception) -> {
-            if (exception instanceof InvalidCellBoundsException) {
-                handleInvalidCellBoundException((InvalidCellBoundsException) exception);
-            } else {
-                showErrorAlert("File Loading Error", "An error occurred while loading the file", exception.getMessage());
-            }
-            dialogStage.close();
-            currentRunningTask.cancel();
-        };
-    }
+    public void updateCell(Coordinate cellToUpdateCoordinate, String newCellValue) {
+        UpdateInformation updateInformation = new UpdateInformation(cellToUpdateCoordinate, newCellValue, getVersion());
 
-    public void setSheetToView(SheetDTO sheet) {
-        try {
-            centerComponentController.initializeGrid(sheet, true);
-            centerScrollPane.setContent(centerComponentController.getCenterGrid());
-//                centerScrollPane.setFitToWidth(true);
-//                centerScrollPane.setFitToHeight(true);
-            borderPane.setCenter(centerScrollPane);
-            //headerComponentController.initializeHeaderAfterLoad(filePath); //REMOVE
-            //leftComponentController.loadRanges(engine.getRanges()); //TODO fix
-            isFileLoaded.set(true);
-        } catch (Exception e) {
-            showErrorAlert("File Loading Error", "An error occurred while processing the loaded file.", e.getMessage());
-        }
-    }
-
-    private Consumer<Void> getLoadFileConsumerSuccess(String filePath, Stage dialogStage) {
-        return (v) -> {
-            try {
-                SheetDTO sheetDTO = engine.getSpreadsheet();
-                centerComponentController.initializeGrid(sheetDTO, true);
-                centerScrollPane.setContent(centerComponentController.getCenterGrid());
-//                centerScrollPane.setFitToWidth(true);
-//                centerScrollPane.setFitToHeight(true);
-                borderPane.setCenter(centerScrollPane);
-                headerComponentController.initializeHeaderAfterLoad(filePath);
-                leftComponentController.loadRanges(engine.getRanges());
-                isFileLoaded.set(true);
-            } catch (Exception e) {
-                showErrorAlert("File Loading Error", "An error occurred while processing the loaded file.", e.getMessage());
-                dialogStage.close();
-            } finally {
-                currentRunningTask.cancel();
-            }
-        };
-    }
-
-    public boolean updateCell(Coordinate cellToUpdateCoordinate, String newCellValue) {
-        try {
-            int oldVersion = engine.getCurrentVersionNumber();
-            engine.updateCell(cellToUpdateCoordinate, newCellValue);
-
-            if(oldVersion != engine.getCurrentVersionNumber()) {
-                centerComponentController.updateCells(engine.getSpreadsheet());
-                headerComponentController.refreshComboBoxVersion();
-            }
-            return true;
-        } catch (Exception e) {
-            showErrorAlert("Updating Cell Error", "An error occurred while updating the cell.", e.getMessage());
-            return false;
-        }
+        sheetService.updateCell(updateInformation, (newSheet) -> {
+            setVersion(version.get() + 1);
+            centerComponentController.updateCells(newSheet);
+            headerComponentController.updateHeader();
+        });
     }
 
     public void displaySheetByVersion(int version) {
-        try {
-            SheetDTO sheetVersion = engine.getSheetByVersion(version);
+        sheetService.getSheetByVersion(version, (sheetVersion) -> {
             String titleToDisplay = "Sheet Version: " + version;
             displaySheet(sheetVersion, titleToDisplay);
-        } catch (Exception e) {
-            showErrorAlert("Invalid Version", "An error occurred while displaying the sheet.", e.getMessage());
-        }
+        });
     }
 
     private void displaySheet(SheetDTO sheetToDisplay, String title) {
@@ -263,19 +199,6 @@ public class SheetController implements Closeable {
         alert.setHeaderText(headerText);
         alert.setContentText(contentText);
         alert.showAndWait();
-    }
-
-    private void handleInvalidCellBoundException(InvalidCellBoundsException e) {
-        Coordinate coordinate = e.getActualCoordinate();
-        int sheetNumOfRows = e.getSheetNumOfRows();
-        int SheetNumOfColumns = e.getSheetNumOfColumns();
-        char sheetColumnRange = (char) (SheetNumOfColumns + 'A' - 1);
-        char cellColumnChar = (char) (coordinate.column() + 'A' - 1);
-        String message = e.getMessage() != null ? e.getMessage() : "";
-
-        showErrorAlert("Invalid cells bounds", "An error occurred while processing the loaded file..",
-                message + "\n" + "Expected column between A-" + sheetColumnRange + " and row between 1-" + sheetNumOfRows + "\n" +
-                "But received column [" + cellColumnChar + "] and row [" + coordinate.row() + "].");
     }
 
     public void updateColumnWidth(Double result) {
@@ -308,89 +231,55 @@ public class SheetController implements Closeable {
 
     public void updateCellBackgroundColor(String newColor) {
         Coordinate currentCellCoordinate = selectedCell.getCoordinate();
+        UpdateInformation updateInformation = new UpdateInformation(currentCellCoordinate, newColor, getVersion());
 
-        engine.updateCellBackgroundColor(currentCellCoordinate, newColor);
-        centerComponentController.updateCellBackgroundColor(currentCellCoordinate, newColor);
+        sheetService.updateCellBackgroundColor(updateInformation, () ->
+                centerComponentController.updateCellBackgroundColor(currentCellCoordinate, newColor)
+        );
     }
 
     public void updateCellTextColor(String newColor) {
         Coordinate currentCellCoordinate = selectedCell.getCoordinate();
+        UpdateInformation updateInformation = new UpdateInformation(currentCellCoordinate, newColor, getVersion());
 
-        engine.updateCellTextColor(currentCellCoordinate, newColor);
-        centerComponentController.updateCellTextColor(currentCellCoordinate, newColor);
+        sheetService.updateCellTextColor(updateInformation, () ->
+                centerComponentController.updateCellTextColor(currentCellCoordinate, newColor)
+        );
     }
 
-    public boolean addRange(String rangeName, String rangeCoordinates) {
-        try {
-            engine.addRange(rangeName, rangeCoordinates);
-            return true;
-        } catch (InvalidCellBoundsException e) {
-            handleInvalidCellBoundException(e);
-            return false;
-        } catch (Exception e) {
-            showErrorAlert("Invalid Range Addition", "An error occurred while adding the range.", e.getMessage());
-            return false;
-        }
+    public void addRange(String rangeName, String rangeCoordinates) {
+        sheetService.addRange(rangeName, rangeCoordinates, getVersion(), (newRange) ->
+                leftComponentController.updateRanges(newRange));
     }
 
-    public boolean deleteRange(String rangeNameToDelete) {
-        try {
-            engine.deleteRange(rangeNameToDelete);
-            centerComponentController.unmarkRange();
-            return true;
-        } catch (Exception e) {
-            showErrorAlert("Invalid Range Deletion", "An error occurred while deleting the range.", e.getMessage());
-            return false;
-        }
+    public void deleteRange(String rangeNameToDelete) {
+        sheetService.deleteRange(rangeNameToDelete, getVersion(), () -> {
+                    centerComponentController.unmarkRange();
+                    leftComponentController.deleteRange(rangeNameToDelete);
+        });
     }
 
-    public void viewRange(String rangeNameToView) {
-        List<Coordinate> cellsInRange = engine.getRange(rangeNameToView);
-        centerComponentController.markRange(cellsInRange);
+    public void viewRange(List<Coordinate> rangeCoordinatesToMark) {
+        centerComponentController.markRange(rangeCoordinatesToMark);
     }
 
     public void sortRange(String rangeCoordinatesToSort, List<String> columnsToSortBy) {
-        SheetDTO sortedSheet;
-
-        try {
-            sortedSheet = engine.getSortedSheet(rangeCoordinatesToSort, columnsToSortBy);
-        } catch (InvalidCellBoundsException e) {
-            handleInvalidCellBoundException(e);
-            return;
-        } catch (Exception e) {
-            showErrorAlert("Invalid Sort Request", "An error occurred while sorting the range.", e.getMessage());
-            return;
-        }
-
-        displaySheet(sortedSheet, "Sorted Sheet");
+        sheetService.getSortedSheet(rangeCoordinatesToSort, columnsToSortBy, (sortedSheet) ->
+                displaySheet(sortedSheet, "Sorted Sheet")
+        );
     }
 
     public int getNumberOfColumns() {
-        //add method in engine api that gets the number of column (consider not mandatory)
-        return engine.getSpreadsheet().numOfColumns();
-    }
-
-    public int getSheetCurrentVersion() {
-        return engine.getCurrentVersionNumber();
+        return centerComponentController.getNumOfColumns();
     }
 
     public List<String> getColumnUniqueValues(String columnLetter) {
-        return engine.getColumnUniqueValue(columnLetter);
+        return centerComponentController.getColumnUniqueValue(columnLetter);
     }
 
     public void filterRange(String rangeToFilter, Map<String, List<String>> filterRequestValues) {
-        SheetDTO filteredSheet;
-        try {
-            filteredSheet = engine.getFilteredSheet(rangeToFilter, filterRequestValues);
-        } catch (InvalidCellBoundsException e) {
-            handleInvalidCellBoundException(e);
-            return;
-        } catch (Exception e) {
-            showErrorAlert("Invalid Filter Request", "An error occurred while filtering the range.", e.getMessage());
-            return;
-        }
-
-        displaySheet(filteredSheet, "Filtered Sheet");
+        sheetService.getFilteredSheet(rangeToFilter, filterRequestValues, (filteredSheet) ->
+                displaySheet(filteredSheet, "Filtered Sheet"));
     }
 
     public void setComponentsSkin(String newSkin) {
@@ -414,75 +303,67 @@ public class SheetController implements Closeable {
     }
 
     public void displayExpectedValue(Number newValue) {
-        try {
-//            Map<Coordinate, EffectiveValue> modifiedCells = engine.getExpectedValue(selectedCell.getCoordinate(), String.valueOf(newValue.doubleValue()));
-            SheetDTO sheet = engine.getExpectedValue(selectedCell.getCoordinate(), String.valueOf(newValue.doubleValue()));
-            centerComponentController.refreshExpectedValues(sheet);
-        } catch (Exception e) {
-            showErrorAlert("Invalid Usage of What-If",
-                    "An error occurred while using the what-if command.", e.getMessage());
-        }
+//            Map<Coordinate, EffectiveValue> modifiedCells = sheetService.getExpectedValue(selectedCell.getCoordinate(), String.valueOf(newValue.doubleValue()));
+        UpdateInformation updateInformation = new UpdateInformation(selectedCell.getCoordinate(), String.valueOf(newValue.doubleValue()), getVersion());
+        sheetService.getExpectedValue(updateInformation, (expectedSheet) ->
+                centerComponentController.refreshExpectedValues(expectedSheet));
     }
 
     public void restoreCurrentValues() {
         centerComponentController.restoreCurrentValues();
     }
 
-    public CellDTO getCurrentCell() {
-        return engine.getCell(selectedCell.getCoordinate());
+    public SingleCellController getSelectedCell() {
+        return selectedCell;
     }
 
     public void createGraph(String xAxisRange, String yAxisRange, String chartType) {
-        List<Coordinate> xAxis = null;
-        List<Coordinate> yAxis = null;
+        sheetService.getAxis(xAxisRange, xAxis -> {
+            if (xAxis.getFirst().column() != xAxis.getLast().column()) {
+                showErrorAlert("Invalid graph settings",
+                        "An error occurred while creating the graph.", "Invalid Column");
+                return;
+            }
 
-        try {
-            xAxis = engine.getAxis(xAxisRange);
-            yAxis = engine.getAxis(yAxisRange);
-        } catch (Exception e) {
-            showErrorAlert("Invalid graph settings", "An error occurred while creating the graph.",
-                    "Invalid column range format. Expected <coordinate first column cell>..<coordinate last column cell>");
-            return;
-        }
+            sheetService.getAxis(yAxisRange, yAxis -> {
+                if (yAxis.getFirst().column() != yAxis.getLast().column()) {
+                    showErrorAlert("Invalid graph settings",
+                            "An error occurred while creating the graph.", "Invalid Column");
+                    return;
+                }
 
-        if (xAxis.getFirst().column() != xAxis.getLast().column()
-                || yAxis.getFirst().column() != yAxis.getLast().column()) {
+                List<Double> xAxisData = getValuesFromCoordinates(xAxis);
+                List<Double> yAxisData = getValuesFromCoordinates(yAxis);
 
-            showErrorAlert("Invalid graph settings",
-                    "An error occurred while creating the graph.", "Invalid Column");
-            return;
-        }
+                if (xAxisData.size() != yAxisData.size()) {
+                    showErrorAlert("Mismatch in data size",
+                            "X-axis and Y-axis ranges must have the same number of data points.", null);
+                    return;
+                }
 
-        List<Double> xAxisData = getValuesFromCoordinates(xAxis);
-        List<Double> yAxisData = getValuesFromCoordinates(yAxis);
-
-        if (xAxisData.size() != yAxisData.size()) {
-            showErrorAlert("Mismatch in data size",
-                    "X-axis and Y-axis ranges must have the same number of data points.", null);
-            return;
-        }
-
-        switch (chartType) {
-            case "BarChart":
-                showBarChart(xAxisData, yAxisData);
-                break;
-            case "LineChart":
-                showLineChart(xAxisData, yAxisData);
-                break;
-            default:
-                showErrorAlert("Invalid chart type",
-                        "Unknown chart type: " + chartType, null);
-                break;
-        }
+                switch (chartType) {
+                    case "BarChart":
+                        showBarChart(xAxisData, yAxisData);
+                        break;
+                    case "LineChart":
+                        showLineChart(xAxisData, yAxisData);
+                        break;
+                    default:
+                        showErrorAlert("Invalid chart type",
+                                "Unknown chart type: " + chartType, null);
+                        break;
+                }
+            });
+        });
     }
 
     private List<Double> getValuesFromCoordinates(List<Coordinate> coordinates) {
         List<Double> values = new ArrayList<>();
         for (Coordinate coord : coordinates) {
-            CellDTO cell = engine.getCell(coord);
-            EffectiveValue value = cell.effectiveValue();
-            if (value.cellType() == CellType.NUMERIC) {
-                values.add(value.extractValueWithExpectation(Double.class));
+            CellModel cell = centerComponentController.getCell(coord);
+            String value = cell.getEffectiveValue();
+            if (cell.getCellType() == CellType.NUMERIC) {
+                values.add(Double.parseDouble(value));
             } else {
                 showErrorAlert("Non-numeric data", "All cells in the graph must be numeric.", null);
                 return null;
@@ -545,5 +426,25 @@ public class SheetController implements Closeable {
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
+    }
+
+    public void setActive() {
+        headerComponentController.startVersionRefresher();
+    }
+
+    @Override
+    public void close() {
+        headerComponentController.close();
+    }
+
+    @FXML
+    public void backButtonOnClicked(ActionEvent event) {
+        close();
+        mainController.loadDashboardScreen();
+    }
+
+    public void setStageDimension(Stage primaryStage) {
+        primaryStage.setWidth(borderPane.getPrefWidth() + 50);
+        primaryStage.setMinHeight(borderPane.getPrefHeight() + 50);
     }
 }

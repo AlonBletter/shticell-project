@@ -1,8 +1,8 @@
 package engine.expression.api;
 
-import engine.sheet.cell.api.CellType;
-import engine.sheet.effectivevalue.EffectiveValue;
 import engine.sheet.api.SheetReadActions;
+import dto.cell.CellType;
+import dto.effectivevalue.EffectiveValue;
 
 public interface Expression {
     EffectiveValue evaluate(SheetReadActions currentWorkingSheet);

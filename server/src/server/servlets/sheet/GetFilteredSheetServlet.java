@@ -3,6 +3,7 @@ package server.servlets.sheet;
 import dto.requestinfo.FilterParams;
 import dto.sheet.SheetDTO;
 import engine.Engine;
+import engine.exception.InvalidCellBoundsException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -14,6 +15,7 @@ import server.utils.SessionUtils;
 import java.io.IOException;
 
 import static server.constants.Constants.GSON_INSTANCE;
+import static server.utils.ServletUtils.handleInvalidCellBoundException;
 
 @WebServlet(name = "Get Filtered Sheet Servlet", urlPatterns = "/sheet/filter")
 public class GetFilteredSheetServlet extends HttpServlet {
@@ -37,6 +39,8 @@ public class GetFilteredSheetServlet extends HttpServlet {
             String jsonResponse = GSON_INSTANCE.toJson(sheet);
             response.getWriter().println(jsonResponse);
             response.getWriter().flush();
+        } catch (InvalidCellBoundsException e) {
+            handleInvalidCellBoundException(response, e);
         } catch (Exception e) {
             ServletUtils.sendErrorResponse(response, e.getMessage());
         }

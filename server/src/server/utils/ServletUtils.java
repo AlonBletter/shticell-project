@@ -1,9 +1,11 @@
 package server.utils;
 
 import com.google.gson.JsonObject;
+import dto.coordinate.Coordinate;
 import engine.Engine;
 import engine.EngineImpl;
 import engine.chat.ChatManager;
+import engine.exception.InvalidCellBoundsException;
 import engine.user.UserManager;
 import engine.user.UserManagerImpl;
 import jakarta.servlet.ServletContext;
@@ -94,5 +96,22 @@ public class ServletUtils {
 		errorResponse.addProperty("error", errorMessage);
 
 		response.getWriter().write(errorResponse.toString());
+	}
+
+
+	public static void handleInvalidCellBoundException(HttpServletResponse response, InvalidCellBoundsException e) throws IOException {
+		Coordinate coordinate = e.getActualCoordinate();
+		int sheetNumOfRows = e.getSheetNumOfRows();
+		int sheetNumOfColumns = e.getSheetNumOfColumns();
+		char sheetColumnRange = (char) (sheetNumOfColumns + 'A' - 1);
+		char cellColumnChar = (char) (coordinate.column() + 'A' - 1);
+		String message = e.getMessage() != null ? e.getMessage() : "";
+
+		String errorMessage = message + " Expected column between A-" + sheetColumnRange +
+				" and row between 1-" + sheetNumOfRows + ". " +
+				"But received column [" + cellColumnChar + "] and row [" + coordinate.row() + "].";
+
+		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		response.getWriter().write("{\"error\":\"" + errorMessage + "\"}");
 	}
 }

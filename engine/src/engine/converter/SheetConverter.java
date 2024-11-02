@@ -1,4 +1,4 @@
-package dto.converter;
+package engine.converter;
 
 import dto.cell.CellDTO;
 import dto.range.RangeDTO;
@@ -69,7 +69,7 @@ public class SheetConverter {
         List<RangeDTO> rangeDTOs = new LinkedList<>();
 
         for(Range range : ranges) {
-            RangeDTO rangeDTO = RangeDTO.convertToRangeDTO(range);
+            RangeDTO rangeDTO = RangeConverter.convertToDTO(range);
             rangeDTOs.add(rangeDTO);
         }
 

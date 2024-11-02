@@ -3,9 +3,7 @@ package client.component.sheet.common;
 import java.net.URL;
 
 public class ShticellResourcesConstants {
-    public static final String APP_FXML_RESOURCE_IDENTIFIER = "/client/component/sheet/app/sheet.fxml";
     public static final String CELL_FXML_RESOURCE_IDENTIFIER = "/client/component/sheet/center/singlecell/singlecell.fxml";
-    public static final String LOADING_DIALOG_FXML_RESOURCE_IDENTIFIER = "/client/component/sheet/task/loadingDialog.fxml";
     public static final String DIMENSION_DIALOG_FXML_RESOURCE_IDENTIFIER = "/client/component/sheet/left/dialog/dimension/dimensionDialog.fxml";
     public static final String RANGE_DIALOG_FXML_RESOURCE_IDENTIFIER = "/client/component/sheet/left/dialog/range/rangeDialog.fxml";
     public static final String SORT_DIALOG_FXML_RESOURCE_IDENTIFIER = "/client/component/sheet/left/dialog/sort/sortDialog.fxml";
@@ -16,7 +14,6 @@ public class ShticellResourcesConstants {
     public static final String GRAPH_DIALOG_FXML_RESOURCE_IDENTIFIER = "/client/component/sheet/left/dialog/graph/graphDialog.fxml";
 
     public static final URL CELL_FXML_URL = ShticellResourcesConstants.class.getResource(CELL_FXML_RESOURCE_IDENTIFIER);
-    public static final URL LOADING_DIALOG_URL = ShticellResourcesConstants.class.getResource(LOADING_DIALOG_FXML_RESOURCE_IDENTIFIER);
     public static final URL DIMENSION_DIALOG_URL = ShticellResourcesConstants.class.getResource(DIMENSION_DIALOG_FXML_RESOURCE_IDENTIFIER);
     public static final URL RANGE_DIALOG_URL = ShticellResourcesConstants.class.getResource(RANGE_DIALOG_FXML_RESOURCE_IDENTIFIER);
     public static final URL SORT_DIALOG_URL = ShticellResourcesConstants.class.getResource(SORT_DIALOG_FXML_RESOURCE_IDENTIFIER);

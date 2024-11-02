@@ -3,8 +3,9 @@ package engine;
 import dto.cell.CellDTO;
 import dto.range.RangeDTO;
 import dto.sheet.SheetDTO;
-import dto.converter.CellConverter;
-import dto.converter.SheetConverter;
+import engine.converter.CellConverter;
+import engine.converter.RangeConverter;
+import engine.converter.SheetConverter;
 import engine.exception.InvalidCellBoundsException;
 import engine.expression.ExpressionUtils;
 import engine.generated.STLSheet;
@@ -183,7 +184,7 @@ public class SheetManagerImpl implements SheetManager {
     public RangeDTO getRange(String rangeNameToView) {
         validateLoadedSheet();
         Sheet currentVersion = versionManager.getCurrentVersionSheet();
-        return RangeDTO.convertToRangeDTO(currentVersion.getRange(rangeNameToView));
+        return RangeConverter.convertToDTO(currentVersion.getRange(rangeNameToView));
     }
 
     @Override

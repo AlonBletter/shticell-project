@@ -17,7 +17,7 @@ import static server.constants.Constants.GSON_INSTANCE;
 @WebServlet(name = "Delete Range Servlet", urlPatterns = "/sheet/range/delete")
 public class DeleteRangeServlet extends HttpServlet {
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
 
         String username = SessionUtils.getUsername(req);

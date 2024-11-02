@@ -536,6 +536,7 @@ public class SheetImpl implements Sheet, Serializable {
             throw new InvalidCellBoundsException(coordinate, numberOfRows, numberOfColumns);
         }
     }
+
     @Override
     public void setName(String name) {
         this.name = name;

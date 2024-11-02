@@ -3,6 +3,7 @@ package server.servlets.sheet;
 import com.google.gson.JsonObject;
 import dto.range.RangeDTO;
 import engine.Engine;
+import engine.exception.InvalidCellBoundsException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -14,11 +15,12 @@ import server.utils.SessionUtils;
 import java.io.IOException;
 
 import static server.constants.Constants.GSON_INSTANCE;
+import static server.utils.ServletUtils.handleInvalidCellBoundException;
 
 @WebServlet(name = "Add Range Servlet", urlPatterns = "/sheet/range/add")
 public class AddRangeServlet extends HttpServlet {
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
 
         String username = SessionUtils.getUsername(req);
@@ -40,6 +42,8 @@ public class AddRangeServlet extends HttpServlet {
             String jsonResponse = GSON_INSTANCE.toJson(rangeDTO);
             resp.getWriter().write(jsonResponse);
             resp.getWriter().flush();
+        } catch (InvalidCellBoundsException e) {
+            handleInvalidCellBoundException(resp, e);
         } catch (Exception e) {
             ServletUtils.sendErrorResponse(resp, e.getMessage());
         }

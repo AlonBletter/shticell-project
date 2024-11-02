@@ -65,7 +65,7 @@ public class PermissionsController {
         });
     }
 
-    public void setDashboardController(DashboardController dashboardController) {
+    public void     setDashboardController(DashboardController dashboardController) {
         this.dashboardController = dashboardController;
 
         dashboardController.selectedSheetNameProperty().addListener((observable, oldValue, newValue) -> {

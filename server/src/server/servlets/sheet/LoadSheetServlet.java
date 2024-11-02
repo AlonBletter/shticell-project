@@ -15,6 +15,8 @@ import server.utils.SessionUtils;
 
 import java.io.IOException;
 
+import static server.utils.ServletUtils.handleInvalidCellBoundException;
+
 
 @WebServlet(name = "Load Sheet Servlet", urlPatterns = "/loadSheet")
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 10, maxFileSize = 1024 * 1024 * 50, maxRequestSize = 1024 * 1024 * 100)
@@ -45,21 +47,5 @@ public class LoadSheetServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write("{\"error\":\"" + e.getMessage() + "\"}");
         }
-    }
-
-    private void handleInvalidCellBoundException(HttpServletResponse response, InvalidCellBoundsException e) throws IOException {
-        Coordinate coordinate = e.getActualCoordinate();
-        int sheetNumOfRows = e.getSheetNumOfRows();
-        int sheetNumOfColumns = e.getSheetNumOfColumns();
-        char sheetColumnRange = (char) (sheetNumOfColumns + 'A' - 1);
-        char cellColumnChar = (char) (coordinate.column() + 'A' - 1);
-        String message = e.getMessage() != null ? e.getMessage() : "";
-
-        String errorMessage = message + " Expected column between A-" + sheetColumnRange +
-                " and row between 1-" + sheetNumOfRows + ". " +
-                "But received column [" + cellColumnChar + "] and row [" + coordinate.row() + "].";
-
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        response.getWriter().write("{\"error\":\"" + errorMessage + "\"}");
     }
 }

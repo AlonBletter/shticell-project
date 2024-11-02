@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dto.sheet.SheetDTO;
 import engine.Engine;
+import engine.exception.InvalidCellBoundsException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -19,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static server.constants.Constants.GSON_INSTANCE;
+import static server.utils.ServletUtils.handleInvalidCellBoundException;
 
 @WebServlet(name = "Get Sorted Sheet Servlet", urlPatterns = "/sheet/sort")
 public class GetSortedSheetServlet extends HttpServlet {
@@ -49,6 +51,8 @@ public class GetSortedSheetServlet extends HttpServlet {
             String jsonResponse = GSON_INSTANCE.toJson(sheet);
             response.getWriter().println(jsonResponse);
             response.getWriter().flush();
+        } catch (InvalidCellBoundsException e) {
+            handleInvalidCellBoundException(response, e);
         } catch (Exception e) {
             ServletUtils.sendErrorResponse(response, e.getMessage());
         }

@@ -134,7 +134,7 @@ public class DashboardController implements Closeable {
 
     public void setStageDimension(Stage stage) {
         stage.setWidth(borderPane.getPrefWidth() + 50);
-        stage.setMinHeight(borderPane.getPrefHeight() + 50);
+        stage.setHeight(borderPane.getPrefHeight() + 50);
     }
 
     public SimpleStringProperty usernameProperty() {

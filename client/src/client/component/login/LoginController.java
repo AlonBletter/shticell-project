@@ -23,7 +23,6 @@ public class LoginController {
 
     @FXML private Button exitButton;
     @FXML private Button loginButton;
-    @FXML private ProgressBar loginProgressBar;
     @FXML private Label errorMessageLabel;
     @FXML private TextField userNameTextField;
 
@@ -77,5 +76,4 @@ public class LoginController {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();
     }
-
 }

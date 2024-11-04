@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<STL-Sheet name="Major Test Sheet" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="shtisel-v2.xsd">
+    <STL-Layout rows="30" columns="4">
+        <STL-Size column-width-units="150" rows-height-units="40"/>
+    </STL-Layout>
+    <STL-Ranges>
+        <STL-Range name="test-range">
+            <STL-Boundaries from="C2" to="c28"/>
+        </STL-Range>
+    </STL-Ranges>
+    <STL-Cells>
+        <STL-Cell row="1" column="A">
+            <STL-Original-Value>Calculation</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="1" column="B">
+            <STL-Original-Value>Expected</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="1" column="C">
+            <STL-Original-Value>Validate</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="1" column="D">
+            <STL-Original-Value>Specific Test</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="2" column="A">
+            <STL-Original-Value>{pLuS,5,-10}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="2" column="B">
+            <STL-Original-Value>-5</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="2" column="C">
+            <STL-Original-Value>{if,{equal,{ref,b2},-5},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="3" column="A">
+            <STL-Original-Value>{minus,10,10}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="3" column="B">
+            <STL-Original-Value>0</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="3" column="C">
+            <STL-Original-Value>{if,{equal,{ref,b3},0},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="4" column="A">
+            <STL-Original-Value>{times,30,0.5}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="4" column="B">
+            <STL-Original-Value>15</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="4" column="C">
+            <STL-Original-Value>{if,{equal,{ref,b4},15},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="5" column="A">
+            <STL-Original-Value>{DIVIDE,10,-5}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="5" column="B">
+            <STL-Original-Value>-2</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="5" column="C">
+            <STL-Original-Value>{if,{equal,{ref,b5},-2},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="6" column="A">
+            <STL-Original-Value>{DIVIDE,10,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="6" column="B">
+            <STL-Original-Value>NaN</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="6" column="C">
+            <STL-Original-Value>{if,{equal,NaN,{ref,b6}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="6" column="D">
+            <STL-Original-Value>Divide by zero</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="7" column="A">
+            <STL-Original-Value>{MOD,10,3}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="7" column="B">
+            <STL-Original-Value>1</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="7" column="C">
+            <STL-Original-Value>{if,{equal,1,{ref,b7}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="8" column="A">
+            <STL-Original-Value>{PoW,2,8}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="8" column="B">
+            <STL-Original-Value>256</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="8" column="C">
+            <STL-Original-Value>{if,{equal,256,{ref,b8}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="9" column="A">
+            <STL-Original-Value>{Abs,-5.125}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="9" column="B">
+            <STL-Original-Value>5.125</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="9" column="C">
+            <STL-Original-Value>{if,{equal,5.125,{ref,b9}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="10" column="A">
+            <STL-Original-Value>{ConcaT,Hello ,{ref,b6}}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="10" column="B">
+            <STL-Original-Value>Hello NaN</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="10" column="C">
+            <STL-Original-Value>{if,{equal,Hello NaN,{ref,b10}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="11" column="A">
+            <STL-Original-Value>{Concat,{ref,b9},HAY}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="11" column="B">
+            <STL-Original-Value>!UNDEFINED!</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="11" column="C">
+            <STL-Original-Value>{if,{equal,!UNDEFINED!,{ref,b11}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="11" column="D">
+            <STL-Original-Value>Concat with number</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="12" column="A">
+            <STL-Original-Value>{SUB,Aviad,{ref,b3},2}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="12" column="B">
+            <STL-Original-Value>Avi</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="12" column="C">
+            <STL-Original-Value>{if,{equal,Avi,{ref,b12}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="13" column="A">
+            <STL-Original-Value>{SUB,Aviad,2,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="13" column="B">
+            <STL-Original-Value>!UNDEFINED!</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="13" column="C">
+            <STL-Original-Value>{if,{equal,!UNDEFINED!,{ref,b13}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="13" column="D">
+            <STL-Original-Value>Invalid SUB limits</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="14" column="A">
+            <STL-Original-Value>{SUB,Aviad,1.5,2}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="14" column="B">
+            <STL-Original-Value>!UNDEFINED!</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="14" column="C">
+            <STL-Original-Value>{if,{equal,!UNDEFINED!,{ref,b14}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="14" column="D">
+            <STL-Original-Value>Invalid limits data type</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="15" column="A">
+            <STL-Original-Value>{SUB,Aviad,1,20}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="15" column="B">
+            <STL-Original-Value>!UNDEFINED!</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="15" column="C">
+            <STL-Original-Value>{if,{equal,!UNDEFINED!,{ref,b15}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="15" column="D">
+            <STL-Original-Value>Index out of bounds</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="16" column="A">
+            <STL-Original-Value>{EQuaL,TrUe,TruE}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="16" column="B">
+            <STL-Original-Value>TRUE</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="16" column="C">
+            <STL-Original-Value>{if,{equal,TRUE,{ref,b16}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="17" column="A">
+            <STL-Original-Value>{EQuaL,TrUe,FALSE}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="17" column="B">
+            <STL-Original-Value>FALSE</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="17" column="C">
+            <STL-Original-Value>{if,{equal,FALSE,{ref,b17}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="17" column="D">
+            <STL-Original-Value>TRUE != FALSE</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="18" column="A">
+            <STL-Original-Value>{EQuaL,false,FALSE}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="18" column="B">
+            <STL-Original-Value>TRUE</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="18" column="C">
+            <STL-Original-Value>{if,{equal,TRUE,{ref,b18}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="19" column="A">
+            <STL-Original-Value>{EquaL,text,5}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="19" column="B">
+            <STL-Original-Value>FALSE</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="19" column="C">
+            <STL-Original-Value>{if,{equal,FALSE,{ref,b19}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="19" column="D">
+            <STL-Original-Value>text != 5</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="20" column="A">
+            <STL-Original-Value>{EquaL,10,True}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="20" column="B">
+            <STL-Original-Value>FALSE</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="20" column="C">
+            <STL-Original-Value>{if,{equal,FALSE,{ref,b20}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="20" column="D">
+            <STL-Original-Value>10 != TRUE</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="21" column="A">
+            <STL-Original-Value>{BIGGER,10.9,-10.1}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="21" column="B">
+            <STL-Original-Value>TRUE</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="21" column="C">
+            <STL-Original-Value>{if,{equal,TRUE,{ref,b21}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="22" column="A">
+            <STL-Original-Value>{BIGGER,-10.9,10.1}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="22" column="B">
+            <STL-Original-Value>FALSE</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="22" column="C">
+            <STL-Original-Value>{if,{equal,FALSE,{ref,b22}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="22" column="D">
+            <STL-Original-Value>-10.9 not greater equal 10.1</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="23" column="A">
+            <STL-Original-Value>{LESS,10.9,-10.1}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="23" column="B">
+            <STL-Original-Value>FALSE</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="23" column="C">
+            <STL-Original-Value>{if,{equal,FALSE,{ref,b23}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="23" column="D">
+            <STL-Original-Value>10.9 not lesser equal -10.1</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="24" column="A">
+            <STL-Original-Value>{LESS,-10.99,-10.99}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="24" column="B">
+            <STL-Original-Value>TRUE</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="24" column="C">
+            <STL-Original-Value>{if,{equal,TRUE,{ref,b24}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="25" column="A">
+            <STL-Original-Value>{OR,{REF,B21},{REF,B22}}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="25" column="B">
+            <STL-Original-Value>TRUE</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="25" column="C">
+            <STL-Original-Value>{if,{equal,TRUE,{ref,b25}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="26" column="A">
+            <STL-Original-Value>{OR,{REF,B22},{REF,B23}}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="26" column="B">
+            <STL-Original-Value>FALSE</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="26" column="C">
+            <STL-Original-Value>{if,{equal,FALSE,{ref,b26}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="27" column="A">
+            <STL-Original-Value>{AND,TRUE,{REF,B25}}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="27" column="B">
+            <STL-Original-Value>TRUE</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="27" column="C">
+            <STL-Original-Value>{if,{equal,TRUE,{ref,b27}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="28" column="A">
+            <STL-Original-Value>{AND,FALSE,{REF,B25}}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="28" column="B">
+            <STL-Original-Value>FALSE</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="28" column="C">
+            <STL-Original-Value>{if,{equal,FALSE,{ref,b28}},1,0}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="29" column="C">
+            <STL-Original-Value>{SuM,test-range}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="30" column="A">
+            <STL-Original-Value>Grade:</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="30" column="B">
+            <STL-Original-Value>{PERCeNt,{times,100,{divide,{REF,C29},27}},100}</STL-Original-Value>
+        </STL-Cell>
+        <STL-Cell row="30" column="C">
+            <STL-Original-Value>{if,{equal,{ref,b30},100},YOU DA BEST!,{if,{bigger,{ref,b30},90},OK,{if,{bigger,{ref,b30},60},LESS THEN OK,FIX ME}}}</STL-Original-Value>
+        </STL-Cell>
+    </STL-Cells>
+</STL-Sheet>

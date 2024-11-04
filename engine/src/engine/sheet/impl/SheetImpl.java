@@ -62,14 +62,14 @@ public class SheetImpl implements Sheet, Serializable {
      }
 
     @Override
-    public boolean updateCell(Coordinate coordinate, String newOriginalValue, String modifiedBy) {
+    public boolean updateCell(Coordinate coordinate, String newOriginalValue, String modifiedBy, boolean dynamicCalculation) {
         Cell cellToUpdate = addNewCellIfEmptyCell(coordinate);
 
         lastModifiedCells.clear();
         cellToUpdate.setOriginalValue(newOriginalValue);
         updateSheetEffectiveValues();
 
-        if(!lastModifiedCells.isEmpty()) {
+        if(!lastModifiedCells.isEmpty() && !dynamicCalculation) {
             versionNumber++;
 
             for(Cell cell : lastModifiedCells) {

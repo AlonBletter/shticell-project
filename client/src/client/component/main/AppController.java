@@ -85,6 +85,7 @@ public class AppController implements Closeable {
             sheetController.setMainController(this);
             sheetController.setSheetToView(sheetToView, readonly);
             sheetController.setStageDimension(primaryStage);
+            sheetController.setPrimaryStage(primaryStage);
             setMainPanelTo(sheetComponent);
             sheetController.setActive();
         } catch (IOException e) {

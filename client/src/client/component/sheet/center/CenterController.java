@@ -420,4 +420,8 @@ public class CenterController {
         char normalizedColumn = Character.toUpperCase(column.charAt(0));
         return normalizedColumn - 'A' + 1;
     }
+
+    public int getNumOfRows() {
+        return numOfRows;
+    }
 }

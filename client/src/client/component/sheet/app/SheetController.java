@@ -451,6 +451,6 @@ public class SheetController implements Closeable {
 
     public void setStageDimension(Stage primaryStage) {
         primaryStage.setWidth(borderPane.getPrefWidth() + 50);
-        primaryStage.setMinHeight(borderPane.getPrefHeight() + 50);
+        primaryStage.setHeight(borderPane.getPrefHeight() + 50);
     }
 }

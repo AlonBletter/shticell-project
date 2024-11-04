@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 
 
-<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.component.sheet.left.dialog.whatif.WhatIfDialogController">
+<BorderPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.component.sheet.left.dialog.whatif.WhatIfDialogController">
    <center>
       <GridPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="227.0" prefWidth="376.0">
         <columnConstraints>

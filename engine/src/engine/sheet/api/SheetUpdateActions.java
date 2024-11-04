@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface SheetUpdateActions {
-    boolean updateCell(Coordinate coordinate, String value, String modifiedBy);
+    boolean updateCell(Coordinate coordinate, String newOriginalValue, String modifiedBy, boolean dynamicCalculation);
     void setName(String name);
     void setNumberOfRows(int numberOfRows);
     void setNumberOfColumns(int numberOfColumns);

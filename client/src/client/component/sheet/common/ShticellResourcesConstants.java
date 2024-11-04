@@ -11,6 +11,7 @@ public class ShticellResourcesConstants {
     public static final String FILTER_DIALOG_FXML_RESOURCE_IDENTIFIER = "/client/component/sheet/left/dialog/filter/filterDialog.fxml";
     public static final String FILTER_COLUMN_PICKER_FXML_RESOURCE_IDENTIFIER = "/client/component/sheet/left/dialog/filter/filtercolumnpicker/filterColumnPicker.fxml";
     public static final String WHAT_IF_DIALOG_FXML_RESOURCE_IDENTIFIER = "/client/component/sheet/left/dialog/whatif/whatIfDialog.fxml";
+    public static final String MULTIPLE_WHAT_IF_DIALOG_FXML_RESOURCE_IDENTIFIER = "/client/component/sheet/left/dialog/whatif/multipleWhatIfDialog.fxml";
     public static final String GRAPH_DIALOG_FXML_RESOURCE_IDENTIFIER = "/client/component/sheet/left/dialog/graph/graphDialog.fxml";
 
     public static final URL CELL_FXML_URL = ShticellResourcesConstants.class.getResource(CELL_FXML_RESOURCE_IDENTIFIER);
@@ -21,6 +22,7 @@ public class ShticellResourcesConstants {
     public static final URL FILTER_DIALOG_URL = ShticellResourcesConstants.class.getResource(FILTER_DIALOG_FXML_RESOURCE_IDENTIFIER);
     public static final URL FILTER_PICKER_URL = ShticellResourcesConstants.class.getResource(FILTER_COLUMN_PICKER_FXML_RESOURCE_IDENTIFIER);
     public static final URL WHAT_IF_DIALOG_URL = ShticellResourcesConstants.class.getResource(WHAT_IF_DIALOG_FXML_RESOURCE_IDENTIFIER);
+    public static final URL MULTIPLE_WHAT_IF_DIALOG_URL = ShticellResourcesConstants.class.getResource(MULTIPLE_WHAT_IF_DIALOG_FXML_RESOURCE_IDENTIFIER);
     public static final URL GRAPH_DIALOG_URL = ShticellResourcesConstants.class.getResource(GRAPH_DIALOG_FXML_RESOURCE_IDENTIFIER);
 
     public static final String DEFAULT_CENTER_CSS_RESOURCE_IDENTIFIER = "/client/component/sheet/center/center.css";

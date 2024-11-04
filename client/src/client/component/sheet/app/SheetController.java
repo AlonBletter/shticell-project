@@ -8,6 +8,7 @@ import client.component.sheet.header.HeaderController;
 import client.component.sheet.left.LeftController;
 import client.util.sheetservice.SheetService;
 import client.util.sheetservice.SheetServiceImpl;
+import dto.coordinate.CoordinateFactory;
 import dto.sheet.SheetDTO;
 import dto.requestinfo.UpdateInformation;
 import dto.cell.CellType;
@@ -273,6 +274,10 @@ public class SheetController implements Closeable {
         return centerComponentController.getNumOfColumns();
     }
 
+    public int getNumberOfRows() {
+        return centerComponentController.getNumOfRows();
+    }
+
     public List<String> getColumnUniqueValues(String columnLetter) {
         return centerComponentController.getColumnUniqueValue(columnLetter);
     }
@@ -302,9 +307,10 @@ public class SheetController implements Closeable {
         }
     }
 
-    public void displayExpectedValue(Number newValue) {
-//            Map<Coordinate, EffectiveValue> modifiedCells = sheetService.getExpectedValue(selectedCell.getCoordinate(), String.valueOf(newValue.doubleValue()));
-        UpdateInformation updateInformation = new UpdateInformation(selectedCell.getCoordinate(), String.valueOf(newValue.doubleValue()), getVersion());
+    public void displayExpectedValue(Number newValue , Coordinate cellId) {
+        UpdateInformation updateInformation = new UpdateInformation(
+                cellId, String.valueOf(newValue.doubleValue()), getVersion());
+
         sheetService.getExpectedValue(updateInformation, (expectedSheet) ->
                 centerComponentController.refreshExpectedValues(expectedSheet));
     }

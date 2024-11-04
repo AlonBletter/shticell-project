@@ -109,7 +109,7 @@ public class SheetManagerImpl implements SheetManager {
         validateVersion(sheetVersionFromUser);
         Sheet copyOfCurrentVersion = versionManager.getCurrentVersionSheet().copySheet();
 
-        boolean updated = copyOfCurrentVersion.updateCell(cellToUpdateCoordinate, newCellOriginalValue, modifiedBy);
+        boolean updated = copyOfCurrentVersion.updateCell(cellToUpdateCoordinate, newCellOriginalValue, modifiedBy, false);
 
         if (updated) {
             versionManager.addNewVersion(copyOfCurrentVersion);
@@ -218,7 +218,8 @@ public class SheetManagerImpl implements SheetManager {
         if (whatIfCopy == null || whatIfCopy.getVersionNumber() != versionManager.getCurrentVersionNumber()) {
             whatIfCopy = versionManager.getCurrentVersionSheet().copySheet();
         }
-        whatIfCopy.updateCell(cellToCalculate, newValueOfCell, null);
+
+        whatIfCopy.updateCell(cellToCalculate, newValueOfCell, null, true);
 
         return SheetConverter.convertToDTO(whatIfCopy);
     }

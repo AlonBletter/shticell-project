@@ -1,7 +1,10 @@
 package client.component.sheet.left.dialog.whatif;
 
 import client.component.sheet.app.SheetController;
+import dto.coordinate.Coordinate;
+import dto.coordinate.CoordinateFactory;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -18,6 +21,7 @@ public class WhatIfDialogController {
     @FXML private VBox sliderContainer;
     @FXML private TextField stepSizeTextField;
     @FXML private TextField toLimitTextField;
+    @FXML private TextField coordinateTextField;
 
     private SheetController mainController;
     private Stage dialogStage;
@@ -30,15 +34,21 @@ public class WhatIfDialogController {
         fromLimitTextField.disableProperty().bind(isSliderCreated);
         toLimitTextField.disableProperty().bind(isSliderCreated);
         stepSizeTextField.disableProperty().bind(isSliderCreated);
+        coordinateTextField.disableProperty().bind(isSliderCreated);
     }
 
     @FXML
     void createSliderButtonAction(ActionEvent event) {
+        int sheetNumberOfColumns = mainController.getNumberOfColumns();
+        int sheetNumOfRows = mainController.getNumberOfRows();
+
         String fromText = fromLimitTextField.getText();
         String toText = toLimitTextField.getText();
         String stepText = stepSizeTextField.getText();
+        String coordinateText = coordinateTextField.getText();
 
-        if (isValidDouble(fromText) && isValidDouble(toText) && isValidDouble(stepText)) {
+        if (isValidDouble(fromText) && isValidDouble(toText) && isValidDouble(stepText) && isValidCoordinate(coordinateText)) {
+            Coordinate coordinate = CoordinateFactory.createCoordinate(coordinateText);
             double fromLimit = Double.parseDouble(fromLimitTextField.getText());
             double toLimit = Double.parseDouble(toLimitTextField.getText());
             double stepSize = Double.parseDouble(stepSizeTextField.getText());
@@ -51,9 +61,19 @@ public class WhatIfDialogController {
                         - Step size is positive and does not exceed the difference between 'From' and 'To'.
                         Re-enter the values correctly and try again.""");
                 return;
+            } else if(coordinate.row() > sheetNumOfRows || coordinate.row() < 1 ||
+                        coordinate.column() > sheetNumberOfColumns || coordinate.column() < 1) {
+                char sheetColumnRange = (char) (sheetNumberOfColumns + 'A' - 1);
+                char cellColumnChar = (char) (coordinate.column() + 'A' - 1);
+
+                String errorMessage = " Expected column between A-" + sheetColumnRange +
+                        " and row between 1-" + sheetNumOfRows + ". " +
+                        "But received column [" + cellColumnChar + "] and row [" + coordinate.row() + "].";
+                showErrorAlert("Invalid coordinate.\n" + errorMessage);
+                return;
             }
 
-            Slider valueSlider = getSlider(fromLimit, toLimit, stepSize);
+            Slider valueSlider = getSlider(fromLimit, toLimit, stepSize, coordinate);
             sliderContainer.getChildren().add(valueSlider);
             isSliderCreated.set(true);
         } else {
@@ -61,7 +81,7 @@ public class WhatIfDialogController {
         }
     }
 
-    private Slider getSlider(double fromLimit, double toLimit, double stepSize) {
+    private Slider getSlider(double fromLimit, double toLimit, double stepSize, Coordinate coordinate) {
         Slider valueSlider = new Slider();
 
         valueSlider.setMin(fromLimit);
@@ -78,12 +98,11 @@ public class WhatIfDialogController {
         valueSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             double snappedValue = Math.round(newValue.doubleValue() / stepSize) * stepSize;
             valueSlider.setValue(snappedValue);
-            mainController.displayExpectedValue(snappedValue);
+            mainController.displayExpectedValue(snappedValue, coordinate);
         });
 
         return valueSlider;
     }
-
 
     private void showErrorAlert(String errorMessage) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -115,6 +134,15 @@ public class WhatIfDialogController {
             Double.parseDouble(value);
             return true;
         } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private boolean isValidCoordinate(String coordinate) {
+        try {
+            CoordinateFactory.createCoordinate(coordinate);
+            return true;
+        } catch (IllegalArgumentException e) {
             return false;
         }
     }

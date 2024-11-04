@@ -8,6 +8,7 @@ import client.component.sheet.left.dialog.filter.FilterDialogController;
 import client.component.sheet.left.dialog.graph.GraphController;
 import client.component.sheet.left.dialog.range.RangeDialogController;
 import client.component.sheet.left.dialog.sort.SortDialogController;
+import client.component.sheet.left.dialog.whatif.MultipleWhatIfController;
 import client.component.sheet.left.dialog.whatif.WhatIfDialogController;
 import client.component.sheet.left.model.SingleRange;
 import dto.range.RangeDTO;
@@ -331,23 +332,11 @@ public class LeftController {
 
     @FXML
     void whatIfButtonAction(ActionEvent event) {
-        SingleCellController currentCell = mainController.getSelectedCell();
-        if(currentCell.getCellType() != CellType.NUMERIC || currentCell.isContainsFunction()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText(null);
-            alert.initOwner(primaryStage);
-            alert.setContentText("Invalid cell selection: The selected cell must contain a pure (non-function) " +
-                    "numeric value for the 'What If' feature.");
-            alert.showAndWait();
-            return;
-        }
-
         try {
-            FXMLLoader loader = new FXMLLoader(ShticellResourcesConstants.WHAT_IF_DIALOG_URL);
+            FXMLLoader loader = new FXMLLoader(ShticellResourcesConstants.MULTIPLE_WHAT_IF_DIALOG_URL);
             Parent root = loader.load();
 
-            WhatIfDialogController dialogController = loader.getController();
+            MultipleWhatIfController dialogController = loader.getController();
 
             Stage dialogStage = new Stage();
             dialogStage.setTitle("What-If");

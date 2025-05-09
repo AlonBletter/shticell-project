@@ -45,16 +45,16 @@ Shticell is a custom-built program designed to emulate the functionality of elec
 
 ### Navigate to the Latest Release:
 
-- **Release ZIP**: Contains both the client-side and server-side applications, ready for deployment. There are **three versions**, each corresponding to a specific milestone of the project. You can select the version that best fits your needs:
+- **Release ZIP**: Contains both the client-side and server-side applications, ready for deployment. There are **three versions**, each corresponding to a specific milestone of the project.
 
   - **Version 1 - Console UI Implementation**:  
-    The first milestone introduces the console-based version of the application. This version allows users to load files, interact with spreadsheet data, and perform basic calculations through a command-line interface. It serves as the foundational version, focusing on the core spreadsheet engine logic without a graphical user interface.
-  
+    The first milestone introduces the console-based version of the application.
+    
   - **Version 2 - JavaFX Graphics and Engine Enhancement**:  
-    The second version enhances the previous implementation by introducing a graphical user interface (GUI) using JavaFX. This version allows users to interact with spreadsheets in a visual format, improving usability and adding features such as dynamic formula updates, cell styling, and other graphical elements. The engine is also enhanced to support more complex calculations and features.
+    The second version enhances the previous implementation by introducing a graphical user interface (GUI) using JavaFX.
 
   - **Version 3 - Client-Server Final Version**:  
-    The final version of the project integrates a full client-server architecture. The client communicates with the server using HTTP and JSON for real-time updates, permission management, and data synchronization. This version includes full collaboration features, such as multi-user support, role-based permissions, and the ability to make requests for editing or viewing access. It is the most complete version, offering the full set of features and capabilities.
+    The final version of the project integrates a full client-server architecture.
 
 ## Set Up the Environment
 
